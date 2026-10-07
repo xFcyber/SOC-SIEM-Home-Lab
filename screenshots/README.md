@@ -1,6 +1,12 @@
 # Lab screenshot evidence
 
-Five original lab screenshots are included below. They were visually inspected and uploaded without changing their pixels. Captions distinguish observed state from work still pending.
+Six original lab screenshots are included below. They were visually inspected and uploaded without changing their pixels. Captions distinguish observed state from work still pending.
+
+## VirtualBox environment baseline — 2026-10-07
+
+![All five SOC-LAB virtual machines running](virtualbox-machines-running.png)
+
+Splunk-Server, Windows 11, pfSense-Firewall, Ubuntu-22,04 Server (Wazuh) and kali-linux-2024.2 are all marked **Running** in VirtualBox. This screenshot proves VM power state at capture time; it does not establish network connectivity, completed Splunk startup, agent collection or clock synchronization. Adapter configuration is still needed to confirm segmentation.
 
 ## Firewall events collected in Splunk
 

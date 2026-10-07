@@ -10,7 +10,7 @@ This repository documents the lab previously built by the author. It separates p
 
 | Component / activity | Status |
 | --- | --- |
-| VirtualBox environment and pfSense gateway | Previously configured |
+| VirtualBox environment and pfSense gateway | Five lab VMs shown Running on 2026-10-07 |
 | Windows 11 with Sysmon | Installed; process creation events previously observed |
 | Universal Forwarder → Splunk on TCP 9997 | Previously confirmed active |
 | pfSense filterlog → Splunk | Raw and parsed event screenshots attached |
@@ -21,7 +21,13 @@ This repository documents the lab previously built by the author. It separates p
 | Wazuh event and alert comparison | Pending evidence |
 | Security / System / Application forwarding, AD and additional detections | Planned or awaiting ingestion checks |
 
-Five original screenshots are included in the [evidence gallery](screenshots/README.md): raw and parsed firewall events, a saved alert, an OPT1 rule draft and an active Wazuh endpoint. Raw event exports, the Kali command and a successful scheduled trigger remain pending.
+Six original screenshots are included in the [evidence gallery](screenshots/README.md): the five running lab VMs, raw and parsed firewall events, a saved alert, an OPT1 rule draft and an active Wazuh endpoint. Raw event exports, the Kali command and a successful scheduled trigger remain pending.
+
+## Environment baseline
+
+![Five SOC lab VMs running in VirtualBox](screenshots/virtualbox-machines-running.png)
+
+The screenshot from 2026-10-07 shows Splunk-Server, Windows 11, pfSense-Firewall, Ubuntu-22,04 Server (Wazuh) and kali-linux-2024.2 in the SOC-LAB group, all marked Running. This establishes VM power state; service health, current IP addresses and clock synchronization are checked separately.
 
 ## Architecture
 
