@@ -26,7 +26,7 @@ The [Kali baseline and follow-up captures](kali-baseline.md) show route selectio
 
 ## Current Splunk baseline
 
-The [Splunk screenshot](splunk-baseline.md) confirms enp0s3 at 192.168.10.20/24 and completed startup/local web checks. A kernel soft-lockup message is also visible; its cause is unknown. Receiver sockets, remote access and fresh ingestion remain to be checked.
+The [Splunk screenshot](splunk-baseline.md) confirms enp0s3 at 192.168.10.20/24 and completed startup/local web checks. A kernel soft-lockup message is also visible; its cause is unknown. A follow-up screenshot confirms splunkd sockets on TCP 8000, TCP 9997 and UDP 5514, bound to 0.0.0.0. Remote access and fresh ingestion remain to be checked.
 
 ## VM adapter design
 
@@ -47,9 +47,9 @@ Splunk receives firewall syslog separately from endpoint forwarding. Wazuh is a 
 
 | Service | Port | Status |
 | --- | --- | --- |
-| Splunk receiving | TCP 9997 | Previously configured |
-| Splunk Web | TCP 8000 | Previously used |
-| Firewall syslog receiver | UDP 5514 | Observed Splunk source udp:5514; sender settings not captured |
+| Splunk receiving | TCP 9997 | splunkd LISTEN on 0.0.0.0:9997, screenshot 2026-10-07 |
+| Splunk Web | TCP 8000 | splunkd LISTEN on 0.0.0.0:8000, screenshot 2026-10-07 |
+| Firewall syslog receiver | UDP 5514 | splunkd bound to 0.0.0.0:5514; sender settings not captured |
 | Wazuh agent communication | Confirm from agent/manager configuration | Record actual settings |
 
 The screenshot-supported input is UDP 5514. Confirm sender settings and the actual Wazuh manager endpoint from configuration.

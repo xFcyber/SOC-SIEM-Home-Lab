@@ -1,6 +1,6 @@
 # Splunk setup and validation
 
-The [current server screenshot](../architecture/splunk-baseline.md) confirms `192.168.10.20/24` on `enp0s3` and completed daemon/local web startup checks. Receiver validation and fresh ingestion remain pending.
+The [current server screenshot](../architecture/splunk-baseline.md) confirms `192.168.10.20/24` on `enp0s3` and completed daemon/local web startup checks. The [follow-up socket evidence](../screenshots/splunk-receiver.png) confirms splunkd on TCP 8000, TCP 9997 and UDP 5514, bound to 0.0.0.0. Remote transport validation and fresh ingestion remain pending.
 
 ## Checks
 
@@ -24,7 +24,7 @@ PowerShell network check from Windows:
 Test-NetConnection 192.168.10.20 -Port 9997
 ```
 
-A listening port or successful TCP check proves transport reachability, not ingestion.
+A local socket proves local binding. A successful remote TCP check proves transport reachability. Neither proves ingestion.
 
 ## Ingestion overview
 

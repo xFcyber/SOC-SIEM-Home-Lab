@@ -1,6 +1,6 @@
 # Lab screenshot evidence
 
-Twelve original lab screenshots are included below. They were visually inspected and uploaded without changing their pixels. Captions distinguish observed state from work still pending.
+Thirteen original lab screenshots are included below. They were visually inspected and uploaded without changing their pixels. Captions distinguish observed state from work still pending.
 
 ## VirtualBox environment baseline — 2026-10-07
 
@@ -60,6 +60,14 @@ A kernel watchdog soft-lockup message for CPU#1 is visible; its cause is not det
 
 [Baseline details](../architecture/splunk-baseline.md)
 
+## Splunk web and receiver sockets — 2026-10-07
+
+![Splunk listening on web and receiver ports](splunk-receiver.png)
+
+The visible socket output confirms **TCP 8000 LISTEN**, **TCP 9997 LISTEN** and **UDP 5514 UNCONN**, all bound to **0.0.0.0** and owned by **splunkd (PID 1139)**. The first filter checks 800 by mistake; the subsequent command correctly checks 8000. These are local socket observations, not proof of remote access or fresh ingestion.
+
+[Baseline details](../architecture/splunk-baseline.md)
+
 ## Firewall events collected in Splunk
 
 ![Raw pfSense filterlog events](splunk-pfsense-raw-events.png)
@@ -98,7 +106,6 @@ Summary charts are visible, but individual event details are not. Technique/comp
 | --- | --- |
 | virtualbox-network.png | VM adapter names and segmentation |
 | pfsense-syslog.png | Actual remote logging destination |
-| splunk-receiver.png | TCP 9997 receiving input |
 | windows-forwarder-active.png | Active endpoint forwarding |
 | windows-sysmon-event1.png | Local Sysmon process creation |
 | splunk-sysmon-event.png | Matching indexed Sysmon event |
