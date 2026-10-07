@@ -2,11 +2,9 @@ index=pfSense "filterlog" earliest=1791377520 latest=1791377820
 | rex field=_raw "(?<pfdata>[0-9]+,(?:[^,\r\n]*,){7}[46],.*)$"
 | eval f=split(pfdata,",")
 | where mvindex(f,8)="4" AND lower(mvindex(f,16))="tcp"
-| eval interface=mvindex(f,4), action=mvindex(f,6), direction=mvindex(f,7), protocol=lower(mvindex(f,16)), src_ip=mvindex(f,18), dst_ip=mvindex(f,19), src_port=tonumber(mvindex(f,20)), dst_port=tonumber(mvindex(f,21))
+| eval interface=mvindex(f,4), action=mvindex(f,6), direction=mvindex(f,7), src_ip=mvindex(f,18), dst_ip=mvindex(f,19), dst_port=tonumber(mvindex(f,21))
 | where isnotnull(src_ip) AND isnotnull(dst_ip) AND isnotnull(dst_port)
 | where direction="in"
-| stats dc(dst_port) as unique_ports count as logged_events values(dst_port) as destination_ports values(action) as firewall_actions min(_time) as first_seen max(_time) as last_seen by src_ip dst_ip
+| stats dc(dst_port) as unique_ports count as logged_events values(dst_port) as destination_ports values(action) as firewall_actions by src_ip dst_ip
 | where unique_ports >= 5
-| convert ctime(first_seen) ctime(last_seen)
 | sort - unique_ports
-

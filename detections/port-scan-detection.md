@@ -1,6 +1,6 @@
 # IPv4 TCP port scan candidate
 
-**Status:** prepared query; live-lab validation pending.
+**Status:** Core field extraction, grouping and threshold validated by a manual case 002 replay; scheduled firing pending.
 
 ## Behavior and data
 
@@ -59,6 +59,12 @@ Five ports is a deliberately low educational threshold. Legitimate vulnerability
 
 Stateful logging may not record every packet. NAT or additional filtering may affect the visible addresses. Confirm the observation point. A missing result is not proof that no scan occurred.
 
+## Observed validation — case 002
+
+The [2026-10-07 controlled scan](../investigations/incident-002-controlled-port-scan.md) has an attached [grouped-result screenshot](../screenshots/splunk-port-scan-result-case002.png). A fixed five-minute [replay](../investigations/incident-002-replay.spl) returns one source/destination pair: **192.168.20.20 → 192.168.10.100**, **8 distinct destination ports**, **8 logged events**, and **pass**. The values match the Nmap port set and individually reviewed firewall records.
+
+The executed variant uses the same extraction, IPv4 TCP/inbound filters, grouping and threshold as the generic query above, while omitting optional protocol/source-port fields and first_seen/last_seen columns. The screenshot validates the core behavior for this one controlled case; it does not demonstrate those extra columns, all input layouts, negative-case coverage or scheduled alert firing.
+
 ## Validation sequence
 
 1. Run the parsed-event search in [spl-searches.md](../splunk/spl-searches.md).
@@ -66,6 +72,6 @@ Stateful logging may not record every packet. NAT or additional filtering may af
 3. Run a recorded controlled scan through pfSense.
 4. Search the five-minute interval containing it.
 5. Review grouped results against individual events.
-6. Attach screenshots and exact observed values to [incident 001](../investigations/incident-001-port-scan.md).
+6. Attach screenshots and exact observed values to the relevant case: [historical case 001](../investigations/incident-001-port-scan.md) or [controlled case 002](../investigations/incident-002-controlled-port-scan.md).
 
 [Schedule proposal](../splunk/alerts.md) · [CSV specification](https://docs.netgate.com/pfsense/en/latest/monitoring/logs/raw-filter-format.html)

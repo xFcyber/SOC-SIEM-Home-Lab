@@ -6,7 +6,7 @@
 
 The captured Possible Port Scan Detected alert is enabled, scheduled and configured to add triggered records when results exceed zero. It explicitly displays no fired events. Its actual cron expression, window and query are not visible; the settings below are proposed for the revised analytic.
 
-Use the [port scan SPL](../detections/pfsense-ipv4-port-scan.spl) after validating its field extraction.
+The [case 002 manual replay](../investigations/incident-002-controlled-port-scan.md) confirms the core extraction, grouping and threshold for an authorized eight-port scan. Scheduled firing remains pending. Use the validated aggregation logic or the [generic port scan SPL](../detections/pfsense-ipv4-port-scan.spl) for the scheduled definition. Remove fixed epoch earliest/latest modifiers used for replay, then configure the relative alert window below.
 
 | Setting | Proposed value |
 | --- | --- |

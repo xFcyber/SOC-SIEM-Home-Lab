@@ -1,6 +1,6 @@
 # Lab screenshot evidence
 
-Sixteen original lab screenshots are included below. They were visually inspected and uploaded without changing their pixels. Captions distinguish observed state from work still pending.
+Seventeen original lab screenshots are included below. They were visually inspected and uploaded without changing their pixels. Captions distinguish observed state from work still pending.
 
 ## VirtualBox environment baseline — 2026-10-07
 
@@ -84,7 +84,7 @@ The displayed event time and raw prefixes show a three-hour difference whose cau
 
 Nmap **7.94SVN** starts at **15:54 +03**, targets **192.168.10.100**, and completes in **0.34 seconds**. The command scans eight ports: **135, 139 and 445 are reported open**, while **22, 80, 443, 3389 and 5985 are closed**. Reasons are SYN-ACK for open ports and reset for closed ports.
 
-This is scan execution evidence. Matching firewall records are attached below; the grouped analytic and a fired alert remain pending.
+This is scan execution evidence. Matching firewall records and the grouped analytic are attached below; scheduled alert firing remains pending.
 
 [Case 002](../investigations/incident-002-controlled-port-scan.md)
 
@@ -96,9 +96,21 @@ The captured **Last 24 hours** search returns **8 events** from **192.168.20.20*
 
 The displayed event time is **12:54:56 PM**; raw prefixes contain **12:54:56** and **15:54:56**. Numeric event/index times and configured timezone are not shown. Matching addresses, port set and the embedded 15:54 minute support correlation with the Nmap run. Firewall permission does not mean every port was open.
 
-This proves indexed matching records. The revised grouped analytic and scheduled alert firing still require separate evidence.
+This proves indexed matching records. The grouped detection result is attached below; scheduled alert firing still requires separate evidence.
 
 [Case 002 and replay query](../investigations/incident-002-controlled-port-scan.md)
+
+## Case 002 grouped detection result — 2026-10-07
+
+![Successful manual replay with one grouped scan candidate](splunk-port-scan-result-case002.png)
+
+The completed search shows **8 events** and **Statistics (1)**. Its one row reports source **192.168.20.20**, destination **192.168.10.100**, **unique_ports=8**, **logged_events=8**, the exact eight scanned destination ports and **firewall_actions=pass**.
+
+The query uses an IPv4 TCP filter, inbound direction, grouping by source/destination and a threshold of at least five distinct ports, without a hard-coded attacker IP. The explicit epoch bounds select a five-minute interval; the job banner shows **12:52:00–12:57:00 PM on 2026-10-07**, despite the picker showing Last 15 minutes.
+
+This validates the manual detection replay for the authorized scan. It does not show scheduled alert firing. Optional first_seen/last_seen columns from the generic SPL are absent from the executed variant.
+
+[Case 002](../investigations/incident-002-controlled-port-scan.md) · [Executed replay SPL](../investigations/incident-002-replay.spl)
 
 ## Firewall events collected in Splunk
 
@@ -141,7 +153,6 @@ Summary charts are visible, but individual event details are not. Technique/comp
 | windows-forwarder-active.png | Active endpoint forwarding |
 | windows-sysmon-event1.png | Local Sysmon process creation |
 | splunk-sysmon-event.png | Matching indexed Sysmon event |
-| splunk-port-scan-result.png | Revised analytic's grouped result |
 | splunk-alert-schedule.png | Actual cron and time-window settings |
 | splunk-triggered-alert.png | Successful scheduled trigger |
 | wazuh-event-details.png | Individual collected event or alert |

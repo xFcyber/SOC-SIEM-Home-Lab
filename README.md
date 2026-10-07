@@ -15,13 +15,13 @@ This repository documents the lab previously built by the author. It separates p
 | Universal Forwarder → Splunk on TCP 9997 | Previously confirmed active |
 | pfSense filterlog → Splunk | Raw/parsed screenshots and a 2026-10-07 search returning indexed filterlog records |
 | Wazuh manager and Windows agent | Active windows-lab agent 001 shown in dashboard screenshot |
-| Controlled Kali port scan | Eight-port SYN scan and eight matching firewall records confirmed; case 002 analytic pending |
-| Revised port scan SPL in this repository | Prepared; requires execution against actual lab logs |
+| Controlled Kali port scan | Eight-port SYN scan, matching firewall records and one grouped detection result confirmed |
+| Revised port scan SPL in this repository | Core extraction, grouping and threshold validated in case 002 manual replay |
 | Scheduled alert definition | Saved and enabled in screenshot; no fired events displayed |
 | Wazuh event and alert comparison | Pending evidence |
 | Security / System / Application forwarding, AD and additional detections | Planned or awaiting ingestion checks |
 
-Sixteen original screenshots are included in the [evidence gallery](screenshots/README.md): the five running lab VMs, Windows and Kali IP/time settings, a Kali timezone/NTP status check, successful gateway and Windows pings, Splunk's current address/startup output and web/receiver sockets, raw and parsed firewall events plus a new search check, a saved alert, an OPT1 rule draft, an active Wazuh endpoint a completed eight-port Nmap scan and its eight matching firewall records. Raw event exports and a successful scheduled trigger remain pending.
+Seventeen original screenshots are included in the [evidence gallery](screenshots/README.md): the five running lab VMs, Windows and Kali IP/time settings, a Kali timezone/NTP status check, successful gateway and Windows pings, Splunk's current address/startup output and web/receiver sockets, raw and parsed firewall events plus a new search check, a saved alert, an OPT1 rule draft, an active Wazuh endpoint, a completed eight-port Nmap scan, its eight matching firewall records and a grouped detection result. Raw event exports and a successful scheduled trigger remain pending.
 
 ## Environment baseline
 
@@ -92,7 +92,7 @@ The captured Wazuh page shows windows-lab (001) active. See the [agent inventory
 
 ## Current exercise: controlled scan — 2026-10-07
 
-An actual Nmap run scanned eight TCP ports on Windows 192.168.10.100 at 15:54 UTC+03:00. Ports 135, 139 and 445 were reported open; the other five were closed. The command and completed output are attached. Eight indexed TCP SYN records match the scanner, target and all eight ports, with firewall action pass. Execution of the revised analytic and scheduled alert firing remain pending.
+An actual Nmap run scanned eight TCP ports on Windows 192.168.10.100 at 15:54 UTC+03:00. Ports 135, 139 and 445 were reported open; the other five were closed. The command and completed output are attached. Eight indexed TCP SYN records match the scanner, target and all eight ports, with firewall action pass. The manual analytic replay returns one candidate with eight distinct ports and eight events. This is an authorized-test true positive for scan behavior; scheduled alert firing remains pending.
 
 [Follow case 002](investigations/incident-002-controlled-port-scan.md).
 
@@ -102,7 +102,7 @@ Log collection, SPL search, firewall log interpretation, endpoint telemetry vali
 
 ## Roadmap
 
-Validate case 002 with the revised SPL, add raw exports and individual endpoint event details, verify scheduled firing, then add failed authentication and PowerShell investigations. Active Directory and Windows Server remain future additions.
+Validate case 002 scheduled alert firing, add raw exports and individual endpoint event details, verify scheduled firing, then add failed authentication and PowerShell investigations. Active Directory and Windows Server remain future additions.
 
 ## Scope and author
 

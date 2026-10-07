@@ -1,10 +1,10 @@
 # Case 002 — Controlled Kali TCP port scan
 
-**Status:** Simulation and firewall correlation confirmed; analytic execution and scheduled alert firing pending.
+**Status:** Controlled scan, firewall correlation and manual detection replay confirmed; scheduled alert firing pending.
 
 ## Summary
 
-On 2026-10-07 at 15:54 UTC+03:00, an authorized Nmap SYN scan targeted eight TCP ports on the Windows lab address 192.168.10.100. The captured output reports three open and five closed ports. Eight indexed TCP SYN records match the source/destination pair and scanned ports, all with firewall action pass. No compromise, exploitation, successful SIEM detection or scheduled alert firing is established by this evidence.
+On 2026-10-07 at 15:54 UTC+03:00, an authorized Nmap SYN scan targeted eight TCP ports on the Windows lab address 192.168.10.100. The captured output reports three open and five closed ports. Eight indexed TCP SYN records match the source/destination pair and scanned ports, all with firewall action pass. A subsequent manual analytic replay returns one scan candidate with eight distinct ports and eight logged events. No compromise, exploitation or scheduled alert firing is established.
 
 This is a new exercise, separate from [case 001](incident-001-port-scan.md), whose historical firewall source address was 192.168.20.100.
 
@@ -59,7 +59,7 @@ The SYN-ACK responses support Nmap's open-port classifications for 135, 139 and 
 
 Because `-Pn` bypasses host discovery, the `Host is up, received user-set` line alone is not a successful ping. The earlier ping evidence and the visible scan responses provide separate reachability observations.
 
-The activity is authorized discovery within the lab. Detection outcome is still pending; do not label this a true-positive SIEM alert before obtaining the analytic result. T1046 (Network Service Discovery) is a technique association for the exercise, not an assertion of malicious intent.
+The activity is authorized discovery within the lab. The manual replay correctly identifies the controlled port scan: a true positive for the tested behavior, with an authorized-test disposition. It does not establish a malicious incident or a triggered scheduled alert. T1046 (Network Service Discovery) is a technique association for the exercise, not an assertion of malicious intent.
 
 ## Evidence 2 — Matching firewall records in Splunk
 
@@ -95,15 +95,38 @@ The firewall's `pass` action means it allowed the recorded packets. It does not 
 
 The screenshot contains timestamp prefixes differing by three hours and does not expose an explicit offset or numeric `_time` / `_indextime` values. Their interpretation remains unverified. Clock synchronization is deferred at the author's request. The original raw-event export is still needed.
 
-## Detection and disposition (pending)
+## Evidence 3 — Manual detection replay confirmed
 
-1. Execute the [case replay search](incident-002-replay.spl), which uses the repository's [IPv4 TCP analytic](../detections/pfsense-ipv4-port-scan.spl) with a fixed five-minute search interval: `earliest=1791377520 latest=1791377820` (2026-10-07 12:52:00–12:57:00 UTC). The interval follows the Nmap timestamp converted from UTC+03 and the displayed event time; confirm actual search results because numeric event times were not captured.
-2. Record the grouped source/destination row, distinct port count, logged event count and firewall actions. Manual review suggests **8 distinct ports, 8 logged events and pass** for this pair, but the analytic has not yet been executed. The lab threshold is five distinct ports per source/destination pair; the replay does not constrain the search to Kali's IP.
-3. If no row appears, inspect actual event epoch values and timestamp parsing before drawing a detection verdict.
-4. Validate the scheduled alert separately, preserving actual schedule and fired-event evidence. Historical replay does not prove scheduled operation.
-5. Export raw records and attach the original Nmap output before closing the exercise.
+![One grouped scan candidate with eight destination ports](../screenshots/splunk-port-scan-result-case002.png)
 
-No containment or endpoint change has been performed. Final detection verdict, alert severity and closure remain pending.
+The executed [replay SPL](incident-002-replay.spl) searches IPv4 TCP inbound records, groups by source and destination, and applies a threshold of five distinct destination ports. It contains no hard-coded scanner or target address.
+
+Although the picker shows **Last 15 minutes**, the search includes `earliest=1791377520 latest=1791377820`. The completed-job banner confirms the actual interval **2026-10-07 12:52:00 PM to 12:57:00 PM**, consistent with the selected five-minute replay window. Splunk reports **8 events** and **Statistics (1)**.
+
+| Result field | Captured value |
+| --- | --- |
+| src_ip | 192.168.20.20 |
+| dst_ip | 192.168.10.100 |
+| unique_ports | 8 |
+| logged_events | 8 |
+| destination_ports | 22, 80, 135, 139, 443, 445, 3389, 5985 |
+| firewall_actions | pass |
+
+The grouped values agree with the eight individually reviewed records and the scanned port set. This validates field extraction, grouping and threshold logic for this controlled IPv4 TCP case. The executed display variant omits the optional protocol/source-port fields and first_seen/last_seen columns present in the generic repository SPL; those extra output columns have not been demonstrated by this screenshot.
+
+## Disposition and remaining validation
+
+**Behavior verdict:** True positive for the controlled port scan.  
+**Activity context:** Authorized lab test.  
+**Scheduled alert:** Successful firing not yet demonstrated.  
+**Endpoint compromise:** Not established.
+
+1. Prepare the scheduled alert using the validated aggregation logic. Remove the fixed `earliest` / `latest` replay values from its query and configure a relative window as described in the [schedule proposal](../splunk/alerts.md).
+2. Capture the actual saved query, schedule, time window and trigger action.
+3. Generate a fresh controlled scan and inspect the scheduled job and Triggered Alerts. Manual replay does not prove scheduled operation.
+4. Export the raw records and attach the original Nmap output for reproducible evidence.
+
+No containment or endpoint change has been performed. Clock synchronization remains deferred. The exercise remains open for scheduled-alert validation and original event/output exports.
 
 ## References
 
