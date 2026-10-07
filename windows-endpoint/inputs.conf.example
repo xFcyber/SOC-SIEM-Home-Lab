@@ -1,0 +1,7 @@
+# Example only. Review existing local configuration before applying.
+# Only the previously used Sysmon channel is included here.
+[WinEventLog://Microsoft-Windows-Sysmon/Operational]
+disabled = 0
+renderXml = true
+index = main
+
