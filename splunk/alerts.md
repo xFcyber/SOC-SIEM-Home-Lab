@@ -1,6 +1,10 @@
 # Scheduled port scan alert
 
-**Status: configuration proposal; execution evidence pending.**
+**Status: revised schedule proposal; an existing alert definition is shown below, but successful firing remains unverified.**
+
+![Existing enabled alert with no displayed fired events](../screenshots/splunk-alert-enabled-no-fires.png)
+
+The captured Possible Port Scan Detected alert is enabled, scheduled and configured to add triggered records when results exceed zero. It explicitly displays no fired events. Its actual cron expression, window and query are not visible; the settings below are proposed for the revised analytic.
 
 Use the [port scan SPL](../detections/pfsense-ipv4-port-scan.spl) after validating its field extraction.
 

@@ -5,12 +5,12 @@ Firewall logs were previously forwarded to Splunk. Record the receiver's actual 
 | Detail | Value |
 | --- | --- |
 | Splunk host | Previously reported as 192.168.10.20 |
-| Destination syslog port | To confirm |
-| Transport | To confirm |
+| Observed receiver input | UDP 5514, from source metadata in raw event screenshot |
+| Transport | UDP in the captured receiving metadata; sender settings not attached |
 | Log category | Firewall / filterlog |
 | Splunk index | Previously used as `pfSense` |
 
-Verify both sides: pfSense remote logging settings and the receiving input. Keep time synchronized on the VMs.
+The [raw-event screenshot](../screenshots/splunk-pfsense-raw-events.png) establishes collection and identifies udp:5514. The remote logging settings screen is still needed. Verify both sides and resolve the two timestamp prefixes visible in the captured raw events.
 
 ## Verification
 

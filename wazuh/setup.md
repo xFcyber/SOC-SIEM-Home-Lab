@@ -2,7 +2,9 @@
 
 The lab uses Wazuh on a separate Ubuntu Server and a Windows agent.
 
-**Previously observed:** manager installed and Windows agent service running. **Still needed for this repository:** actual manager IP, connected-agent evidence and a collected event or alert.
+**Screenshot evidence:** windows-lab (001) active in the Wazuh endpoint page, last keep alive Oct 5, 2026 @ 11:17:05.000. Dashboard URL: 192.168.10.10. The agent-configured manager endpoint and individual event details still need confirmation.
+
+![Active Windows agent](../screenshots/wazuh-agent-active.png)
 
 1. Record the manager's actual lab IP and installed version.
 2. Check the Windows agent's configured manager address.

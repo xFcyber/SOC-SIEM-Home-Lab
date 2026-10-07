@@ -2,6 +2,10 @@
 
 Choose a time range that includes the exercise. Index names must match your deployment.
 
+## Historical search evidence
+
+The [captured extraction search](../screenshots/splunk-pfsense-parsed-events.png) is transcribed in [pfsense-field-extraction-observed.spl](pfsense-field-extraction-observed.spl). It lacks a protocol filter; ICMP entries are therefore displayed in port columns. The revised IPv4 TCP searches below avoid that interpretation.
+
 ## Raw firewall events
 
 ```spl
@@ -40,5 +44,5 @@ index=main source="*Sysmon*"
 
 Adapt the source filter after inspecting metadata. Event ID extractions vary with sourcetype and add-ons, so validate fields before writing Event ID filters.
 
-These searches are prepared examples. They have not been executed in the author's live Splunk instance during repository preparation.
+The historical search has screenshot evidence. The revised searches here were prepared separately and were not executed in the live Splunk instance during repository preparation.
 

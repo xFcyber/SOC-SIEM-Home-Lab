@@ -6,6 +6,12 @@ pfSense is the gateway between SOC-LAB and the attacker segment.
 
 Capture assigned interface names, lab IPs and the VirtualBox adapter mapping. Label the WAN as upstream; omit unrelated home network details.
 
+## Captured configuration
+
+![OPT1 rule awaiting application](../screenshots/pfsense-opt1-rule-pending.png)
+
+The screenshot shows Allow Kali Lab Traffic on OPT1 and unapplied changes. It documents a rule draft; it does not prove the pictured change was active when the later events were logged.
+
 ## Rule checklist for the exercise
 
 - Kali is connected to the attacker segment.

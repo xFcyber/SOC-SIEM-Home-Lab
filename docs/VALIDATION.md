@@ -6,3 +6,5 @@ The parser layout was compared with official Netgate documentation. Synthetic te
 
 No live VM, Splunk search, Wazuh collection or scheduled alert was accessed or executed during preparation. Current configurations, installed versions, event measurements and screenshots must be confirmed in the lab.
 
+
+Five original screenshots were visually reviewed and attached as historical lab evidence. Observed addresses, input metadata, alert state and Wazuh agent status are documented with limitations. Uploaded image bytes are preserved; no interface content or results were generated.

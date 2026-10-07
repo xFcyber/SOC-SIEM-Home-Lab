@@ -13,15 +13,15 @@ This repository documents the lab previously built by the author. It separates p
 | VirtualBox environment and pfSense gateway | Previously configured |
 | Windows 11 with Sysmon | Installed; process creation events previously observed |
 | Universal Forwarder → Splunk on TCP 9997 | Previously confirmed active |
-| pfSense filterlog → Splunk | Firewall events previously observed |
-| Wazuh manager and Windows agent | Installed; agent service previously confirmed running |
+| pfSense filterlog → Splunk | Raw and parsed event screenshots attached |
+| Wazuh manager and Windows agent | Active windows-lab agent 001 shown in dashboard screenshot |
 | Controlled Kali port scan | Previously performed; firewall events reviewed |
 | Revised port scan SPL in this repository | Prepared; requires execution against actual lab logs |
-| Scheduled alert execution | Pending confirmation and attached evidence |
+| Scheduled alert definition | Saved and enabled in screenshot; no fired events displayed |
 | Wazuh event and alert comparison | Pending evidence |
 | Security / System / Application forwarding, AD and additional detections | Planned or awaiting ingestion checks |
 
-No screenshots or raw lab logs are bundled yet. See the [evidence checklist](screenshots/README.md).
+Five original screenshots are included in the [evidence gallery](screenshots/README.md): raw and parsed firewall events, a saved alert, an OPT1 rule draft and an active Wazuh endpoint. Raw event exports, the Kali command and a successful scheduled trigger remain pending.
 
 ## Architecture
 
@@ -65,7 +65,7 @@ Kali can be moved between segments for different exercises. For the firewall cas
 | Windows | [Sysmon](windows-endpoint/sysmon.md), [forwarder](windows-endpoint/splunk-universal-forwarder.md), [Wazuh agent](windows-endpoint/wazuh-agent.md) |
 | Simulation | [Controlled port scan](attack-simulations/port-scan.md) |
 | Detection | [Port scan analytic](detections/port-scan-detection.md), [SPL file](detections/pfsense-ipv4-port-scan.spl) |
-| Investigation | [Case 001](investigations/incident-001-port-scan.md), [case template](investigations/incident-template.md) |
+| Investigation | [Screenshot-backed case 001](investigations/incident-001-port-scan.md), [case template](investigations/incident-template.md) |
 | Portfolio evidence | [Screenshot checklist](screenshots/README.md) |
 | Next work | [Roadmap](docs/roadmap.md) |
 | Arabic guide | [دليل رفع الملفات وإكمال الأدلة](docs/GETTING-STARTED-AR.md) |
@@ -76,7 +76,15 @@ The initial case investigates connections to multiple destination ports on a lab
 
 A result indicates scan-like behavior; authorization and event context determine the verdict. A firewall log does not prove successful access or endpoint compromise.
 
-[Read the detection](detections/port-scan-detection.md) and [the investigation draft](investigations/incident-001-port-scan.md).
+[Read the detection](detections/port-scan-detection.md) and [the evidence-backed investigation](investigations/incident-001-port-scan.md).
+
+![Firewall events from the actual lab](screenshots/splunk-pfsense-raw-events.png)
+
+The captured raw search shows pfSense events from 192.168.20.100 to 192.168.10.100, received through udp:5514. The case documents timestamp discrepancies and the limits of the visible results.
+
+![Active Windows endpoint in Wazuh](screenshots/wazuh-agent-active.png)
+
+The captured Wazuh page shows windows-lab (001) active. See the [agent inventory](wazuh/agent-configuration.md) for details and remaining collection checks.
 
 ## Skills practiced
 
@@ -84,7 +92,7 @@ Log collection, SPL search, firewall log interpretation, endpoint telemetry vali
 
 ## Roadmap
 
-Validate the revised SPL against raw events, attach sanitized screenshots, verify scheduled execution, then add failed authentication and PowerShell investigations. Active Directory and Windows Server remain future additions.
+Validate the revised SPL against live events, add the Kali command and individual endpoint event details, verify scheduled firing, then add failed authentication and PowerShell investigations. Active Directory and Windows Server remain future additions.
 
 ## Scope and author
 

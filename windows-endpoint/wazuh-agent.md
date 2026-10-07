@@ -6,7 +6,7 @@ The Windows service `WazuhSvc` was previously confirmed running.
 Get-Service WazuhSvc
 ```
 
-Check the configured manager address against the current Wazuh server IP, then verify a connected agent from the manager/dashboard. Record both the service check and manager-side confirmation.
+The attached [dashboard screenshot](../screenshots/wazuh-agent-active.png) shows windows-lab (001) active with last keep alive Oct 5, 2026 @ 11:17:05.000. Check the configured manager address separately and collect an individual event detail. The screenshot is a historical observation, not a current live check.
 
 Complete the [collection inventory](../wazuh/agent-configuration.md). Do not infer that Sysmon is collected simply because WazuhSvc is running.
 

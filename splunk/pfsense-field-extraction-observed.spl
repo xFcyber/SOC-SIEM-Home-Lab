@@ -1,0 +1,12 @@
+index=pfSense "filterlog" "192.168.20.100" "192.168.10.100"
+| rex field=_raw "filterlog\[\d+\]:\s+(?<pfdata>.*)"
+| eval f=split(pfdata,",")
+| eval action=mvindex(f,6)
+| eval protocol=mvindex(f,16)
+| eval src_ip=mvindex(f,18)
+| eval dst_ip=mvindex(f,19)
+| eval src_port=mvindex(f,20)
+| eval dst_port=mvindex(f,21)
+| table _time action src_ip dst_ip src_port dst_port protocol
+| sort - _time
+

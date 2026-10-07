@@ -3,10 +3,10 @@
 | Source | Destination | Prior observation | Next verification |
 | --- | --- | --- | --- |
 | Sysmon Operational | Splunk `main` via UF | Event ID 1 and forwarding were previously observed | Compare a local event with its indexed copy |
-| pfSense filterlog | Splunk `pfSense` via syslog | Firewall events were previously searched | Confirm raw CSV and timestamp |
+| pfSense filterlog | Splunk `pfSense` via UDP 5514 | Raw and parsed events attached | Resolve timestamp-prefix discrepancy |
 | Windows Security | Splunk via UF | Not confirmed as collected | Check inputs and indexed events |
 | Windows System / Application | Splunk via UF | Not confirmed as collected | Check each channel separately |
-| Windows agent telemetry | Wazuh manager | Agent service previously running | Confirm manager connection and a collected event |
+| Windows agent telemetry | Wazuh manager/dashboard | windows-lab (001) active in screenshot | Inspect individual collected event details |
 
 Running an agent service alone does not demonstrate collection, indexing or a security alert.
 

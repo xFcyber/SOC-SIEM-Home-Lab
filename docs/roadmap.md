@@ -3,9 +3,9 @@
 | Priority | Work | Completion evidence |
 | --- | --- | --- |
 | 1 | Validate revised IPv4 TCP parser | Raw and extracted fields agree |
-| 2 | Complete incident 001 | Real command, events, results and final verdict |
+| 2 | Complete screenshot-backed incident 001 | Add real command, validate timestamps and grouped result |
 | 3 | Verify scheduled alert | Scheduled job and triggered record |
-| 4 | Confirm Wazuh collection | Manager connection and actual event |
+| 4 | Inspect Wazuh collection detail | Active agent already pictured; individual event still needed |
 | 5 | Confirm Windows Security ingestion | Actual Security events in Splunk |
 | 6 | Failed-login investigation | Controlled failures and contextual analysis |
 | 7 | PowerShell investigation | Harmless test, collected telemetry and query |

@@ -1,67 +1,96 @@
-# Incident 001 — Authorized lab port scan
+# Incident 001 — Scan-like traffic across the lab firewall
 
-**Case status: documentation draft; supporting screenshots and exact event measurements pending.**
+**Status: screenshot-backed investigation; revised analytic and scheduled firing remain unverified.**
 
 ## Summary
 
-The author previously generated scan traffic from Kali Linux and reviewed pfSense firewall events in Splunk. This case structures that exercise as an analyst investigation. The revised detection and scheduled alert have not yet been validated against the live lab.
+Saved lab screenshots show IPv4 TCP traffic from **192.168.20.100** to **192.168.10.100** on multiple destination ports, collected from pfSense in Splunk. The author previously described the source as Kali and the exercise as authorized lab testing. A command transcript is still missing.
 
-## Case details
+This case demonstrates firewall ingestion and manual field review. The enabled scheduled alert is documented separately from a successful trigger.
 
-| Field | Value |
+## Observed details
+
+| Field | Evidence-supported value |
 | --- | --- |
-| Environment | VirtualBox SOC home lab |
-| Source machine | Kali Linux |
-| Source IP | Pending actual event evidence |
-| Target IP | 192.168.10.100 in the reported addressing; verify against events |
-| Start / end and timezone | Pending |
-| Source telemetry | pfSense filterlog |
-| SIEM | Splunk; index `pfSense` |
-| Distinct destination ports | Pending |
-| Firewall action | Pending raw-event review |
-| Triggered alert / search job | Pending |
 | Analyst | xFcyber |
+| Observed source | 192.168.20.100; Kali role based on author context |
+| Observed destination | 192.168.10.100 |
+| Firewall log host | 192.168.10.1 |
+| Input / sourcetype | `udp:5514` / `syslog` |
+| Index | `pfSense` |
+| Visible interface and direction | `em2`, `in` in raw TCP entries |
+| Displayed event timestamp | 2026-10-04 15:57:53 in visible rows; timezone not established |
+| Raw search | 19 matching events in a 15-minute search |
+| Parsed search | 21 matching events in a different 60-minute search |
+| TCP ports visibly represented across the images | 11, 22, 25, 80, 139, 443, 3389 |
+| Firewall actions | `pass` and `block` visible in parsed results |
+| Scheduled alert | Saved and enabled; screenshot shows no fired events |
 
-## Detection
-
-The [analytic](../detections/port-scan-detection.md) extracts IPv4 TCP addresses and ports, then looks for at least five destination ports per source/destination pair in the selected five-minute window. This is a scan candidate and needs context.
+The port list is a visible subset, not a computed total. Different search filters/windows explain why the displayed 19 and 21 counts must not be treated as one measurement.
 
 ## Evidence register
 
-| Evidence | Required content | Status |
+| ID | File | What it proves |
 | --- | --- | --- |
-| E01 | Kali command/output, IP and timestamp | Not attached |
-| E02 | pfSense interface and matching logged rule | Not attached |
-| E03 | Sanitized raw firewall events | Not attached |
-| E04 | SPL and parsed source/destination/port table | Not attached |
-| E05 | Candidate result with unique ports and event count | Not attached |
-| E06 | Scheduled job and Triggered Alerts result, if enabled | Not attached |
+| E01 | [Raw firewall events](../screenshots/splunk-pfsense-raw-events.png) | Indexed filterlog entries, addresses, TCP destination ports and receiver metadata |
+| E02 | [Parsed event table](../screenshots/splunk-pfsense-parsed-events.png) | An actual extraction search and visible field values |
+| E03 | [Enabled alert](../screenshots/splunk-alert-enabled-no-fires.png) | Saved scheduled definition, result-count condition and no displayed fired records |
+| E04 | [OPT1 rule draft](../screenshots/pfsense-opt1-rule-pending.png) | An exercise rule exists in configuration; changes were still pending |
+| Missing | Kali command/output | Exact command, timing and independent source attribution |
+| Missing | Revised analytic result and scheduled job | Live validation of the repository query and a successful firing |
 
-Add sanitized images under [screenshots](../screenshots/README.md), then link only files that actually exist.
+## 1. Raw-event inspection
 
-## Investigation steps
+![pfSense filterlog events indexed in Splunk](../screenshots/splunk-pfsense-raw-events.png)
 
-1. Locate raw events in the exact exercise time range.
-2. Check extracted fields against CSV values.
-3. Match the source IP to Kali and the destination IP to the test target.
-4. Review ports and action; distinguish attempted discovery from successful access.
-5. Match event times to the authorized scan record.
-6. Record the candidate result and any observed alert.
-7. Check for other events only if they are actually collected; avoid inferring endpoint activity from firewall logs alone.
+The visible raw entries show source `192.168.20.100`, destination `192.168.10.100`, IPv4 TCP SYN flags and multiple destination ports. The metadata identifies `host=192.168.10.1`, `source=udp:5514` and `sourcetype=syslog`.
+
+The screenshot also contains two different timestamp prefixes: `Oct 4 15:57:53` and `Oct 4 18:48:28`. Their relationship and timezone are not established. Verify VM clock synchronization and Splunk timestamp parsing before building a precise cross-host timeline.
+
+## 2. Field review
+
+![Observed extraction search and parsed events](../screenshots/splunk-pfsense-parsed-events.png)
+
+The table visibly contains the same source/destination pair, repeated source port `41956` on several TCP rows and destination ports including `443`, `80`, `139` and `11`. A blocked TCP row is also visible. A firewall `pass` record does not demonstrate a successful application connection.
+
+The screenshot's historical search does not restrict records to TCP. Its ICMP rows show values such as `tstamp` and `request` in the `src_port` column, illustrating why protocol-specific parsing matters. Those rows must not be interpreted as TCP ports.
+
+[Historical query transcription](../splunk/pfsense-field-extraction-observed.spl) · [Revised IPv4 TCP analytic](../detections/pfsense-ipv4-port-scan.spl)
+
+The revised analytic groups source/destination pairs over a five-minute search window. These images are not evidence that the revised query was executed or that its grouped result fired an alert.
+
+## 3. Alert state
+
+![Enabled scheduled alert with no displayed fired events](../screenshots/splunk-alert-enabled-no-fires.png)
+
+The screenshot shows **Possible Port Scan Detected**, enabled, scheduled with cron, a **number of results > 0** condition and **Add to Triggered Alerts** action. It also explicitly says **There are no fired events for this alert**.
+
+This supports creation of an alert definition at the captured time. It does not prove successful scheduling, the actual cron expression, the search interval, use of the revised SPL or a triggered record.
+
+## 4. Firewall configuration context
+
+![OPT1 exercise rule with changes awaiting application](../screenshots/pfsense-opt1-rule-pending.png)
+
+The OPT1 page contains **Allow Kali Lab Traffic** and a banner stating that changes must be applied. Treat it as configuration-in-progress evidence. The later raw logs demonstrate observed traffic independently; this image alone does not establish which rule was active when those logs were generated.
 
 ## Verdict
 
-**Provisional: scan-like activity consistent with the authorized lab exercise.**
+**Observed scan-like behavior, consistent with the author's authorized lab simulation.**
 
-Finalize as **True Positive for scan behavior — authorized lab simulation** only after the events and command record agree. Authorization changes the incident context; it does not erase a correct behavioral detection. Do not conclude malicious compromise from this evidence alone.
+The multi-port IPv4 TCP observations support a discovery-pattern finding. Attribution to Kali and authorization rely on the author's exercise context until a command record is added. No successful service access or endpoint compromise is established.
+
+**Scheduled detection outcome: unverified.** The captured alert page contains no fired records.
 
 ## MITRE ATT&CK
 
-Proposed association: [T1046 — Network Service Discovery](https://attack.mitre.org/techniques/T1046/). The mapping describes the discovery behavior, not a finding of malicious intent.
+Behavioral association: [T1046 — Network Service Discovery](https://attack.mitre.org/techniques/T1046/). This is a discovery-pattern mapping, not a claim of malicious intent.
 
-## Response and lessons
+## Response and remaining validation
 
-The exercise itself does not require containment. Record whether any firewall rule was changed and restore temporary test rules if applicable. In a production investigation, validate ownership and authorization before deciding on containment.
+No containment was taken as part of this documentation work. Record any actual lab rule changes separately.
 
-Lessons to demonstrate with evidence: path-dependent visibility, raw-event verification, difference between grouped results and individual events, and limits of threshold-based detection.
+To complete the case: add the real Kali command, confirm clock/timestamp handling, run the revised query over a controlled five-minute test, and capture its grouped result plus any scheduled firing.
 
+## Lessons demonstrated
+
+Raw-event inspection establishes what the source actually logged. Protocol filters prevent ICMP fields from becoming fake TCP ports. Search counts depend on scope. A saved alert and a fired alert provide different evidence.

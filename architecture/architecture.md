@@ -9,11 +9,11 @@ These values reflect the previously reported lab arrangement; confirm them again
 | pfSense LAN | 192.168.10.1 | SOC-LAB gateway |
 | Splunk Ubuntu Server | 192.168.10.20 | Log receiver and search UI |
 | Windows 11 | 192.168.10.100 | Monitored endpoint |
-| Wazuh Ubuntu Server | Not yet recorded | Endpoint manager |
-| Kali Linux | Not yet recorded | Attacker segment for firewall tests |
+| Wazuh service | Dashboard at 192.168.10.10; configured manager endpoint not captured | Endpoint monitoring |
+| Scan source, reported as Kali | 192.168.20.100 in firewall screenshots | Attacker segment for this case |
 | pfSense attacker interface | Not yet recorded | Routes attacker traffic into SOC-LAB |
 
-Do not assign a guessed address to the Wazuh manager or Kali. Record actual addresses before attaching evidence.
+Firewall screenshots establish the observed source address. A Kali command/interface screenshot is still needed to confirm the source machine independently. The Wazuh dashboard URL alone does not establish the endpoint configured in the agent.
 
 ## VM adapter design
 
@@ -36,8 +36,8 @@ Splunk receives firewall syslog separately from endpoint forwarding. Wazuh is a 
 | --- | --- | --- |
 | Splunk receiving | TCP 9997 | Previously configured |
 | Splunk Web | TCP 8000 | Previously used |
-| pfSense remote syslog destination | Confirm protocol and port | Record actual input |
+| Firewall syslog receiver | UDP 5514 | Observed Splunk source udp:5514; sender settings not captured |
 | Wazuh agent communication | Confirm from agent/manager configuration | Record actual settings |
 
-Use the syslog input actually configured; do not assume UDP 514 or a Wazuh manager address.
+The screenshot-supported input is UDP 5514. Confirm sender settings and the actual Wazuh manager endpoint from configuration.
 
