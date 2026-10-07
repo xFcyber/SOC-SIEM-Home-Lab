@@ -26,7 +26,7 @@ date --iso-8601=seconds
 
 ## Interpretation
 
-The selected route uses a gateway rather than direct delivery on Windows' subnet. Confirm the gateway's pfSense interface assignment and actual connectivity separately.
+The selected route uses a gateway rather than direct delivery on Windows' subnet. The follow-up ping captures below confirm reachability to the next hop and Windows address. The gateway's pfSense interface assignment still requires separate evidence.
 
 The initial Kali capture uses a different timezone offset from the Windows screenshot. The timestamp's UTC-04:00 value converts to 15:00:35 at UTC+03:00. This does not establish a clock fault or NTP synchronization. The Windows and Kali captures were taken at different times and cannot measure cross-host clock drift.
 
@@ -68,6 +68,24 @@ ping -c 4 192.168.20.1
 | RTT min / avg / max / mdev (ms) | 4.412 / 25.258 / 75.238 / 28.975 |
 
 The selected next hop responds to ICMP echo requests from Kali. This establishes reachability to that address at capture time. The screenshot does not independently identify the responding device as pfSense or establish connectivity to Windows or Splunk.
+
+## Windows reachability — 2026-10-07
+
+![Kali ping to Windows endpoint](../screenshots/kali-windows-ping.png)
+
+```bash
+ping -c 4 192.168.10.100
+```
+
+| Field | Captured value |
+| --- | --- |
+| Destination | 192.168.10.100 |
+| Packets transmitted / received | 4 / 4 |
+| Packet loss | 0% |
+| Reply TTL | 127 |
+| RTT min / avg / max / mdev (ms) | 6.130 / 7.233 / 8.417 / 0.826 |
+
+The Windows address responds to ICMP echo requests from Kali. Together with the previously captured route via 192.168.20.1, this supports routed connectivity to the lab endpoint. It does not prove TCP service availability, firewall log forwarding, or Splunk indexing. The same screenshot also retains the earlier successful gateway ping output.
 
 ## Historical versus current addresses
 

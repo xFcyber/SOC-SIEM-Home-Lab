@@ -1,6 +1,6 @@
 # Lab screenshot evidence
 
-Ten original lab screenshots are included below. They were visually inspected and uploaded without changing their pixels. Captions distinguish observed state from work still pending.
+Eleven original lab screenshots are included below. They were visually inspected and uploaded without changing their pixels. Captions distinguish observed state from work still pending.
 
 ## VirtualBox environment baseline — 2026-10-07
 
@@ -38,7 +38,15 @@ The displayed timestamp **2026-10-07T08:00:35-04:00** represents **15:00:35 at U
 
 ![Successful ping from Kali to its next hop](kali-gateway-ping.png)
 
-The command `ping -c 4 192.168.20.1` returns **4 transmitted, 4 received, 0% packet loss**, with average RTT **25.258 ms**. This confirms ICMP reachability to the selected next hop. Windows and Splunk reachability remain to be checked.
+The command `ping -c 4 192.168.20.1` returns **4 transmitted, 4 received, 0% packet loss**, with average RTT **25.258 ms**. This confirms ICMP reachability to the selected next hop. Windows reachability is checked in the following capture; Splunk reachability remains pending.
+
+[Baseline details](../architecture/kali-baseline.md)
+
+## Kali to Windows reachability — 2026-10-07
+
+![Successful ping from Kali to Windows](kali-windows-ping.png)
+
+The command `ping -c 4 192.168.10.100` returns **4 transmitted, 4 received, 0% packet loss**, with average RTT **7.233 ms** and reply TTL **127**. This confirms ICMP reachability to the Windows endpoint address. TCP service access and log ingestion require separate validation.
 
 [Baseline details](../architecture/kali-baseline.md)
 
