@@ -1,6 +1,6 @@
 # Lab screenshot evidence
 
-Eleven original lab screenshots are included below. They were visually inspected and uploaded without changing their pixels. Captions distinguish observed state from work still pending.
+Twelve original lab screenshots are included below. They were visually inspected and uploaded without changing their pixels. Captions distinguish observed state from work still pending.
 
 ## VirtualBox environment baseline — 2026-10-07
 
@@ -49,6 +49,16 @@ The command `ping -c 4 192.168.20.1` returns **4 transmitted, 4 received, 0% pac
 The command `ping -c 4 192.168.10.100` returns **4 transmitted, 4 received, 0% packet loss**, with average RTT **7.233 ms** and reply TTL **127**. This confirms ICMP reachability to the Windows endpoint address. TCP service access and log ingestion require separate validation.
 
 [Baseline details](../architecture/kali-baseline.md)
+
+## Splunk address and startup — 2026-10-07
+
+![Splunk startup and enp0s3 address](splunk-ip-startup.png)
+
+`ip -br addr` shows **enp0s3 UP, 192.168.10.20/24**. Startup output reports `splunkd` started and the local web check on **127.0.0.1:8000** completed. The installation manifest path identifies version **10.4.3**.
+
+A kernel watchdog soft-lockup message for CPU#1 is visible; its cause is not determined. Current receiving sockets and fresh ingestion are not demonstrated.
+
+[Baseline details](../architecture/splunk-baseline.md)
 
 ## Firewall events collected in Splunk
 

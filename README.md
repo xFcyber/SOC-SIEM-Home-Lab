@@ -21,7 +21,7 @@ This repository documents the lab previously built by the author. It separates p
 | Wazuh event and alert comparison | Pending evidence |
 | Security / System / Application forwarding, AD and additional detections | Planned or awaiting ingestion checks |
 
-Eleven original screenshots are included in the [evidence gallery](screenshots/README.md): the five running lab VMs, Windows and Kali IP/time settings, a Kali timezone/NTP status check, successful gateway and Windows pings, raw and parsed firewall events, a saved alert, an OPT1 rule draft and an active Wazuh endpoint. Raw event exports, the Kali command and a successful scheduled trigger remain pending.
+Twelve original screenshots are included in the [evidence gallery](screenshots/README.md): the five running lab VMs, Windows and Kali IP/time settings, a Kali timezone/NTP status check, successful gateway and Windows pings, Splunk's current address/startup output, raw and parsed firewall events, a saved alert, an OPT1 rule draft and an active Wazuh endpoint. Raw event exports, the Kali command and a successful scheduled trigger remain pending.
 
 ## Environment baseline
 
@@ -45,7 +45,7 @@ flowchart TD
 
 Kali can be moved between segments for different exercises. For the firewall case, use the attacker segment so traffic crosses pfSense. Same-subnet traffic can bypass the firewall.
 
-[Addressing and routing](architecture/architecture.md) · [Windows network/time baseline](architecture/windows-baseline.md) · [Kali route/time baseline](architecture/kali-baseline.md) · [Telemetry coverage](architecture/data-sources.md)
+[Addressing and routing](architecture/architecture.md) · [Windows network/time baseline](architecture/windows-baseline.md) · [Kali route/time baseline](architecture/kali-baseline.md) · [Splunk address/startup baseline](architecture/splunk-baseline.md) · [Telemetry coverage](architecture/data-sources.md)
 
 ## Technology and purpose
 

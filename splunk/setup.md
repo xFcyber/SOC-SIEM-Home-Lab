@@ -1,6 +1,6 @@
 # Splunk setup and validation
 
-Splunk Enterprise runs on the Ubuntu Server previously reported as `192.168.10.20`.
+The [current server screenshot](../architecture/splunk-baseline.md) confirms `192.168.10.20/24` on `enp0s3` and completed daemon/local web startup checks. Receiver validation and fresh ingestion remain pending.
 
 ## Checks
 
@@ -13,8 +13,10 @@ Splunk Enterprise runs on the Ubuntu Server previously reported as `192.168.10.2
 Read-only server check:
 
 ```bash
-sudo ss -lntp | rg ':8000|:9997'
+sudo ss -lntup
 ```
+
+Inspect TCP 8000 (web), TCP 9997 (forwarders) and UDP 5514 (firewall syslog), including bind addresses and owning processes.
 
 PowerShell network check from Windows:
 

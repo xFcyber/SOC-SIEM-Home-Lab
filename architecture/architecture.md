@@ -7,7 +7,7 @@ These values reflect the previously reported lab arrangement; confirm them again
 | System | Lab address | Network role |
 | --- | --- | --- |
 | pfSense LAN | 192.168.10.1 | SOC-LAB gateway |
-| Splunk Ubuntu Server | 192.168.10.20 | Log receiver and search UI |
+| Splunk Ubuntu Server | 192.168.10.20/24 on enp0s3, confirmed by screenshot on 2026-10-07 | Log receiver and search UI |
 | Windows 11 | 192.168.10.100, confirmed by screenshot on 2026-10-07 | Monitored endpoint |
 | Wazuh service | Dashboard at 192.168.10.10; configured manager endpoint not captured | Endpoint monitoring |
 | Kali, current baseline | 192.168.20.20/24 on eth0, screenshot on 2026-10-07 | Attacker endpoint for the next test |
@@ -18,11 +18,15 @@ The new Kali screenshot establishes its current 192.168.20.20 address and select
 
 ## Current Windows baseline
 
-The [Windows screenshot](windows-baseline.md) confirms a /24 mask and default gateway 192.168.10.1, with UTC+03:00 displayed. Connectivity and time synchronization still require separate checks.
+The [Windows screenshot](windows-baseline.md) confirms a /24 mask and default gateway 192.168.10.1, with UTC+03:00 displayed. The [Kali follow-up tests](kali-baseline.md) confirm ICMP reachability to the Windows address. Time synchronization remains unverified.
 
 ## Current Kali baseline
 
-The [Kali screenshot](kali-baseline.md) shows traffic to 192.168.10.100 routed via 192.168.20.1 using eth0. The displayed UTC-04:00 timestamp corresponds to Saudi time after adding seven hours. Route selection alone does not demonstrate packet delivery or identify the gateway device.
+The [Kali baseline and follow-up captures](kali-baseline.md) show route selection to 192.168.10.100 via 192.168.20.1 using eth0, followed by successful four-packet pings to both addresses with zero packet loss. The follow-up timezone is Asia/Riyadh; NTP is inactive and synchronization is deferred. The gateway's pfSense interface assignment is still not independently captured.
+
+## Current Splunk baseline
+
+The [Splunk screenshot](splunk-baseline.md) confirms enp0s3 at 192.168.10.20/24 and completed startup/local web checks. A kernel soft-lockup message is also visible; its cause is unknown. Receiver sockets, remote access and fresh ingestion remain to be checked.
 
 ## VM adapter design
 
