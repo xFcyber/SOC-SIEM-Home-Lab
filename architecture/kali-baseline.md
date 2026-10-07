@@ -28,9 +28,29 @@ date --iso-8601=seconds
 
 The selected route uses a gateway rather than direct delivery on Windows' subnet. Confirm the gateway's pfSense interface assignment and actual connectivity separately.
 
-Kali currently uses a different timezone offset from the Windows screenshot. The timestamp's UTC-04:00 value converts to 15:00:35 at UTC+03:00. This does not establish a clock fault or NTP synchronization. The Windows and Kali captures were taken at different times and cannot measure cross-host clock drift.
+The initial Kali capture uses a different timezone offset from the Windows screenshot. The timestamp's UTC-04:00 value converts to 15:00:35 at UTC+03:00. This does not establish a clock fault or NTP synchronization. The Windows and Kali captures were taken at different times and cannot measure cross-host clock drift.
 
-For consistent display, a later step may set Kali's timezone to Asia/Riyadh. A timezone change changes display rather than the underlying instant.
+The follow-up capture below shows Asia/Riyadh. A timezone change changes display rather than the underlying instant.
+
+## Timezone follow-up — 2026-10-07
+
+![Kali timedatectl after timezone change](../screenshots/kali-timezone-ntp-inactive.png)
+
+The visible command is `timedatectl`.
+
+| Field | Captured value |
+| --- | --- |
+| Local time | Wed 2026-10-07 15:12:00 +03 |
+| Universal time | Wed 2026-10-07 12:12:00 UTC |
+| RTC time | Wed 2026-10-07 12:11:59 |
+| Time zone | Asia/Riyadh (+03, +0300) |
+| System clock synchronized | no |
+| NTP service | inactive |
+| RTC in local TZ | no |
+
+The timezone setting is confirmed. At capture time, timedatectl reports no system-clock synchronization and an inactive NTP service. This does not measure the actual clock error, establish synchronization across lab hosts, or identify why NTP is inactive.
+
+The next validation step is to enable an available network time synchronization service and capture its resulting status. Successful synchronization remains pending.
 
 ## Historical versus current addresses
 
