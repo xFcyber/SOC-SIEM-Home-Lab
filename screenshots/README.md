@@ -1,12 +1,20 @@
 # Lab screenshot evidence
 
-Six original lab screenshots are included below. They were visually inspected and uploaded without changing their pixels. Captions distinguish observed state from work still pending.
+Seven original lab screenshots are included below. They were visually inspected and uploaded without changing their pixels. Captions distinguish observed state from work still pending.
 
 ## VirtualBox environment baseline — 2026-10-07
 
 ![All five SOC-LAB virtual machines running](virtualbox-machines-running.png)
 
 Splunk-Server, Windows 11, pfSense-Firewall, Ubuntu-22,04 Server (Wazuh) and kali-linux-2024.2 are all marked **Running** in VirtualBox. This screenshot proves VM power state at capture time; it does not establish network connectivity, completed Splunk startup, agent collection or clock synchronization. Adapter configuration is still needed to confirm segmentation.
+
+## Windows network and time baseline — 2026-10-07
+
+![Windows IPv4, gateway and displayed clock](windows-ip-time.png)
+
+The PowerShell output shows IPv4 **192.168.10.100**, mask **255.255.255.0**, gateway **192.168.10.1**, and displayed time **2026-10-07 14:32:59 +03:00**. These are configuration observations; reachability and cross-host clock synchronization are not demonstrated.
+
+[Baseline details](../architecture/windows-baseline.md)
 
 ## Firewall events collected in Splunk
 

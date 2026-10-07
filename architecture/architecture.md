@@ -8,12 +8,16 @@ These values reflect the previously reported lab arrangement; confirm them again
 | --- | --- | --- |
 | pfSense LAN | 192.168.10.1 | SOC-LAB gateway |
 | Splunk Ubuntu Server | 192.168.10.20 | Log receiver and search UI |
-| Windows 11 | 192.168.10.100 | Monitored endpoint |
+| Windows 11 | 192.168.10.100, confirmed by screenshot on 2026-10-07 | Monitored endpoint |
 | Wazuh service | Dashboard at 192.168.10.10; configured manager endpoint not captured | Endpoint monitoring |
 | Scan source, reported as Kali | 192.168.20.100 in firewall screenshots | Attacker segment for this case |
 | pfSense attacker interface | Not yet recorded | Routes attacker traffic into SOC-LAB |
 
 Firewall screenshots establish the observed source address. A Kali command/interface screenshot is still needed to confirm the source machine independently. The Wazuh dashboard URL alone does not establish the endpoint configured in the agent.
+
+## Current Windows baseline
+
+The [Windows screenshot](windows-baseline.md) confirms a /24 mask and default gateway 192.168.10.1, with UTC+03:00 displayed. Connectivity and time synchronization still require separate checks.
 
 ## VM adapter design
 
