@@ -1,6 +1,8 @@
 # Controlled IPv4 TCP port scan
 
-**Previously performed:** a Kali scan and firewall event review. The command below is a reproducible example; the original command and exact output have not been attached.
+**Historical case:** an earlier Kali scan and firewall event review, with its original command still unavailable.
+
+**New executed exercise:** the 2026-10-07 screenshot captures the actual command and complete output for an eight-port TCP SYN scan. See [case 002](../investigations/incident-002-controlled-port-scan.md).
 
 ## Preparation
 
@@ -9,6 +11,16 @@
 3. Verify that the path to the target crosses pfSense.
 4. Enable logging on the matching firewall rule and confirm syslog ingestion.
 5. Record test start/end time and timezone.
+
+## Captured command — 2026-10-07
+
+```bash
+sudo nmap -sS -Pn -n -p 22,80,135,139,443,445,3389,5985 --reason -oN soc-port-scan-01.txt 192.168.10.100
+```
+
+The run starts at 15:54 UTC+03:00 and completes in 0.34 seconds. Ports 135, 139 and 445 are reported open; the other five are closed. The normal output file itself is still awaiting upload. Firewall correlation and detection results remain pending.
+
+[Original scan screenshot](../screenshots/kali-port-scan.png)
 
 ## Example command
 

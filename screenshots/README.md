@@ -1,6 +1,6 @@
 # Lab screenshot evidence
 
-Fourteen original lab screenshots are included below. They were visually inspected and uploaded without changing their pixels. Captions distinguish observed state from work still pending.
+Fifteen original lab screenshots are included below. They were visually inspected and uploaded without changing their pixels. Captions distinguish observed state from work still pending.
 
 ## VirtualBox environment baseline — 2026-10-07
 
@@ -78,6 +78,16 @@ The displayed event time and raw prefixes show a three-hour difference whose cau
 
 [Search and timestamp details](../splunk/pfsense-ingestion-check.md)
 
+## Controlled Kali TCP scan — 2026-10-07
+
+![Executed eight-port Nmap scan against Windows](kali-port-scan.png)
+
+Nmap **7.94SVN** starts at **15:54 +03**, targets **192.168.10.100**, and completes in **0.34 seconds**. The command scans eight ports: **135, 139 and 445 are reported open**, while **22, 80, 443, 3389 and 5985 are closed**. Reasons are SYN-ACK for open ports and reset for closed ports.
+
+This is scan execution evidence. Matching firewall events, the grouped analytic and a fired alert have not yet been attached for this run.
+
+[Case 002](../investigations/incident-002-controlled-port-scan.md)
+
 ## Firewall events collected in Splunk
 
 ![Raw pfSense filterlog events](splunk-pfsense-raw-events.png)
@@ -119,7 +129,6 @@ Summary charts are visible, but individual event details are not. Technique/comp
 | windows-forwarder-active.png | Active endpoint forwarding |
 | windows-sysmon-event1.png | Local Sysmon process creation |
 | splunk-sysmon-event.png | Matching indexed Sysmon event |
-| kali-port-scan.png | Real command, target, source identity and output |
 | splunk-port-scan-result.png | Revised analytic's grouped result |
 | splunk-alert-schedule.png | Actual cron and time-window settings |
 | splunk-triggered-alert.png | Successful scheduled trigger |

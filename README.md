@@ -15,13 +15,13 @@ This repository documents the lab previously built by the author. It separates p
 | Universal Forwarder → Splunk on TCP 9997 | Previously confirmed active |
 | pfSense filterlog → Splunk | Raw/parsed screenshots and a 2026-10-07 search returning indexed filterlog records |
 | Wazuh manager and Windows agent | Active windows-lab agent 001 shown in dashboard screenshot |
-| Controlled Kali port scan | Previously performed; firewall events reviewed |
+| Controlled Kali port scan | Eight-port SYN scan captured on 2026-10-07; new case 002 awaits firewall correlation |
 | Revised port scan SPL in this repository | Prepared; requires execution against actual lab logs |
 | Scheduled alert definition | Saved and enabled in screenshot; no fired events displayed |
 | Wazuh event and alert comparison | Pending evidence |
 | Security / System / Application forwarding, AD and additional detections | Planned or awaiting ingestion checks |
 
-Fourteen original screenshots are included in the [evidence gallery](screenshots/README.md): the five running lab VMs, Windows and Kali IP/time settings, a Kali timezone/NTP status check, successful gateway and Windows pings, Splunk's current address/startup output and web/receiver sockets, raw and parsed firewall events plus a new search check, a saved alert, an OPT1 rule draft and an active Wazuh endpoint. Raw event exports, the Kali command and a successful scheduled trigger remain pending.
+Fifteen original screenshots are included in the [evidence gallery](screenshots/README.md): the five running lab VMs, Windows and Kali IP/time settings, a Kali timezone/NTP status check, successful gateway and Windows pings, Splunk's current address/startup output and web/receiver sockets, raw and parsed firewall events plus a new search check, a saved alert, an OPT1 rule draft, an active Wazuh endpoint and a completed eight-port Nmap scan. Raw event exports and a successful scheduled trigger remain pending.
 
 ## Environment baseline
 
@@ -71,7 +71,7 @@ Kali can be moved between segments for different exercises. For the firewall cas
 | Windows | [Sysmon](windows-endpoint/sysmon.md), [forwarder](windows-endpoint/splunk-universal-forwarder.md), [Wazuh agent](windows-endpoint/wazuh-agent.md) |
 | Simulation | [Controlled port scan](attack-simulations/port-scan.md) |
 | Detection | [Port scan analytic](detections/port-scan-detection.md), [SPL file](detections/pfsense-ipv4-port-scan.spl) |
-| Investigation | [Screenshot-backed case 001](investigations/incident-001-port-scan.md), [case template](investigations/incident-template.md) |
+| Investigation | [Historical case 001](investigations/incident-001-port-scan.md), [controlled scan case 002](investigations/incident-002-controlled-port-scan.md), [case template](investigations/incident-template.md) |
 | Portfolio evidence | [Screenshot checklist](screenshots/README.md) |
 
 ## First case: Kali → pfSense → Splunk
@@ -90,13 +90,19 @@ The captured raw search shows pfSense events from 192.168.20.100 to 192.168.10.1
 
 The captured Wazuh page shows windows-lab (001) active. See the [agent inventory](wazuh/agent-configuration.md) for details and remaining collection checks.
 
+## Current exercise: controlled scan — 2026-10-07
+
+An actual Nmap run scanned eight TCP ports on Windows 192.168.10.100 at 15:54 UTC+03:00. Ports 135, 139 and 445 were reported open; the other five were closed. The command and completed output are attached. Correlation with firewall records, the revised analytic and scheduled alert firing remain pending.
+
+[Follow case 002](investigations/incident-002-controlled-port-scan.md).
+
 ## Skills practiced
 
 Log collection, SPL search, firewall log interpretation, endpoint telemetry validation, alert triage, evidence handling and investigation documentation. A proposed MITRE ATT&CK association for the scan is **T1046 — Network Service Discovery**; this is a technique reference, not proof of a malicious incident.
 
 ## Roadmap
 
-Validate the revised SPL against live events, add the Kali command and individual endpoint event details, verify scheduled firing, then add failed authentication and PowerShell investigations. Active Directory and Windows Server remain future additions.
+Correlate case 002 with firewall events, validate the revised SPL, add raw exports and individual endpoint event details, verify scheduled firing, then add failed authentication and PowerShell investigations. Active Directory and Windows Server remain future additions.
 
 ## Scope and author
 
