@@ -1,6 +1,6 @@
 # Lab screenshot evidence
 
-Fifteen original lab screenshots are included below. They were visually inspected and uploaded without changing their pixels. Captions distinguish observed state from work still pending.
+Sixteen original lab screenshots are included below. They were visually inspected and uploaded without changing their pixels. Captions distinguish observed state from work still pending.
 
 ## VirtualBox environment baseline — 2026-10-07
 
@@ -84,9 +84,21 @@ The displayed event time and raw prefixes show a three-hour difference whose cau
 
 Nmap **7.94SVN** starts at **15:54 +03**, targets **192.168.10.100**, and completes in **0.34 seconds**. The command scans eight ports: **135, 139 and 445 are reported open**, while **22, 80, 443, 3389 and 5985 are closed**. Reasons are SYN-ACK for open ports and reset for closed ports.
 
-This is scan execution evidence. Matching firewall events, the grouped analytic and a fired alert have not yet been attached for this run.
+This is scan execution evidence. Matching firewall records are attached below; the grouped analytic and a fired alert remain pending.
 
 [Case 002](../investigations/incident-002-controlled-port-scan.md)
+
+## Case 002 firewall correlation — 2026-10-07
+
+![Eight matching TCP SYN records from Kali to Windows](splunk-port-scan-raw-case002.png)
+
+The captured **Last 24 hours** search returns **8 events** from **192.168.20.20** to **192.168.10.100**, covering exactly the eight scanned TCP ports. All visible rows show **pass / in** on **em2**, source port **51062** and SYN flag **S**. Metadata identifies host **192.168.10.1**, source **udp:5514** and sourcetype **syslog**.
+
+The displayed event time is **12:54:56 PM**; raw prefixes contain **12:54:56** and **15:54:56**. Numeric event/index times and configured timezone are not shown. Matching addresses, port set and the embedded 15:54 minute support correlation with the Nmap run. Firewall permission does not mean every port was open.
+
+This proves indexed matching records. The revised grouped analytic and scheduled alert firing still require separate evidence.
+
+[Case 002 and replay query](../investigations/incident-002-controlled-port-scan.md)
 
 ## Firewall events collected in Splunk
 
