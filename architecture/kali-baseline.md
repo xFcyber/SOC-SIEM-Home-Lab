@@ -50,7 +50,24 @@ The visible command is `timedatectl`.
 
 The timezone setting is confirmed. At capture time, timedatectl reports no system-clock synchronization and an inactive NTP service. This does not measure the actual clock error, establish synchronization across lab hosts, or identify why NTP is inactive.
 
-The next validation step is to enable an available network time synchronization service and capture its resulting status. Successful synchronization remains pending.
+Network time synchronization is deferred at the author's request. The lab proceeds with connectivity validation; successful synchronization remains unverified.
+
+## Gateway reachability — 2026-10-07
+
+![Kali ping to selected next hop](../screenshots/kali-gateway-ping.png)
+
+```bash
+ping -c 4 192.168.20.1
+```
+
+| Field | Captured value |
+| --- | --- |
+| Destination | 192.168.20.1 |
+| Packets transmitted / received | 4 / 4 |
+| Packet loss | 0% |
+| RTT min / avg / max / mdev (ms) | 4.412 / 25.258 / 75.238 / 28.975 |
+
+The selected next hop responds to ICMP echo requests from Kali. This establishes reachability to that address at capture time. The screenshot does not independently identify the responding device as pfSense or establish connectivity to Windows or Splunk.
 
 ## Historical versus current addresses
 

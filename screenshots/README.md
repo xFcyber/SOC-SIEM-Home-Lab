@@ -1,6 +1,6 @@
 # Lab screenshot evidence
 
-Nine original lab screenshots are included below. They were visually inspected and uploaded without changing their pixels. Captions distinguish observed state from work still pending.
+Ten original lab screenshots are included below. They were visually inspected and uploaded without changing their pixels. Captions distinguish observed state from work still pending.
 
 ## VirtualBox environment baseline — 2026-10-07
 
@@ -31,6 +31,14 @@ The displayed timestamp **2026-10-07T08:00:35-04:00** represents **15:00:35 at U
 ![Kali timezone corrected with NTP inactive](kali-timezone-ntp-inactive.png)
 
 `timedatectl` shows **Asia/Riyadh (+03, +0300)** and local time **2026-10-07 15:12:00 +03**. It also reports **System clock synchronized: no** and **NTP service: inactive**. The timezone change is confirmed; network time synchronization remains pending.
+
+[Baseline details](../architecture/kali-baseline.md)
+
+## Kali gateway reachability — 2026-10-07
+
+![Successful ping from Kali to its next hop](kali-gateway-ping.png)
+
+The command `ping -c 4 192.168.20.1` returns **4 transmitted, 4 received, 0% packet loss**, with average RTT **25.258 ms**. This confirms ICMP reachability to the selected next hop. Windows and Splunk reachability remain to be checked.
 
 [Baseline details](../architecture/kali-baseline.md)
 
