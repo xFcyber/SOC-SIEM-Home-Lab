@@ -73,8 +73,6 @@ Kali can be moved between segments for different exercises. For the firewall cas
 | Detection | [Port scan analytic](detections/port-scan-detection.md), [SPL file](detections/pfsense-ipv4-port-scan.spl) |
 | Investigation | [Screenshot-backed case 001](investigations/incident-001-port-scan.md), [case template](investigations/incident-template.md) |
 | Portfolio evidence | [Screenshot checklist](screenshots/README.md) |
-| Next work | [Roadmap](docs/roadmap.md) |
-| Arabic guide | [دليل رفع الملفات وإكمال الأدلة](docs/GETTING-STARTED-AR.md) |
 
 ## First case: Kali → pfSense → Splunk
 
