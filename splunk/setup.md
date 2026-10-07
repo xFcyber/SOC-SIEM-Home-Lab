@@ -1,6 +1,6 @@
 # Splunk setup and validation
 
-The [current server screenshot](../architecture/splunk-baseline.md) confirms `192.168.10.20/24` on `enp0s3` and completed daemon/local web startup checks. The [follow-up socket evidence](../screenshots/splunk-receiver.png) confirms splunkd on TCP 8000, TCP 9997 and UDP 5514, bound to 0.0.0.0. Remote transport validation and fresh ingestion remain pending.
+The [current server screenshot](../architecture/splunk-baseline.md) confirms `192.168.10.20/24` on `enp0s3` and completed daemon/local web startup checks. The [follow-up socket evidence](../screenshots/splunk-receiver.png) confirms splunkd on TCP 8000, TCP 9997 and UDP 5514, bound to 0.0.0.0. A [follow-up search](pfsense-ingestion-check.md) confirms Splunk Web access from Windows and returns indexed filterlog records dated 2026-10-07. Remote TCP 9997 reachability, current endpoint forwarding and ingestion of the next controlled scan remain pending.
 
 ## Checks
 

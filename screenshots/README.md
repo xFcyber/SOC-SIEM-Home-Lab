@@ -1,6 +1,6 @@
 # Lab screenshot evidence
 
-Thirteen original lab screenshots are included below. They were visually inspected and uploaded without changing their pixels. Captions distinguish observed state from work still pending.
+Fourteen original lab screenshots are included below. They were visually inspected and uploaded without changing their pixels. Captions distinguish observed state from work still pending.
 
 ## VirtualBox environment baseline — 2026-10-07
 
@@ -67,6 +67,16 @@ A kernel watchdog soft-lockup message for CPU#1 is visible; its cause is not det
 The visible socket output confirms **TCP 8000 LISTEN**, **TCP 9997 LISTEN** and **UDP 5514 UNCONN**, all bound to **0.0.0.0** and owned by **splunkd (PID 1139)**. The first filter checks 800 by mistake; the subsequent command correctly checks 8000. These are local socket observations, not proof of remote access or fresh ingestion.
 
 [Baseline details](../architecture/splunk-baseline.md)
+
+## pfSense search validation — 2026-10-07
+
+![Ten returned pfSense filterlog events](splunk-pfsense-search-check.png)
+
+Splunk Web at **192.168.10.20:8000** is open in the Windows VM. The search in **Last 24 hours** returns 10 events after `head 10`, with host **192.168.10.1**, source **udp:5514**, and sourcetype **syslog**. The visible events are background UDP broadcasts blocked inbound on em0, not a Kali TCP scan.
+
+The displayed event time and raw prefixes show a three-hour difference whose cause is unverified.
+
+[Search and timestamp details](../splunk/pfsense-ingestion-check.md)
 
 ## Firewall events collected in Splunk
 

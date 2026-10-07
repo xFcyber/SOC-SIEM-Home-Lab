@@ -13,7 +13,7 @@ This repository documents the lab previously built by the author. It separates p
 | VirtualBox environment and pfSense gateway | Five lab VMs shown Running on 2026-10-07 |
 | Windows 11 with Sysmon | Installed; process creation events previously observed |
 | Universal Forwarder → Splunk on TCP 9997 | Previously confirmed active |
-| pfSense filterlog → Splunk | Raw and parsed event screenshots attached |
+| pfSense filterlog → Splunk | Raw/parsed screenshots and a 2026-10-07 search returning indexed filterlog records |
 | Wazuh manager and Windows agent | Active windows-lab agent 001 shown in dashboard screenshot |
 | Controlled Kali port scan | Previously performed; firewall events reviewed |
 | Revised port scan SPL in this repository | Prepared; requires execution against actual lab logs |
@@ -21,7 +21,7 @@ This repository documents the lab previously built by the author. It separates p
 | Wazuh event and alert comparison | Pending evidence |
 | Security / System / Application forwarding, AD and additional detections | Planned or awaiting ingestion checks |
 
-Thirteen original screenshots are included in the [evidence gallery](screenshots/README.md): the five running lab VMs, Windows and Kali IP/time settings, a Kali timezone/NTP status check, successful gateway and Windows pings, Splunk's current address/startup output and web/receiver sockets, raw and parsed firewall events, a saved alert, an OPT1 rule draft and an active Wazuh endpoint. Raw event exports, the Kali command and a successful scheduled trigger remain pending.
+Fourteen original screenshots are included in the [evidence gallery](screenshots/README.md): the five running lab VMs, Windows and Kali IP/time settings, a Kali timezone/NTP status check, successful gateway and Windows pings, Splunk's current address/startup output and web/receiver sockets, raw and parsed firewall events plus a new search check, a saved alert, an OPT1 rule draft and an active Wazuh endpoint. Raw event exports, the Kali command and a successful scheduled trigger remain pending.
 
 ## Environment baseline
 

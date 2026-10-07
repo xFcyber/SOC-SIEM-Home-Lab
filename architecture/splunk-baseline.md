@@ -36,8 +36,8 @@ All three sockets bind to all local IPv4 interfaces. UDP's UNCONN label is a soc
 
 ## Validation still needed
 
-- Remote access to Splunk Web and receiver ports.
+- Remote receiver transport validation. Splunk Web access from Windows is confirmed by the [follow-up search](../splunk/pfsense-ingestion-check.md).
 - Current endpoint forwarding and firewall syslog destination.
 - Newly indexed events from the controlled test.
 
-The server's gateway and clock are not visible. Successful startup and configured indexes do not independently prove current ingestion.
+The server's gateway and clock are not visible. The follow-up search returns indexed filterlog records; association with the next controlled scan still requires validation.
