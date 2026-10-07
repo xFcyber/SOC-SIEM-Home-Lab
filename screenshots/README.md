@@ -1,6 +1,6 @@
 # Lab screenshot evidence
 
-Seven original lab screenshots are included below. They were visually inspected and uploaded without changing their pixels. Captions distinguish observed state from work still pending.
+Eight original lab screenshots are included below. They were visually inspected and uploaded without changing their pixels. Captions distinguish observed state from work still pending.
 
 ## VirtualBox environment baseline — 2026-10-07
 
@@ -15,6 +15,16 @@ Splunk-Server, Windows 11, pfSense-Firewall, Ubuntu-22,04 Server (Wazuh) and kal
 The PowerShell output shows IPv4 **192.168.10.100**, mask **255.255.255.0**, gateway **192.168.10.1**, and displayed time **2026-10-07 14:32:59 +03:00**. These are configuration observations; reachability and cross-host clock synchronization are not demonstrated.
 
 [Baseline details](../architecture/windows-baseline.md)
+
+## Kali route and time baseline — 2026-10-07
+
+![Kali eth0 address, route to Windows and timestamp](kali-ip-route-time.png)
+
+Kali's eth0 is UP at **192.168.20.20/24**. The selected route to **192.168.10.100** uses **192.168.20.1** and source **192.168.20.20**. This shows the routing decision, not a successful connection.
+
+The displayed timestamp **2026-10-07T08:00:35-04:00** represents **15:00:35 at UTC+03:00**. The timezone differs from Windows; synchronization has not been established.
+
+[Baseline details](../architecture/kali-baseline.md)
 
 ## Firewall events collected in Splunk
 

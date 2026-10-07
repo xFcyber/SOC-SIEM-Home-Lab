@@ -10,14 +10,19 @@ These values reflect the previously reported lab arrangement; confirm them again
 | Splunk Ubuntu Server | 192.168.10.20 | Log receiver and search UI |
 | Windows 11 | 192.168.10.100, confirmed by screenshot on 2026-10-07 | Monitored endpoint |
 | Wazuh service | Dashboard at 192.168.10.10; configured manager endpoint not captured | Endpoint monitoring |
-| Scan source, reported as Kali | 192.168.20.100 in firewall screenshots | Attacker segment for this case |
-| pfSense attacker interface | Not yet recorded | Routes attacker traffic into SOC-LAB |
+| Kali, current baseline | 192.168.20.20/24 on eth0, screenshot on 2026-10-07 | Attacker endpoint for the next test |
+| Historical scan source, reported as Kali | 192.168.20.100 in 2026-10-04 firewall screenshots | Source of the earlier case |
+| Attacker-side next hop | 192.168.20.1 selected by Kali; pfSense interface assignment not independently captured | Route toward SOC-LAB |
 
-Firewall screenshots establish the observed source address. A Kali command/interface screenshot is still needed to confirm the source machine independently. The Wazuh dashboard URL alone does not establish the endpoint configured in the agent.
+The new Kali screenshot establishes its current 192.168.20.20 address and selected route. It does not establish that the same VM owned the historical 192.168.20.100 address; those records remain separate. The Wazuh dashboard URL alone does not establish the endpoint configured in the agent.
 
 ## Current Windows baseline
 
 The [Windows screenshot](windows-baseline.md) confirms a /24 mask and default gateway 192.168.10.1, with UTC+03:00 displayed. Connectivity and time synchronization still require separate checks.
+
+## Current Kali baseline
+
+The [Kali screenshot](kali-baseline.md) shows traffic to 192.168.10.100 routed via 192.168.20.1 using eth0. The displayed UTC-04:00 timestamp corresponds to Saudi time after adding seven hours. Route selection alone does not demonstrate packet delivery or identify the gateway device.
 
 ## VM adapter design
 
