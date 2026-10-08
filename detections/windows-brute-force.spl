@@ -1,0 +1,10 @@
+index=security_logs "<EventID>4625</EventID>"
+| rex field=_raw "<Data Name='TargetUserName'>(?<TargetUserName>[^<]*)</Data>"
+| rex field=_raw "<Data Name='IpAddress'>(?<IpAddress>[^<]*)</Data>"
+| rex field=_raw "<Data Name='IpPort'>(?<IpPort>[^<]*)</Data>"
+| rex field=_raw "<Data Name='LogonType'>(?<LogonType>[^<]*)</Data>"
+| rex field=_raw "<Data Name='WorkstationName'>(?<WorkstationName>[^<]*)</Data>"
+| stats count min(_time) as first_seen max(_time) as last_seen values(WorkstationName) as Workstation values(LogonType) as LogonType by IpAddress TargetUserName
+| where count >= 5
+| convert ctime(first_seen) ctime(last_seen)
+| sort - count
