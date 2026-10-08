@@ -18,8 +18,11 @@ This repository documents the lab previously built by the author. It separates p
 | Controlled Kali port scan | Eight-port SYN scan, matching firewall records and one grouped detection result confirmed |
 | Revised port scan SPL in this repository | Core extraction, grouping and threshold validated in case 002 manual replay |
 | Scheduled alert definition | Saved and enabled in screenshot; no fired events displayed |
+| Controlled SMB failed-logon exercise | Five failed logons from Kali correlated across Windows Security and pfSense; manual Splunk detection confirmed |
+| Windows Security forwarding | Confirmed in `security_logs` with XML-rendered Security events |
+| Brute-force alert | `SOC-002 - Brute Force Failed Logon Detection` saved, enabled and scheduled every five minutes; fired scheduled event not yet captured |
 | Wazuh event and alert comparison | Pending evidence |
-| Security / System / Application forwarding, AD and additional detections | Planned or awaiting ingestion checks |
+| System / Application forwarding, AD and additional detections | Indexes configured or planned; additional ingestion evidence pending |
 
 Seventeen original screenshots are included in the [evidence gallery](screenshots/README.md): the five running lab VMs, Windows and Kali IP/time settings, a Kali timezone/NTP status check, successful gateway and Windows pings, Splunk's current address/startup output and web/receiver sockets, raw and parsed firewall events plus a new search check, a saved alert, an OPT1 rule draft, an active Wazuh endpoint, a completed eight-port Nmap scan, its eight matching firewall records and a grouped detection result. Raw event exports and a successful scheduled trigger remain pending.
 
@@ -69,9 +72,9 @@ Kali can be moved between segments for different exercises. For the firewall cas
 | Wazuh | [Setup checks](wazuh/setup.md), [agent collection](wazuh/agent-configuration.md) |
 | pfSense | [Interfaces and rules](pfsense/configuration.md), [syslog](pfsense/syslog-forwarding.md) |
 | Windows | [Sysmon](windows-endpoint/sysmon.md), [forwarder](windows-endpoint/splunk-universal-forwarder.md), [Wazuh agent](windows-endpoint/wazuh-agent.md) |
-| Simulation | [Controlled port scan](attack-simulations/port-scan.md) |
-| Detection | [Port scan analytic](detections/port-scan-detection.md), [SPL file](detections/pfsense-ipv4-port-scan.spl) |
-| Investigation | [Historical case 001](investigations/incident-001-port-scan.md), [controlled scan case 002](investigations/incident-002-controlled-port-scan.md), [case template](investigations/incident-template.md) |
+| Simulation | [Controlled port scan](attack-simulations/port-scan.md), [controlled SMB failed logons](attack-simulations/brute-force.md) |
+| Detection | [Port scan analytic](detections/port-scan-detection.md), [port-scan SPL](detections/pfsense-ipv4-port-scan.spl), [Windows brute-force analytic](detections/windows-brute-force-detection.md), [brute-force SPL](detections/windows-brute-force.spl) |
+| Investigation | [Historical case 001](investigations/incident-001-port-scan.md), [controlled scan case 002](investigations/incident-002-controlled-port-scan.md), [brute-force case 003](investigations/incident-003-brute-force.md), [case template](investigations/incident-template.md) |
 | Portfolio evidence | [Screenshot checklist](screenshots/README.md) |
 
 ## First case: Kali → pfSense → Splunk
@@ -96,13 +99,21 @@ An actual Nmap run scanned eight TCP ports on Windows 192.168.10.100 at 15:54 UT
 
 [Follow case 002](investigations/incident-002-controlled-port-scan.md).
 
+## Current exercise: controlled SMB failed logons — 2026-10-08
+
+A dedicated lab account received five intentionally incorrect SMB authentication attempts from Kali **192.168.20.20** to Windows **192.168.10.100**. Windows generated Event ID **4625** records, and a Splunk aggregation returned one candidate with **5 failures**, **TargetUserName=SOC-Test**, **Workstation=KALI** and **LogonType=3**. pfSense independently recorded inbound TCP traffic from the same source to the target on **TCP 445**. A follow-up Event ID 4624 search returned **0 successful logons from the Kali address in the checked one-hour window**.
+
+The behavior is documented as an authorized-test true positive for **T1110 — Brute Force** with no successful compromise observed. The Splunk alert `SOC-002 - Brute Force Failed Logon Detection` is saved and enabled; scheduled firing is still awaiting captured evidence.
+
+[Follow case 003](investigations/incident-003-brute-force.md) · [Detection analytic](detections/windows-brute-force-detection.md).
+
 ## Skills practiced
 
 Log collection, SPL search, firewall log interpretation, endpoint telemetry validation, alert triage, evidence handling and investigation documentation. A proposed MITRE ATT&CK association for the scan is **T1046 — Network Service Discovery**; this is a technique reference, not proof of a malicious incident.
 
 ## Roadmap
 
-Validate case 002 scheduled alert firing, add raw exports and individual endpoint event details, verify scheduled firing, then add failed authentication and PowerShell investigations. Active Directory and Windows Server remain future additions.
+Capture scheduled firing evidence for the port-scan and brute-force alerts, add raw exports, then build the next investigation for suspicious PowerShell execution. Active Directory and Windows Server remain future additions.
 
 ## Scope and author
 
