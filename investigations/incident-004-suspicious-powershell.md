@@ -17,6 +17,12 @@ A scheduled Splunk alert named **SOC-003 - Suspicious PowerShell Encoded Executi
 **Observed impact:** Harmless local file creation only.  
 **MITRE ATT&CK:** T1059.001 — PowerShell.
 
+## Visual evidence
+
+![SOC-003 suspicious PowerShell scheduled-search evidence](../screenshots/soc-003/evidence.png)
+
+The PNG above is cropped from the captured lab screenshot so the key Splunk result remains readable directly inside the investigation.
+
 ## Evidence 1 — Process creation
 
 Sysmon Event ID 1 captured:
