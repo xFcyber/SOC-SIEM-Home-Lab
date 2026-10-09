@@ -21,6 +21,7 @@ This repository documents the lab previously built by the author. It separates p
 | Controlled SMB failed-logon exercise | Five failed logons from Kali correlated across Windows Security and pfSense; manual Splunk detection confirmed |
 | Windows Security forwarding | Confirmed in `security_logs` with XML-rendered Security events |
 | Brute-force alert | `SOC-002 - Brute Force Failed Logon Detection` saved, enabled and scheduled every five minutes; fired scheduled event not yet captured |
+| Suspicious PowerShell execution | Sysmon Event ID 1 detection tuned and validated; `SOC-003 - Suspicious PowerShell Encoded Execution` fired successfully |
 | Wazuh event and alert comparison | Pending evidence |
 | System / Application forwarding, AD and additional detections | Indexes configured or planned; additional ingestion evidence pending |
 
@@ -72,9 +73,9 @@ Kali can be moved between segments for different exercises. For the firewall cas
 | Wazuh | [Setup checks](wazuh/setup.md), [agent collection](wazuh/agent-configuration.md) |
 | pfSense | [Interfaces and rules](pfsense/configuration.md), [syslog](pfsense/syslog-forwarding.md) |
 | Windows | [Sysmon](windows-endpoint/sysmon.md), [forwarder](windows-endpoint/splunk-universal-forwarder.md), [Wazuh agent](windows-endpoint/wazuh-agent.md) |
-| Simulation | [Controlled port scan](attack-simulations/port-scan.md), [controlled SMB failed logons](attack-simulations/brute-force.md) |
-| Detection | [Port scan analytic](detections/port-scan-detection.md), [port-scan SPL](detections/pfsense-ipv4-port-scan.spl), [Windows brute-force analytic](detections/windows-brute-force-detection.md), [brute-force SPL](detections/windows-brute-force.spl) |
-| Investigation | [Historical case 001](investigations/incident-001-port-scan.md), [controlled scan case 002](investigations/incident-002-controlled-port-scan.md), [brute-force case 003](investigations/incident-003-brute-force.md), [case template](investigations/incident-template.md) |
+| Simulation | [Controlled port scan](attack-simulations/port-scan.md), [controlled SMB failed logons](attack-simulations/brute-force.md), [controlled suspicious PowerShell](attack-simulations/powershell.md) |
+| Detection | [Port scan analytic](detections/port-scan-detection.md), [port-scan SPL](detections/pfsense-ipv4-port-scan.spl), [Windows brute-force analytic](detections/windows-brute-force-detection.md), [brute-force SPL](detections/windows-brute-force.spl), [PowerShell analytic](detections/suspicious-powershell-detection.md), [PowerShell SPL](detections/suspicious-powershell.spl) |
+| Investigation | [Historical case 001](investigations/incident-001-port-scan.md), [controlled scan case 002](investigations/incident-002-controlled-port-scan.md), [brute-force case 003](investigations/incident-003-brute-force.md), [PowerShell case 004](investigations/incident-004-suspicious-powershell.md), [case template](investigations/incident-template.md) |
 | Portfolio evidence | [Screenshot checklist](screenshots/README.md) |
 
 ## First case: Kali → pfSense → Splunk
@@ -107,13 +108,23 @@ The behavior is documented as an authorized-test true positive for **T1110 — B
 
 [Follow case 003](investigations/incident-003-brute-force.md) · [Detection analytic](detections/windows-brute-force-detection.md).
 
+## Current exercise: suspicious PowerShell execution — 2026-10-09
+
+A safe PowerShell process was executed with `-NoProfile`, `-WindowStyle Hidden` and `-EncodedCommand`. Sysmon Event ID **1** captured the process, and Splunk received the event in `index=main`. A broad PowerShell search also surfaced legitimate Wazuh-related activity, so the analytic was tuned to require encoded execution together with a hidden window.
+
+The scheduled alert `SOC-003 - Suspicious PowerShell Encoded Execution` was then validated end-to-end. Splunk Trigger History recorded a firing at **2026-10-09 09:20:03 UTC**, and **View Results** returned one matching event in the scheduled search window.
+
+This exercise demonstrates both **detection engineering** and **false-positive reduction**, mapped to **MITRE ATT&CK T1059.001 — PowerShell**.
+
+[Follow case 004](investigations/incident-004-suspicious-powershell.md) · [Detection analytic](detections/suspicious-powershell-detection.md).
+
 ## Skills practiced
 
 Log collection, SPL search, firewall log interpretation, endpoint telemetry validation, alert triage, evidence handling and investigation documentation. A proposed MITRE ATT&CK association for the scan is **T1046 — Network Service Discovery**; this is a technique reference, not proof of a malicious incident.
 
 ## Roadmap
 
-Capture scheduled firing evidence for the port-scan and brute-force alerts, add raw exports, then build the next investigation for suspicious PowerShell execution. Active Directory and Windows Server remain future additions.
+Capture scheduled firing evidence for the port-scan and brute-force alerts, add raw exports, then continue with additional endpoint persistence and impact simulations. Active Directory and Windows Server remain future additions.
 
 ## Scope and author
 
