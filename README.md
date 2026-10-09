@@ -23,6 +23,7 @@ This repository documents the lab previously built by the author. It separates p
 | Brute-force alert | `SOC-002 - Brute Force Failed Logon Detection` saved, enabled and scheduled every five minutes; fired scheduled event not yet captured |
 | Suspicious PowerShell execution | Sysmon Event ID 1 detection tuned and validated; `SOC-003 - Suspicious PowerShell Encoded Execution` fired successfully |
 | Scheduled Task persistence | Windows Security 4698 plus Sysmon process correlation validated; `SOC-004 - Suspicious Scheduled Task Creation` fired successfully |
+| Ransomware-like mass file activity | Windows Security 4663 burst detection validated; `SOC-005 - Possible Ransomware Mass File Activity` fired successfully at high severity |
 | Wazuh event and alert comparison | Pending evidence |
 | System / Application forwarding, AD and additional detections | Indexes configured or planned; additional ingestion evidence pending |
 
@@ -74,9 +75,9 @@ Kali can be moved between segments for different exercises. For the firewall cas
 | Wazuh | [Setup checks](wazuh/setup.md), [agent collection](wazuh/agent-configuration.md) |
 | pfSense | [Interfaces and rules](pfsense/configuration.md), [syslog](pfsense/syslog-forwarding.md) |
 | Windows | [Sysmon](windows-endpoint/sysmon.md), [forwarder](windows-endpoint/splunk-universal-forwarder.md), [Wazuh agent](windows-endpoint/wazuh-agent.md) |
-| Simulation | [Controlled port scan](attack-simulations/port-scan.md), [controlled SMB failed logons](attack-simulations/brute-force.md), [controlled suspicious PowerShell](attack-simulations/powershell.md), [controlled Scheduled Task persistence](attack-simulations/scheduled-task.md) |
-| Detection | [Port scan analytic](detections/port-scan-detection.md), [port-scan SPL](detections/pfsense-ipv4-port-scan.spl), [Windows brute-force analytic](detections/windows-brute-force-detection.md), [brute-force SPL](detections/windows-brute-force.spl), [PowerShell analytic](detections/suspicious-powershell-detection.md), [PowerShell SPL](detections/suspicious-powershell.spl), [Scheduled Task analytic](detections/scheduled-task-detection.md), [Scheduled Task SPL](detections/scheduled-task-creation.spl) |
-| Investigation | [Historical case 001](investigations/incident-001-port-scan.md), [controlled scan case 002](investigations/incident-002-controlled-port-scan.md), [brute-force case 003](investigations/incident-003-brute-force.md), [PowerShell case 004](investigations/incident-004-suspicious-powershell.md), [Scheduled Task case 005](investigations/incident-005-scheduled-task.md), [case template](investigations/incident-template.md) |
+| Simulation | [Controlled port scan](attack-simulations/port-scan.md), [controlled SMB failed logons](attack-simulations/brute-force.md), [controlled suspicious PowerShell](attack-simulations/powershell.md), [controlled Scheduled Task persistence](attack-simulations/scheduled-task.md), [controlled ransomware-like file activity](attack-simulations/ransomware-like-file-activity.md) |
+| Detection | [Port scan analytic](detections/port-scan-detection.md), [port-scan SPL](detections/pfsense-ipv4-port-scan.spl), [Windows brute-force analytic](detections/windows-brute-force-detection.md), [brute-force SPL](detections/windows-brute-force.spl), [PowerShell analytic](detections/suspicious-powershell-detection.md), [PowerShell SPL](detections/suspicious-powershell.spl), [Scheduled Task analytic](detections/scheduled-task-detection.md), [Scheduled Task SPL](detections/scheduled-task-creation.spl), [Ransomware-like analytic](detections/ransomware-mass-file-activity.md), [Ransomware-like SPL](detections/ransomware-mass-file-activity.spl) |
+| Investigation | [Historical case 001](investigations/incident-001-port-scan.md), [controlled scan case 002](investigations/incident-002-controlled-port-scan.md), [brute-force case 003](investigations/incident-003-brute-force.md), [PowerShell case 004](investigations/incident-004-suspicious-powershell.md), [Scheduled Task case 005](investigations/incident-005-scheduled-task.md), [Ransomware-like case 006](investigations/incident-006-ransomware-like-file-activity.md), [case template](investigations/incident-template.md) |
 | Portfolio evidence | [Screenshot checklist](screenshots/README.md) |
 
 ## First case: Kali → pfSense → Splunk
@@ -128,6 +129,16 @@ The scheduled Splunk alert `SOC-004 - Suspicious Scheduled Task Creation` was va
 This exercise maps to **MITRE ATT&CK T1053.005 — Scheduled Task/Job: Scheduled Task**.
 
 [Follow case 005](investigations/incident-005-scheduled-task.md) · [Detection analytic](detections/scheduled-task-detection.md).
+
+## Current exercise: ransomware-like mass file activity — 2026-10-09
+
+A safe impact simulation created ransomware-like test files only inside `C:\Users\Public\SOC-RANSOMWARE-LAB`; no real data was encrypted or deleted. Because the active Sysmon configuration did not expose the required file-create events, Windows File System auditing was enabled only for the test directory. Windows Security Event ID **4663** then provided the required file-access telemetry.
+
+The first audited batch produced **20 distinct files in one minute**, all correlated to Windows PowerShell. A high-severity scheduled Splunk alert named `SOC-005 - Possible Ransomware Mass File Activity` was created with a threshold of **10 unique files per minute**. A fresh 15-file validation batch caused the alert to fire at **2026-10-09 14:20:01 UTC**, and **View Results** returned **15 AccessEvents / 15 UniqueFiles**.
+
+This exercise maps to **MITRE ATT&CK T1486 — Data Encrypted for Impact**, while clearly documenting that the lab used simulated extensions rather than real encryption.
+
+[Follow case 006](investigations/incident-006-ransomware-like-file-activity.md) · [Detection analytic](detections/ransomware-mass-file-activity.md).
 
 ## Skills practiced
 
