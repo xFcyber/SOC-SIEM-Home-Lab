@@ -1,0 +1,8 @@
+index=security_logs
+"<EventID>4698</EventID>"
+| rex field=_raw "<Data Name='SubjectUserName'>(?<User>[^<]*)</Data>"
+| rex field=_raw "<Data Name='TaskName'>(?<TaskName>[^<]*)</Data>"
+| rex field=_raw "(?s)<Data Name='TaskContent'>(?<TaskContent>.*?)</Data>"
+| where match(lower(TaskContent),"cmd\.exe|powershell\.exe|pwsh\.exe")
+| table _time User TaskName TaskContent
+| sort - _time
