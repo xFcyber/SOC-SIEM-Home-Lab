@@ -140,6 +140,50 @@ Trigger History
 View Results: 1 matching event
 ```
 
+## Original screenshot evidence
+
+These original PNG captures are attached without changing their pixels. Search results, saved configurations and scheduled triggers are identified separately.
+
+![Case 5 — windows task audit policy case005](../screenshots/windows-task-audit-policy-case005.png)
+
+Other Object Access Events auditing changes from No Auditing to Success and Failure.
+
+![Case 5 — windows task create run case005](../screenshots/windows-task-create-run-case005.png)
+
+The initial SOC-LAB-T1053 task is created and run; this initial attempt alone does not prove marker-file creation.
+
+![Case 5 — splunk task 4698 raw case005](../screenshots/splunk-task-4698-raw-case005.png)
+
+Splunk receives the Windows Security 4698 task-creation event and task XML.
+
+![Case 5 — splunk task sysmon raw case005](../screenshots/splunk-task-sysmon-raw-case005.png)
+
+Sysmon process records provide task-management correlation.
+
+![Case 5 — splunk task management process case005](../screenshots/splunk-task-management-process-case005.png)
+
+The parsed Sysmon table exposes the schtasks.exe management process and command line.
+
+![Case 5 — splunk task payload process case005](../screenshots/splunk-task-payload-process-case005.png)
+
+The repaired task launches cmd.exe with parent svchost.exe and ProcessId 7032.
+
+![Case 5 — splunk task detection result case005](../screenshots/splunk-task-detection-result-case005.png)
+
+The manual Security analytic extracts faris and the SOC-LAB-T1053 task.
+
+![Case 5 — splunk task alert settings case005](../screenshots/splunk-task-alert-settings-case005.png)
+
+SOC-004 alert form shows the five-minute schedule, result-count trigger and Medium action.
+
+![Case 5 — splunk task alert fired case005](../screenshots/splunk-task-alert-fired-case005.png)
+
+SOC-004 Trigger History records 2026-10-09 13:00:01 UTC.
+
+![Case 5 — splunk task alert results case005](../screenshots/splunk-task-alert-results-case005.png)
+
+The scheduled View Results returns the fresh validation task SOC-LAB-T1053-ALERT.
+
 ## Analyst conclusion
 
 This is a **true positive for the persistence behavior being tested**, with authorized-lab context.

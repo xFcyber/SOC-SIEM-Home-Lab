@@ -27,7 +27,19 @@ This repository documents the lab previously built by the author. It separates p
 | Wazuh event and alert comparison | Pending evidence |
 | System / Application forwarding, AD and additional detections | Indexes configured or planned; additional ingestion evidence pending |
 
-Seventeen original screenshots are included in the [evidence gallery](screenshots/README.md): the five running lab VMs, Windows and Kali IP/time settings, a Kali timezone/NTP status check, successful gateway and Windows pings, Splunk's current address/startup output and web/receiver sockets, raw and parsed firewall events plus a new search check, a saved alert, an OPT1 rule draft, an active Wazuh endpoint, a completed eight-port Nmap scan, its eight matching firewall records and a grouped detection result. Raw event exports and a successful scheduled trigger remain pending.
+**60 PNG files** (56 original screenshots and four cropped evidence views) are attached across the [evidence gallery](screenshots/README.md) and the investigations. They cover the lab baseline and all five controlled attack scenarios, including execution, indexed telemetry, detection results and the captured scheduled triggers. Raw event exports remain pending. Successful scheduled firing is evidenced for SOC-003, SOC-004 and SOC-005; port-scan and brute-force scheduled firing remain pending.
+
+## Five documented attack scenarios
+
+| Scenario | Investigation | Detection evidence | Scheduled alert evidence |
+| --- | --- | --- | --- |
+| TCP port scan | [Case 002](investigations/incident-002-controlled-port-scan.md) | 8 distinct ports / 8 firewall events | Saved and enabled; successful firing pending |
+| SMB failed logons / brute-force behavior | [Case 003](investigations/incident-003-brute-force.md) | 5 failed logons, Security 4625, TCP 445 correlation | Saved and enabled; successful firing pending |
+| Suspicious encoded PowerShell | [Case 004](investigations/incident-004-suspicious-powershell.md) | Sysmon Event ID 1 and tuned command-line logic | Trigger History + View Results confirmed |
+| Scheduled Task persistence | [Case 005](investigations/incident-005-scheduled-task.md) | Security 4698 plus Sysmon process correlation | Trigger History + View Results confirmed |
+| Ransomware-like mass file activity | [Case 006](investigations/incident-006-ransomware-like-file-activity.md) | Security 4663, 20-file manual batch / 15-file validation batch | High-severity Trigger History + View Results confirmed |
+
+These are authorized lab simulations. The ransomware-like case uses harmless marker files and does not perform encryption.
 
 ## Environment baseline
 
@@ -146,7 +158,7 @@ Log collection, SPL search, firewall log interpretation, endpoint telemetry vali
 
 ## Roadmap
 
-Capture scheduled firing evidence for the port-scan and brute-force alerts, add raw exports, then continue with additional endpoint persistence and impact simulations. Active Directory and Windows Server remain future additions.
+Capture scheduled firing evidence for the port-scan and brute-force alerts, repeat the successful-logon check across the full brute-force exercise window, and add raw event exports. Wazuh event comparisons, Active Directory and Windows Server remain future additions.
 
 ## Scope and author
 

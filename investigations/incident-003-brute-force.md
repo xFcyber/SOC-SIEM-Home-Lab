@@ -99,7 +99,7 @@ index=security_logs "<EventID>4624</EventID>"
 | sort - _time
 ```
 
-The captured one-hour search returned **0 events**. Within that checked window, the investigation therefore found no successful Windows logon from the attacker IP. This does not prove absence outside the searched time range or through another source address.
+The captured search returned **0 events** for **2026-10-08 12:49:00–13:49:06**, as displayed by Splunk. This window starts after the failed-logon batch (**12:48:03.986–12:48:50.113**), so it is a follow-up check rather than complete coverage of the original attempt period. No successful logon was observed in the checked window. A new fixed-window search spanning before, during and after the attempts is still needed to cover that entire period; this result does not establish absence outside the searched window or through another source address.
 
 ## Evidence 5 — pfSense network correlation
 
@@ -143,6 +143,38 @@ It is enabled, scheduled every five minutes with cron `*/5 * * * *`, searches th
 
 A saved/enabled alert is not evidence that it fired. The captured alert details showed no fired events at that point, so scheduled firing remains a follow-up task.
 
+## Original screenshot evidence
+
+These original PNG captures are attached without changing their pixels. Search results, saved configurations and scheduled triggers are identified separately.
+
+![Case 3 — kali smb reachability case003](../screenshots/kali-smb-reachability-case003.png)
+
+Kali confirms ICMP reachability and TCP 445 open on the Windows lab target.
+
+![Case 3 — kali smb failed logons case003](../screenshots/kali-smb-failed-logons-case003.png)
+
+One initial attempt and four subsequent attempts return NT_STATUS_LOGON_FAILURE; displayed passwords are deliberately incorrect test strings.
+
+![Case 3 — splunk security 4625 raw case003](../screenshots/splunk-security-4625-raw-case003.png)
+
+Windows Security 4625 records for SOC-Test and the controlled Kali source are indexed in Splunk.
+
+![Case 3 — splunk brute force result case003](../screenshots/splunk-brute-force-result-case003.png)
+
+Manual detection returns five failures for 192.168.20.20 / SOC-Test / KALI / LogonType 3, preserving first and last event times.
+
+![Case 3 — splunk brute force alert enabled case003](../screenshots/splunk-brute-force-alert-enabled-case003.png)
+
+SOC-002 is enabled and scheduled, with Add to Triggered Alerts configured; the capture explicitly shows no fired events.
+
+![Case 3 — splunk successful logon check case003](../screenshots/splunk-successful-logon-check-case003.png)
+
+The Event ID 4624 check returns zero events from 192.168.20.20 in the displayed 12:49:00–13:49:06 window; earlier activity is outside this check.
+
+![Case 3 — splunk smb firewall correlation case003](../screenshots/splunk-smb-firewall-correlation-case003.png)
+
+Seven parsed pfSense TCP/445 records show pass/in from Kali to Windows; firewall records and failed-logon counts are distinct.
+
 ## Analyst conclusion
 
 The endpoint and firewall evidence correlate on source, target, service and activity window:
@@ -180,6 +212,7 @@ For an equivalent unauthorized event:
 ## Remaining work
 
 - Capture a fired scheduled-alert entry after a fresh controlled test.
+- Repeat the 4624 check with a fixed window that includes the full original failed-logon period.
 - Export raw event samples for reproducibility.
 - Normalize cross-host timezone handling in a later lab maintenance pass.
 

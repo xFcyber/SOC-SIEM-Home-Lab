@@ -158,6 +158,58 @@ SOC-005 High alert
 Trigger History + View Results
 ```
 
+## Original screenshot evidence
+
+These original PNG captures are attached without changing their pixels. Search results, saved configurations and scheduled triggers are identified separately.
+
+![Case 6 — windows ransomware test files case006](../screenshots/windows-ransomware-test-files-case006.png)
+
+Harmless original documents are created inside C:\Users\Public\SOC-RANSOMWARE-LAB.
+
+![Case 6 — windows ransomware safe simulation case006](../screenshots/windows-ransomware-safe-simulation-case006.png)
+
+The simulation creates .locked marker files and a lab-only note; no actual encryption command is used.
+
+![Case 6 — windows ransomware file list case006](../screenshots/windows-ransomware-file-list-case006.png)
+
+The directory listing contains original .txt documents, matching .locked test files and the lab note.
+
+![Case 6 — windows ransomware sysmon check case006](../screenshots/windows-ransomware-sysmon-check-case006.png)
+
+Local Sysmon file-event checks yield no matching output in the reviewed checks, while Sysmon64 is Running.
+
+![Case 6 — windows sysmon config check case006](../screenshots/windows-sysmon-config-check-case006.png)
+
+The current Sysmon configuration is exported and searched during telemetry troubleshooting; no replacement is shown.
+
+![Case 6 — splunk ransomware 4663 raw case006](../screenshots/splunk-ransomware-4663-raw-case006.png)
+
+Splunk returns the audited Security Event ID 4663 records for the ransomware lab path.
+
+![Case 6 — splunk ransomware file events case006](../screenshots/splunk-ransomware-file-events-case006.png)
+
+The parsed event table exposes the lab file paths and the PowerShell process.
+
+![Case 6 — splunk ransomware detection result case006](../screenshots/splunk-ransomware-detection-result-case006.png)
+
+The initial one-minute aggregation returns AccessEvents=20 and UniqueFiles=20.
+
+![Case 6 — splunk ransomware alert settings case006](../screenshots/splunk-ransomware-alert-settings-case006.png)
+
+SOC-005 is configured with a five-minute schedule and a High Add to Triggered Alerts action.
+
+![Case 6 — splunk ransomware alert enabled case006](../screenshots/splunk-ransomware-alert-enabled-case006.png)
+
+The alert list includes the saved and enabled SOC-005 alert.
+
+![Case 6 — splunk ransomware alert fired case006](../screenshots/splunk-ransomware-alert-fired-case006.png)
+
+SOC-005 Trigger History records 2026-10-09 14:20:01 UTC.
+
+![Case 6 — splunk ransomware alert results case006](../screenshots/splunk-ransomware-alert-results-case006.png)
+
+The scheduled View Results returns AccessEvents=15 and UniqueFiles=15 for the fresh validation batch.
+
 ## Analyst conclusion
 
 The detection is a **true positive for the simulated file-impact pattern**, but the exercise does not establish real cryptographic encryption or malicious compromise.

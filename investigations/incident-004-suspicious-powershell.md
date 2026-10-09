@@ -1,7 +1,7 @@
 # Case 004 — Suspicious PowerShell encoded execution
 
 **Splunk alert ID:** SOC-003  
-**Status:** Controlled execution, manual detection, tuning and scheduled alert firing confirmed.
+**Status:** Controlled execution, initial manual detection, tuning and scheduled alert firing confirmed.
 
 ## Executive summary
 
@@ -61,7 +61,7 @@ sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational"
 | sort - _time
 ```
 
-The tuned manual result contained one matching event.
+The initial manual screenshot uses an OR-based condition and returns one suspicious event. The final rule above requires both conditions; its one-event result is demonstrated by the scheduled **View Results** capture in Evidence 4. These captures show different query versions and should not be treated as the same manual replay.
 
 ## Evidence 3 — Related Sysmon events
 
@@ -114,6 +114,50 @@ Scheduled SOC-003 alert
           v
 Trigger History / View Results
 ```
+
+## Original screenshot evidence
+
+These original PNG captures are attached without changing their pixels. Search results, saved configurations and scheduled triggers are identified separately.
+
+![Case 4 — windows powershell marker case004](../screenshots/windows-powershell-marker-case004.png)
+
+Get-Content confirms the harmless SOC-LAB-PS.txt marker; this alone does not establish which process created it.
+
+![Case 4 — splunk powershell encoded raw case004](../screenshots/splunk-powershell-encoded-raw-case004.png)
+
+An indexed Sysmon process event contains the controlled encoded PowerShell command.
+
+![Case 4 — splunk powershell broad search case004](../screenshots/splunk-powershell-broad-search-case004.png)
+
+The broad PowerShell search includes unrelated Wazuh agent activity, illustrating the need for tuning.
+
+![Case 4 — splunk powershell initial result case004](../screenshots/splunk-powershell-initial-result-case004.png)
+
+The initial OR-based query returns one PowerShell result with -NoProfile, -WindowStyle Hidden and -EncodedCommand.
+
+![Case 4 — splunk powershell process guid case004](../screenshots/splunk-powershell-process-guid-case004.png)
+
+The same initial result exposes ProcessId 9508 and its process GUID; the table is scrolled horizontally.
+
+![Case 4 — splunk powershell network check case004](../screenshots/splunk-powershell-network-check-case004.png)
+
+The focused Sysmon Event ID 3 search returns no events for the reviewed process GUID and window.
+
+![Case 4 — splunk powershell related events case004](../screenshots/splunk-powershell-related-events-case004.png)
+
+The process-GUID correlation returns Sysmon Event IDs 1 and 11; the file event is a PowerShell policy-test script.
+
+![Case 4 — splunk powershell alert settings case004](../screenshots/splunk-powershell-alert-settings-case004.png)
+
+SOC-003 alert form shows the five-minute schedule, result-count trigger and Medium Add to Triggered Alerts action.
+
+![Case 4 — splunk powershell alert fired case004](../screenshots/splunk-powershell-alert-fired-case004.png)
+
+SOC-003 Trigger History records 2026-10-09 09:20:03 UTC.
+
+![Case 4 — splunk powershell alert results case004](../screenshots/splunk-powershell-alert-results-case004.png)
+
+View Results returns one event for 09:15–09:20 using the tuned AND rule requiring encoded execution and a hidden window.
 
 ## Analyst conclusion
 

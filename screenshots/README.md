@@ -1,6 +1,6 @@
 # Lab screenshot evidence
 
-Seventeen original lab screenshots are included below. They were visually inspected and uploaded without changing their pixels. Captions distinguish observed state from work still pending.
+Fifty-six original lab screenshots are included in this gallery and the linked investigations. The original captures were visually inspected and uploaded without changing their pixels. Four additional cropped evidence views are indexed at the end of the gallery. Captions distinguish observed state from work still pending.
 
 ## VirtualBox environment baseline — 2026-10-07
 
@@ -144,6 +144,77 @@ The Wazuh endpoint page shows **windows-lab**, ID **001**, status **active**, ho
 
 Summary charts are visible, but individual event details are not. Technique/compliance summaries do not independently prove those behaviors occurred or compliance was achieved.
 
+## Evidence for the four subsequent attack investigations — 2026-10-08–09
+
+The following **39 original PNGs** complete the uploaded screenshot evidence for these four cases. Alongside the existing controlled port-scan images, the repository now contains screenshot evidence for all **five distinct attack scenarios**. Each investigation embeds its own captures with captions. Port-scan and brute-force scheduled alert firing still require fresh evidence.
+
+### Case 3 — Controlled SMB failed logons
+
+[Open the investigation](../investigations/incident-003-brute-force.md)
+
+| PNG capture | Observed evidence |
+| --- | --- |
+| [kali-smb-reachability-case003.png](kali-smb-reachability-case003.png) | Kali confirms ICMP reachability and TCP 445 open on the Windows lab target. |
+| [kali-smb-failed-logons-case003.png](kali-smb-failed-logons-case003.png) | One initial attempt and four subsequent attempts return NT_STATUS_LOGON_FAILURE; displayed passwords are deliberately incorrect test strings. |
+| [splunk-security-4625-raw-case003.png](splunk-security-4625-raw-case003.png) | Windows Security 4625 records for SOC-Test and the controlled Kali source are indexed in Splunk. |
+| [splunk-brute-force-result-case003.png](splunk-brute-force-result-case003.png) | Manual detection returns five failures for 192.168.20.20 / SOC-Test / KALI / LogonType 3, preserving first and last event times. |
+| [splunk-brute-force-alert-enabled-case003.png](splunk-brute-force-alert-enabled-case003.png) | SOC-002 is enabled and scheduled, with Add to Triggered Alerts configured; the capture explicitly shows no fired events. |
+| [splunk-successful-logon-check-case003.png](splunk-successful-logon-check-case003.png) | The Event ID 4624 check returns zero events from 192.168.20.20 in the displayed 12:49:00–13:49:06 window; earlier activity is outside this check. |
+| [splunk-smb-firewall-correlation-case003.png](splunk-smb-firewall-correlation-case003.png) | Seven parsed pfSense TCP/445 records show pass/in from Kali to Windows; firewall records and failed-logon counts are distinct. |
+
+### Case 4 — Suspicious PowerShell encoded execution
+
+[Open the investigation](../investigations/incident-004-suspicious-powershell.md)
+
+| PNG capture | Observed evidence |
+| --- | --- |
+| [windows-powershell-marker-case004.png](windows-powershell-marker-case004.png) | Get-Content confirms the harmless SOC-LAB-PS.txt marker; this alone does not establish which process created it. |
+| [splunk-powershell-encoded-raw-case004.png](splunk-powershell-encoded-raw-case004.png) | An indexed Sysmon process event contains the controlled encoded PowerShell command. |
+| [splunk-powershell-broad-search-case004.png](splunk-powershell-broad-search-case004.png) | The broad PowerShell search includes unrelated Wazuh agent activity, illustrating the need for tuning. |
+| [splunk-powershell-initial-result-case004.png](splunk-powershell-initial-result-case004.png) | The initial OR-based query returns one PowerShell result with -NoProfile, -WindowStyle Hidden and -EncodedCommand. |
+| [splunk-powershell-process-guid-case004.png](splunk-powershell-process-guid-case004.png) | The same initial result exposes ProcessId 9508 and its process GUID; the table is scrolled horizontally. |
+| [splunk-powershell-network-check-case004.png](splunk-powershell-network-check-case004.png) | The focused Sysmon Event ID 3 search returns no events for the reviewed process GUID and window. |
+| [splunk-powershell-related-events-case004.png](splunk-powershell-related-events-case004.png) | The process-GUID correlation returns Sysmon Event IDs 1 and 11; the file event is a PowerShell policy-test script. |
+| [splunk-powershell-alert-settings-case004.png](splunk-powershell-alert-settings-case004.png) | SOC-003 alert form shows the five-minute schedule, result-count trigger and Medium Add to Triggered Alerts action. |
+| [splunk-powershell-alert-fired-case004.png](splunk-powershell-alert-fired-case004.png) | SOC-003 Trigger History records 2026-10-09 09:20:03 UTC. |
+| [splunk-powershell-alert-results-case004.png](splunk-powershell-alert-results-case004.png) | View Results returns one event for 09:15–09:20 using the tuned AND rule requiring encoded execution and a hidden window. |
+
+### Case 5 — Scheduled Task persistence
+
+[Open the investigation](../investigations/incident-005-scheduled-task.md)
+
+| PNG capture | Observed evidence |
+| --- | --- |
+| [windows-task-audit-policy-case005.png](windows-task-audit-policy-case005.png) | Other Object Access Events auditing changes from No Auditing to Success and Failure. |
+| [windows-task-create-run-case005.png](windows-task-create-run-case005.png) | The initial SOC-LAB-T1053 task is created and run; this initial attempt alone does not prove marker-file creation. |
+| [splunk-task-4698-raw-case005.png](splunk-task-4698-raw-case005.png) | Splunk receives the Windows Security 4698 task-creation event and task XML. |
+| [splunk-task-sysmon-raw-case005.png](splunk-task-sysmon-raw-case005.png) | Sysmon process records provide task-management correlation. |
+| [splunk-task-management-process-case005.png](splunk-task-management-process-case005.png) | The parsed Sysmon table exposes the schtasks.exe management process and command line. |
+| [splunk-task-payload-process-case005.png](splunk-task-payload-process-case005.png) | The repaired task launches cmd.exe with parent svchost.exe and ProcessId 7032. |
+| [splunk-task-detection-result-case005.png](splunk-task-detection-result-case005.png) | The manual Security analytic extracts faris and the SOC-LAB-T1053 task. |
+| [splunk-task-alert-settings-case005.png](splunk-task-alert-settings-case005.png) | SOC-004 alert form shows the five-minute schedule, result-count trigger and Medium action. |
+| [splunk-task-alert-fired-case005.png](splunk-task-alert-fired-case005.png) | SOC-004 Trigger History records 2026-10-09 13:00:01 UTC. |
+| [splunk-task-alert-results-case005.png](splunk-task-alert-results-case005.png) | The scheduled View Results returns the fresh validation task SOC-LAB-T1053-ALERT. |
+
+### Case 6 — Ransomware-like mass file activity
+
+[Open the investigation](../investigations/incident-006-ransomware-like-file-activity.md)
+
+| PNG capture | Observed evidence |
+| --- | --- |
+| [windows-ransomware-test-files-case006.png](windows-ransomware-test-files-case006.png) | Harmless original documents are created inside C:\Users\Public\SOC-RANSOMWARE-LAB. |
+| [windows-ransomware-safe-simulation-case006.png](windows-ransomware-safe-simulation-case006.png) | The simulation creates .locked marker files and a lab-only note; no actual encryption command is used. |
+| [windows-ransomware-file-list-case006.png](windows-ransomware-file-list-case006.png) | The directory listing contains original .txt documents, matching .locked test files and the lab note. |
+| [windows-ransomware-sysmon-check-case006.png](windows-ransomware-sysmon-check-case006.png) | Local Sysmon file-event checks yield no matching output in the reviewed checks, while Sysmon64 is Running. |
+| [windows-sysmon-config-check-case006.png](windows-sysmon-config-check-case006.png) | The current Sysmon configuration is exported and searched during telemetry troubleshooting; no replacement is shown. |
+| [splunk-ransomware-4663-raw-case006.png](splunk-ransomware-4663-raw-case006.png) | Splunk returns the audited Security Event ID 4663 records for the ransomware lab path. |
+| [splunk-ransomware-file-events-case006.png](splunk-ransomware-file-events-case006.png) | The parsed event table exposes the lab file paths and the PowerShell process. |
+| [splunk-ransomware-detection-result-case006.png](splunk-ransomware-detection-result-case006.png) | The initial one-minute aggregation returns AccessEvents=20 and UniqueFiles=20. |
+| [splunk-ransomware-alert-settings-case006.png](splunk-ransomware-alert-settings-case006.png) | SOC-005 is configured with a five-minute schedule and a High Add to Triggered Alerts action. |
+| [splunk-ransomware-alert-enabled-case006.png](splunk-ransomware-alert-enabled-case006.png) | The alert list includes the saved and enabled SOC-005 alert. |
+| [splunk-ransomware-alert-fired-case006.png](splunk-ransomware-alert-fired-case006.png) | SOC-005 Trigger History records 2026-10-09 14:20:01 UTC. |
+| [splunk-ransomware-alert-results-case006.png](splunk-ransomware-alert-results-case006.png) | The scheduled View Results returns AccessEvents=15 and UniqueFiles=15 for the fresh validation batch. |
+
 ## Evidence still needed
 
 | Suggested filename | Required proof |
@@ -158,6 +229,7 @@ Summary charts are visible, but individual event details are not. Technique/comp
 | wazuh-event-details.png | Individual collected event or alert |
 
 Add only real evidence. Do not infer missing values from screenshots or substitute generated interface images.
+
 
 
 ## SOC investigation evidence
