@@ -1,6 +1,6 @@
 # Lab screenshot evidence
 
-Fifty-nine original lab screenshots are included in this gallery and the linked investigations. The original captures were visually inspected and uploaded without changing their pixels. Four additional cropped evidence views are indexed at the end of the gallery. Captions distinguish observed state from work still pending.
+Sixty original lab screenshots are included in this gallery and the linked investigations. The original captures were visually inspected and uploaded without changing their pixels. Four additional cropped evidence views are indexed at the end of the gallery. Captions distinguish observed state from work still pending.
 
 ## VirtualBox environment baseline — 2026-10-07
 
@@ -146,7 +146,7 @@ Summary charts are visible, but individual event details are not. Technique/comp
 
 ## Evidence for the four subsequent attack investigations — 2026-10-08–09
 
-The following **42 original PNGs** complete the uploaded screenshot evidence for these four cases. Alongside the existing controlled port-scan images, the repository now contains screenshot evidence for all **five distinct attack scenarios**. Each investigation embeds its own captures with captions. Brute-force scheduled firing is confirmed by the 2026-10-09 retest below; port-scan scheduled firing still requires fresh evidence.
+The following **43 original PNGs** complete the uploaded screenshot evidence for these four cases. Alongside the existing controlled port-scan images, the repository now contains screenshot evidence for all **five distinct attack scenarios**. Each investigation embeds its own captures with captions. Brute-force scheduled firing is confirmed by the 2026-10-09 retest below; port-scan scheduled firing still requires fresh evidence.
 
 ### Case 3 — Controlled SMB failed logons
 
@@ -164,6 +164,7 @@ The following **42 original PNGs** complete the uploaded screenshot evidence for
 | [kali-smb-failed-logons-retest-20261009-case003.png](kali-smb-failed-logons-retest-20261009-case003.png) | A fresh five-attempt SMB test returns NT_STATUS_LOGON_FAILURE for each deliberately incorrect password. |
 | [splunk-brute-force-alert-triggered-20261009-case003.png](splunk-brute-force-alert-triggered-20261009-case003.png) | SOC-002 Trigger History records a scheduled firing at 2026-10-09 17:50:01 UTC. |
 | [splunk-brute-force-scheduled-results-20261009-case003.png](splunk-brute-force-scheduled-results-20261009-case003.png) | The scheduled View Results job returns 5 events and one grouped result for 192.168.20.20 / SOC-Test / KALI / LogonType 3. |
+| [splunk-successful-logon-check-retest-20261009-case003.png](splunk-successful-logon-check-retest-20261009-case003.png) | The fresh-test successful-logon search returns 0 matching Security 4624 events from 192.168.20.20 over 17:45:00–18:04:33 on 2026-10-09, as displayed by Splunk. |
 
 ### Case 4 — Suspicious PowerShell encoded execution
 

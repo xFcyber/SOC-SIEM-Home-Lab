@@ -67,7 +67,7 @@ A fresh five-attempt SMB retest caused **Trigger History** to record **2026-10-0
 
 ![SOC-002 scheduled results](../screenshots/splunk-brute-force-scheduled-results-20261009-case003.png)
 
-Successful-logon coverage of the full original and fresh exercise periods remains pending.
+The fresh-test successful-logon search returns **0 matching Event ID 4624 records** from **192.168.20.20** for **17:45:00–18:04:33 as displayed by Splunk**, covering the failed batch. [Original screenshot](../screenshots/splunk-successful-logon-check-retest-20261009-case003.png). Full-window coverage of the original 2026-10-08 exercise remains pending.
 
 
 ## Suspicious PowerShell encoded execution alert

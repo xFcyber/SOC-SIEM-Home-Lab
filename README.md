@@ -27,7 +27,7 @@ This repository documents the lab previously built by the author. It separates p
 | Wazuh event and alert comparison | Pending evidence |
 | System / Application forwarding, AD and additional detections | Indexes configured or planned; additional ingestion evidence pending |
 
-**63 PNG files** (59 original screenshots and four cropped evidence views) are attached across the [evidence gallery](screenshots/README.md) and the investigations. They cover the lab baseline and all five controlled attack scenarios, including execution, indexed telemetry, detection results and the captured scheduled triggers. Raw event exports remain pending. Successful scheduled firing is evidenced for SOC-002, SOC-003, SOC-004 and SOC-005; port-scan scheduled firing remains pending.
+**64 PNG files** (60 original screenshots and four cropped evidence views) are attached across the [evidence gallery](screenshots/README.md) and the investigations. They cover the lab baseline and all five controlled attack scenarios, including execution, indexed telemetry, detection results and the captured scheduled triggers. Raw event exports remain pending. Successful scheduled firing is evidenced for SOC-002, SOC-003, SOC-004 and SOC-005; port-scan scheduled firing remains pending.
 
 ## Five documented attack scenarios
 
@@ -122,6 +122,8 @@ The behavior is documented as an authorized-test true positive for **T1110 — B
 
 A fresh five-attempt test on **2026-10-09** caused `SOC-002 - Brute Force Failed Logon Detection` to fire at **17:50:01 UTC (20:50:01 Asia/Riyadh)**. The scheduled **View Results** job covers **17:45–17:50 as displayed by Splunk** and returns **5 events / 1 grouped result**, matching Kali **192.168.20.20**, **SOC-Test**, **KALI** and **LogonType=3**. The execution, Trigger History and scheduled-result screenshots are attached in case 003.
 
+A captured successful-logon check for this fresh test returns **0 matching Event ID 4624 records** from **192.168.20.20** over **17:45:00–18:04:33 as displayed by Splunk**, covering time before, during and after the failed batch. This is a scoped negative search result; the original 2026-10-08 full-window check remains pending.
+
 [Follow case 003](investigations/incident-003-brute-force.md) · [Detection analytic](detections/windows-brute-force-detection.md).
 
 ## Current exercise: suspicious PowerShell execution — 2026-10-09
@@ -160,7 +162,7 @@ Log collection, SPL search, firewall log interpretation, endpoint telemetry vali
 
 ## Roadmap
 
-Capture scheduled firing evidence for the port-scan alert, repeat the successful-logon check across the full original and fresh brute-force exercise windows, and add raw event exports. Wazuh event comparisons, Active Directory and Windows Server remain future additions.
+Capture scheduled firing evidence for the port-scan alert, repeat the successful-logon check across the full original 2026-10-08 brute-force exercise window, and add raw event exports. Wazuh event comparisons, Active Directory and Windows Server remain future additions.
 
 ## Scope and author
 

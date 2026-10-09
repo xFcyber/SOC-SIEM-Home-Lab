@@ -55,7 +55,7 @@ The same bounded five-attempt SMB simulation was repeated from Kali. Every attem
 
 ![Fresh five-attempt Kali SMB test](../screenshots/kali-smb-failed-logons-retest-20261009-case003.png)
 
-The existing `SOC-002 - Brute Force Failed Logon Detection` alert fired at **2026-10-09 17:50:01 UTC (20:50:01 Asia/Riyadh)**. The scheduled **View Results** job returned **5 events / 1 grouped result** for **192.168.20.20 / SOC-Test / KALI / LogonType 3**. See [case 003](../investigations/incident-003-brute-force.md#evidence-6--fresh-scheduled-alert-validation--2026-10-09) for the original Trigger History and results captures. A full-window successful-logon check for this retest remains pending.
+The existing `SOC-002 - Brute Force Failed Logon Detection` alert fired at **2026-10-09 17:50:01 UTC (20:50:01 Asia/Riyadh)**. The scheduled **View Results** job returned **5 events / 1 grouped result** for **192.168.20.20 / SOC-Test / KALI / LogonType 3**. See [case 003](../investigations/incident-003-brute-force.md#evidence-6--fresh-scheduled-alert-validation--2026-10-09) for the original Trigger History and results captures. A captured successful-logon check for this retest returns **0 matching Event ID 4624 records** from the Kali address over **17:45:00–18:04:33 as displayed by Splunk**, including time before, during and after the five failures. [Original check screenshot](../screenshots/splunk-successful-logon-check-retest-20261009-case003.png).
 
 ## Safety and scope
 

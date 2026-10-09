@@ -77,6 +77,8 @@ The original configuration capture showed no fired events. On **2026-10-09**, a 
 
 [Trigger History screenshot](../screenshots/splunk-brute-force-alert-triggered-20261009-case003.png) · [Scheduled results screenshot](../screenshots/splunk-brute-force-scheduled-results-20261009-case003.png) · [Full retest evidence](../investigations/incident-003-brute-force.md#evidence-6--fresh-scheduled-alert-validation--2026-10-09).
 
+The fresh-test successful-logon check returns **0 matching Event ID 4624 records** from **192.168.20.20** over **17:45:00–18:04:33 as displayed by Splunk**. This covers the fresh failed batch and is a scoped negative search result. [Successful-logon screenshot](../screenshots/splunk-successful-logon-check-retest-20261009-case003.png) · [Query and exact bounds](../investigations/incident-003-brute-force.md#evidence-7--successful-logon-check-for-the-fresh-retest--2026-10-09).
+
 ## Interpretation
 
 A result indicates repeated failed authentication behavior, not a successful compromise. Review:

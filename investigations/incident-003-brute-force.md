@@ -1,6 +1,6 @@
 # Case 003 — Controlled SMB brute-force / failed-logon investigation
 
-**Status:** Controlled attack, endpoint evidence, firewall correlation, manual detection and scheduled firing confirmed. The fresh 2026-10-09 retest has captured Trigger History and scheduled View Results.
+**Status:** Controlled attack, endpoint evidence, firewall correlation, manual detection and scheduled firing confirmed. The fresh 2026-10-09 retest has captured Trigger History, scheduled View Results and a successful-logon check covering its failed batch.
 
 ## Executive summary
 
@@ -8,12 +8,12 @@ On 2026-10-08, Kali Linux at **192.168.20.20** generated five controlled failed 
 
 Windows Security auditing generated Event ID **4625** records. A Splunk analytic grouped five failures for the same source IP and target account, with **Workstation=KALI** and **LogonType=3 (Network)**. pfSense independently recorded TCP traffic from the same source to the same target on destination port **445**. A follow-up Splunk search found **0 Event ID 4624 successful logons from 192.168.20.20** during the checked one-hour window.
 
-On **2026-10-09**, a fresh five-attempt SMB test reproduced the behavior. The scheduled alert fired at **17:50:01 UTC (20:50:01 Asia/Riyadh)**, and its scheduled job returned **5 events / 1 grouped result** for the same source and account.
+On **2026-10-09**, a fresh five-attempt SMB test reproduced the behavior. The scheduled alert fired at **17:50:01 UTC (20:50:01 Asia/Riyadh)**, and its scheduled job returned **5 events / 1 grouped result** for the same source and account. A subsequent search returned **0 matching Event ID 4624 records** from the Kali address over **17:45:00–18:04:33 as displayed by Splunk**, including the full fresh failed-logon batch.
 
 **Verdict:** True positive for the controlled failed-authentication / brute-force behavior.  
 **Disposition:** Authorized lab activity; unsuccessful authentication attempt.  
 **Severity:** Medium for the lab scenario.  
-**Observed impact:** Failed authentication confirmed; complete successful-logon coverage remains pending.  
+**Observed impact:** Five failed authentications confirmed; no matching successful logon from the Kali address in the captured fresh-test window. Full-window coverage of the original 2026-10-08 test remains pending.  
 **MITRE ATT&CK:** T1110 — Brute Force.
 
 ## Visual evidence
@@ -173,7 +173,36 @@ Opening **View Results** shows a scheduler job (`sid=scheduler__...`) rather tha
 
 The scheduled SPL preserves `event_time` before applying five-minute `bin` grouping; this keeps the actual first/last event times in the result. The [repository SPL](../detections/windows-brute-force.spl) now matches the executed query visible in the screenshot.
 
-This retest confirms event generation, Windows Security ingestion, threshold matching, scheduled execution and the recorded alert action. No new successful-logon check or fresh pfSense correlation is attached for this retest; the earlier 4624 and firewall observations belong to the 2026-10-08 exercise.
+This retest confirms event generation, Windows Security ingestion, threshold matching, scheduled execution and the recorded alert action. The fresh successful-logon check is attached below. Fresh pfSense correlation has not been captured; the earlier firewall observations belong to the 2026-10-08 exercise.
+
+## Evidence 7 — Successful-logon check for the fresh retest — 2026-10-09
+
+The completed search checks indexed Windows Security Event ID **4624** from source **192.168.20.20**, without restricting the target account. It returns **0 events / Statistics (0)**.
+
+![Fresh-test successful-logon search with zero matching events](../screenshots/splunk-successful-logon-check-retest-20261009-case003.png)
+
+```spl
+index=security_logs earliest=1791567900 latest=now "<EventID>4624</EventID>"
+| rex field=_raw "<Data Name='TargetUserName'>(?<TargetUserName>[^<]*)</Data>"
+| rex field=_raw "<Data Name='IpAddress'>(?<IpAddress>[^<]*)</Data>"
+| rex field=_raw "<Data Name='LogonType'>(?<LogonType>[^<]*)</Data>"
+| search IpAddress="192.168.20.20"
+| table _time host TargetUserName IpAddress LogonType
+| sort _time
+```
+
+| Field | Captured value |
+| --- | --- |
+| Index / event | security_logs / 4624 |
+| Source filter | IpAddress=192.168.20.20 |
+| Start | 2026-10-09 17:45:00, as displayed by Splunk |
+| End | 2026-10-09 18:04:33, as displayed by Splunk |
+| Matching events / results | 0 / 0 |
+| Fresh failed-logon batch | 17:48:00.989–17:48:07.792, inside the checked window |
+
+The screenshot's picker displays **Last 15 minutes**, while the completed job banner shows **17:45:00–18:04:33** for the query's explicit start and `latest=now`. The banner bounds are the recorded evidence window. To repeat that exact interval, replace `latest=now` with `latest=1791569073`.
+
+**Finding:** No matching indexed successful logon from the Kali source was observed in this window. This is scoped to the query, available telemetry and source address; it does not establish absence of activity outside that scope. The original 2026-10-08 full-window successful-logon check remains pending.
 
 ## Original screenshot evidence — 2026-10-08
 
@@ -211,7 +240,7 @@ Seven parsed pfSense TCP/445 records show pass/in from Kali to Windows; firewall
 
 The original 2026-10-08 endpoint and firewall evidence agree on source **192.168.20.20**, target **192.168.10.100**, **TCP/445** and the activity period. The 2026-10-09 retest independently confirms five failed network logons for **SOC-Test** and a recorded scheduled alert.
 
-This is a **true positive for brute-force-like failed authentication behavior** in an authorized lab exercise. The original negative 4624 result covers only its stated follow-up window; successful-logon coverage of both complete exercise periods remains a follow-up task.
+This is a **true positive for brute-force-like failed authentication behavior** in an authorized lab exercise. The fresh 2026-10-09 check shows no matching successful logon from the Kali address across a window that includes the full failed batch. The original 2026-10-08 negative 4624 result covers only its stated follow-up window; complete coverage of that original period remains a follow-up task.
 
 ## Response actions for a real SOC
 
@@ -227,7 +256,7 @@ For an equivalent unauthorized event:
 
 ## Remaining work
 
-- Repeat the 4624 check with fixed windows that cover the full original and fresh failed-logon periods, including time before and after each batch.
+- Repeat the 4624 check with a fixed window covering the full original 2026-10-08 failed-logon period, including time before and after the batch.
 - Export raw event samples for reproducibility.
 - Normalize cross-host timezone handling in a later lab maintenance pass.
 
