@@ -55,7 +55,9 @@ The validated replay in the lab returned one candidate:
 | first_seen | 2026-10-08 12:48:03.986 as displayed in Splunk |
 | last_seen | 2026-10-08 12:48:50.113 as displayed in Splunk |
 
-The lab also showed a three-hour difference between some displayed/indexed timestamps and embedded raw timestamps. Clock normalization was not performed during this exercise, so cross-host time-zone interpretation should remain cautious.
+The original 2026-10-08 evidence showed a three-hour difference between some displayed/indexed timestamps and embedded raw timestamps. Clock normalization was not performed during that exercise.
+
+For the fresh 2026-10-09 test, the [original five-event raw CSV](../investigations/evidence/soc-002-4625-events-20261009.csv) provides explicit UTC timestamps: exported `_time` (`+0000`) and embedded Windows `SystemTime` (`Z`) agree within one millisecond for all five records. The distinct EventRecordIDs are **78762–78766**, and the first/last times match the scheduled result. This comparison is specific to the fresh records.
 
 ## Alert configuration captured
 
@@ -77,7 +79,7 @@ The original configuration capture showed no fired events. On **2026-10-09**, a 
 
 [Trigger History screenshot](../screenshots/splunk-brute-force-alert-triggered-20261009-case003.png) · [Scheduled results screenshot](../screenshots/splunk-brute-force-scheduled-results-20261009-case003.png) · [Full retest evidence](../investigations/incident-003-brute-force.md#evidence-6--fresh-scheduled-alert-validation--2026-10-09).
 
-The fresh-test successful-logon check returns **0 matching Event ID 4624 records** from **192.168.20.20** over **17:45:00–18:04:33 as displayed by Splunk**. This covers the fresh failed batch and is a scoped negative search result. [Successful-logon screenshot](../screenshots/splunk-successful-logon-check-retest-20261009-case003.png) · [Query and exact bounds](../investigations/incident-003-brute-force.md#evidence-7--successful-logon-check-for-the-fresh-retest--2026-10-09).
+The fresh-test successful-logon check returns **0 matching Event ID 4624 records** from **192.168.20.20** over **17:45:00–18:04:33 as displayed by Splunk**. This covers the fresh failed batch and is a scoped negative search result. The raw 4625 export independently confirms the failed-authentication fields, including **Status=0xc000006d**, **SubStatus=0xc000006a** and **AuthenticationPackageName=NTLM**. [Successful-logon screenshot](../screenshots/splunk-successful-logon-check-retest-20261009-case003.png) · [Query and exact bounds](../investigations/incident-003-brute-force.md#evidence-7--successful-logon-check-for-the-fresh-retest--2026-10-09).
 
 ## Interpretation
 

@@ -1,6 +1,6 @@
 # Case 003 — Controlled SMB brute-force / failed-logon investigation
 
-**Status:** Controlled attack, endpoint evidence, firewall correlation, manual detection and scheduled firing confirmed. The fresh 2026-10-09 retest has captured Trigger History, scheduled View Results and a successful-logon check covering its failed batch.
+**Status:** Controlled attack, endpoint evidence, firewall correlation, manual detection and scheduled firing confirmed. The fresh 2026-10-09 retest has captured Trigger History, scheduled View Results, a successful-logon check covering its failed batch, and an original five-event raw CSV export.
 
 ## Executive summary
 
@@ -204,6 +204,49 @@ The screenshot's picker displays **Last 15 minutes**, while the completed job ba
 
 **Finding:** No matching indexed successful logon from the Kali source was observed in this window. This is scoped to the query, available telemetry and source address; it does not establish absence of activity outside that scope. The original 2026-10-08 full-window successful-logon check remains pending.
 
+## Evidence 8 — Raw Windows Security CSV export — 2026-10-09
+
+[Open the original five-event CSV](evidence/soc-002-4625-events-20261009.csv).
+
+The uploaded CSV contains **5 data rows** and retains all eight exported fields: `_raw`, `_time`, `host`, `index`, `linecount`, `source`, `sourcetype` and `splunk_server`. The original bytes and row order are preserved; only the duplicated filename extension was removed.
+
+Each embedded XML record was parsed and matched to the scheduled result:
+
+| Field | Value in all five records |
+| --- | --- |
+| EventID | 4625 |
+| Computer / host | Windows11off |
+| TargetUserName | SOC-Test |
+| IpAddress | 192.168.20.20 |
+| WorkstationName | KALI |
+| LogonType | 3 — Network |
+| AuthenticationPackageName | NTLM |
+| Status / SubStatus | 0xc000006d / 0xc000006a |
+| Index / source / sourcetype | security_logs / WinEventLog:Security / XmlWinEventLog:Security |
+
+The five records have distinct EventRecordIDs. The table below presents them chronologically; the original CSV remains in its exported descending order.
+
+| EventRecordID | CSV event time, UTC on 2026-10-09 | Source port |
+| --- | --- | --- |
+| 78762 | 17:48:00.989 | 43130 |
+| 78763 | 17:48:02.793 | 43142 |
+| 78764 | 17:48:04.490 | 43150 |
+| 78765 | 17:48:06.255 | 54036 |
+| 78766 | 17:48:07.792 | 54046 |
+
+The CSV's `_time` values explicitly use `+0000`, while embedded Windows `SystemTime` values use `Z`. They agree within one millisecond, matching the export's millisecond precision. First/last exported timestamps are **2026-10-09 17:48:00.989 UTC** and **17:48:07.792 UTC**, the same values shown in the scheduled result. This timestamp agreement is verified for these five records.
+
+`SubStatus=0xc000006a` identifies a wrong-password failure, consistent with the controlled test. See [Microsoft's 4625 field documentation](https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4625).
+
+The export can be reproduced over the captured scheduled-job window:
+
+```spl
+index=security_logs earliest=1791567900 latest=1791568200 "<EventID>4625</EventID>" "SOC-Test" "192.168.20.20"
+```
+
+**Original export size:** 7,920 bytes.  
+**SHA-256:** `4804497ff3b89a0d299dbaaadbcf788fd859577a0cc5434ecb1ef5bbd4a9fc39`.
+
 ## Original screenshot evidence — 2026-10-08
 
 These original PNG captures are attached without changing their pixels. Search results, saved configurations and scheduled triggers are identified separately.
@@ -257,7 +300,7 @@ For an equivalent unauthorized event:
 ## Remaining work
 
 - Repeat the 4624 check with a fixed window covering the full original 2026-10-08 failed-logon period, including time before and after the batch.
-- Export raw event samples for reproducibility.
+- Export raw event samples from the original 2026-10-08 exercise; the fresh 2026-10-09 Windows failed-logon CSV is attached above.
 - Normalize cross-host timezone handling in a later lab maintenance pass.
 
 [Simulation](../attack-simulations/brute-force.md) · [Detection](../detections/windows-brute-force-detection.md) · [MITRE ATT&CK T1110](https://attack.mitre.org/techniques/T1110/)

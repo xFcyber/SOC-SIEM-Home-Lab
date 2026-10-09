@@ -219,6 +219,16 @@ The following **43 original PNGs** complete the uploaded screenshot evidence for
 | [splunk-ransomware-alert-fired-case006.png](splunk-ransomware-alert-fired-case006.png) | SOC-005 Trigger History records 2026-10-09 14:20:01 UTC. |
 | [splunk-ransomware-alert-results-case006.png](splunk-ransomware-alert-results-case006.png) | The scheduled View Results returns AccessEvents=15 and UniqueFiles=15 for the fresh validation batch. |
 
+## Raw event export — case 003
+
+The [original Windows Security CSV](../investigations/evidence/soc-002-4625-events-20261009.csv) contains **5 distinct Event ID 4625 records** from the fresh 2026-10-09 test. Each row preserves its `_raw` XML, `_time` and Splunk source metadata. The bytes are unchanged; the uploaded filename's duplicate `.csv` extension was removed in the repository.
+
+| File | Observed evidence |
+| --- | --- |
+| [soc-002-4625-events-20261009.csv](../investigations/evidence/soc-002-4625-events-20261009.csv) | 5 records, IDs 78762–78766; SOC-Test; 192.168.20.20; KALI; LogonType 3; UTC 17:48:00.989–17:48:07.792. |
+
+[Case 003 validation and checksum](../investigations/incident-003-brute-force.md#evidence-8--raw-windows-security-csv-export--2026-10-09)
+
 ## Evidence still needed
 
 | Suggested filename | Required proof |

@@ -27,7 +27,7 @@ This repository documents the lab previously built by the author. It separates p
 | Wazuh event and alert comparison | Pending evidence |
 | System / Application forwarding, AD and additional detections | Indexes configured or planned; additional ingestion evidence pending |
 
-**64 PNG files** (60 original screenshots and four cropped evidence views) are attached across the [evidence gallery](screenshots/README.md) and the investigations. They cover the lab baseline and all five controlled attack scenarios, including execution, indexed telemetry, detection results and the captured scheduled triggers. Raw event exports remain pending. Successful scheduled firing is evidenced for SOC-002, SOC-003, SOC-004 and SOC-005; port-scan scheduled firing remains pending.
+**64 PNG files** (60 original screenshots and four cropped evidence views) are attached across the [evidence gallery](screenshots/README.md) and the investigations. They cover the lab baseline and all five controlled attack scenarios, including execution, indexed telemetry, detection results and the captured scheduled triggers. A [five-row raw Windows Security CSV](investigations/evidence/soc-002-4625-events-20261009.csv) is attached for the SOC-002 retest; raw exports for other exercises remain pending. Successful scheduled firing is evidenced for SOC-002, SOC-003, SOC-004 and SOC-005; port-scan scheduled firing remains pending.
 
 ## Five documented attack scenarios
 
@@ -90,7 +90,7 @@ Kali can be moved between segments for different exercises. For the firewall cas
 | Simulation | [Controlled port scan](attack-simulations/port-scan.md), [controlled SMB failed logons](attack-simulations/brute-force.md), [controlled suspicious PowerShell](attack-simulations/powershell.md), [controlled Scheduled Task persistence](attack-simulations/scheduled-task.md), [controlled ransomware-like file activity](attack-simulations/ransomware-like-file-activity.md) |
 | Detection | [Port scan analytic](detections/port-scan-detection.md), [port-scan SPL](detections/pfsense-ipv4-port-scan.spl), [Windows brute-force analytic](detections/windows-brute-force-detection.md), [brute-force SPL](detections/windows-brute-force.spl), [PowerShell analytic](detections/suspicious-powershell-detection.md), [PowerShell SPL](detections/suspicious-powershell.spl), [Scheduled Task analytic](detections/scheduled-task-detection.md), [Scheduled Task SPL](detections/scheduled-task-creation.spl), [Ransomware-like analytic](detections/ransomware-mass-file-activity.md), [Ransomware-like SPL](detections/ransomware-mass-file-activity.spl) |
 | Investigation | [Historical case 001](investigations/incident-001-port-scan.md), [controlled scan case 002](investigations/incident-002-controlled-port-scan.md), [brute-force case 003](investigations/incident-003-brute-force.md), [PowerShell case 004](investigations/incident-004-suspicious-powershell.md), [Scheduled Task case 005](investigations/incident-005-scheduled-task.md), [Ransomware-like case 006](investigations/incident-006-ransomware-like-file-activity.md), [case template](investigations/incident-template.md) |
-| Portfolio evidence | [Screenshot checklist](screenshots/README.md) |
+| Portfolio evidence | [Screenshots and raw event exports](screenshots/README.md) |
 
 ## First case: Kali → pfSense → Splunk
 
@@ -123,6 +123,8 @@ The behavior is documented as an authorized-test true positive for **T1110 — B
 A fresh five-attempt test on **2026-10-09** caused `SOC-002 - Brute Force Failed Logon Detection` to fire at **17:50:01 UTC (20:50:01 Asia/Riyadh)**. The scheduled **View Results** job covers **17:45–17:50 as displayed by Splunk** and returns **5 events / 1 grouped result**, matching Kali **192.168.20.20**, **SOC-Test**, **KALI** and **LogonType=3**. The execution, Trigger History and scheduled-result screenshots are attached in case 003.
 
 A captured successful-logon check for this fresh test returns **0 matching Event ID 4624 records** from **192.168.20.20** over **17:45:00–18:04:33 as displayed by Splunk**, covering time before, during and after the failed batch. This is a scoped negative search result; the original 2026-10-08 full-window check remains pending.
+
+The [original raw CSV export](investigations/evidence/soc-002-4625-events-20261009.csv) contains **5 distinct Windows Security 4625 records**, IDs **78762–78766**, with **Status=0xc000006d** and **SubStatus=0xc000006a**. Its explicit UTC timestamps match the scheduled-result first/last times, and its embedded Windows XML is preserved.
 
 [Follow case 003](investigations/incident-003-brute-force.md) · [Detection analytic](detections/windows-brute-force-detection.md).
 
@@ -162,7 +164,7 @@ Log collection, SPL search, firewall log interpretation, endpoint telemetry vali
 
 ## Roadmap
 
-Capture scheduled firing evidence for the port-scan alert, repeat the successful-logon check across the full original 2026-10-08 brute-force exercise window, and add raw event exports. Wazuh event comparisons, Active Directory and Windows Server remain future additions.
+Capture scheduled firing evidence for the port-scan alert, repeat the successful-logon check across the full original 2026-10-08 brute-force exercise window, and add raw event exports for the other exercises. Wazuh event comparisons, Active Directory and Windows Server remain future additions.
 
 ## Scope and author
 

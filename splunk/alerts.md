@@ -69,6 +69,8 @@ A fresh five-attempt SMB retest caused **Trigger History** to record **2026-10-0
 
 The fresh-test successful-logon search returns **0 matching Event ID 4624 records** from **192.168.20.20** for **17:45:00–18:04:33 as displayed by Splunk**, covering the failed batch. [Original screenshot](../screenshots/splunk-successful-logon-check-retest-20261009-case003.png). Full-window coverage of the original 2026-10-08 exercise remains pending.
 
+The [original raw-event CSV](../investigations/evidence/soc-002-4625-events-20261009.csv) contains all **5 distinct Security 4625 records** from this scheduled-job window, preserving the Windows XML and explicit UTC timestamps. [Field validation and checksum](../investigations/incident-003-brute-force.md#evidence-8--raw-windows-security-csv-export--2026-10-09).
+
 
 ## Suspicious PowerShell encoded execution alert
 
