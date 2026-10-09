@@ -1,6 +1,6 @@
 # Controlled SMB failed-login simulation
 
-**Exercise date:** 2026-10-08  
+**Exercise dates:** 2026-10-08; scheduled-alert retest 2026-10-09  
 **Scope:** Authorized SOC home lab only.
 
 This exercise generated a small, controlled set of failed SMB authentications from Kali Linux to the Windows 11 lab endpoint so the events could be detected and investigated in Splunk.
@@ -48,6 +48,14 @@ The correlated detection result identified:
 - Target path: Windows 11 over **TCP 445 / SMB**
 
 pfSense independently recorded inbound TCP traffic from 192.168.20.20 to 192.168.10.100:445 around the same exercise window.
+
+## Fresh scheduled-alert retest — 2026-10-09
+
+The same bounded five-attempt SMB simulation was repeated from Kali. Every attempt returned `NT_STATUS_LOGON_FAILURE`; only deliberately incorrect test strings are displayed.
+
+![Fresh five-attempt Kali SMB test](../screenshots/kali-smb-failed-logons-retest-20261009-case003.png)
+
+The existing `SOC-002 - Brute Force Failed Logon Detection` alert fired at **2026-10-09 17:50:01 UTC (20:50:01 Asia/Riyadh)**. The scheduled **View Results** job returned **5 events / 1 grouped result** for **192.168.20.20 / SOC-Test / KALI / LogonType 3**. See [case 003](../investigations/incident-003-brute-force.md#evidence-6--fresh-scheduled-alert-validation--2026-10-09) for the original Trigger History and results captures. A full-window successful-logon check for this retest remains pending.
 
 ## Safety and scope
 

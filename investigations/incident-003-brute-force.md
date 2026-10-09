@@ -1,6 +1,6 @@
 # Case 003 — Controlled SMB brute-force / failed-logon investigation
 
-**Status:** Controlled attack, endpoint evidence, firewall correlation and manual detection confirmed. Splunk alert saved and enabled; scheduled firing remains unconfirmed.
+**Status:** Controlled attack, endpoint evidence, firewall correlation, manual detection and scheduled firing confirmed. The fresh 2026-10-09 retest has captured Trigger History and scheduled View Results.
 
 ## Executive summary
 
@@ -8,10 +8,12 @@ On 2026-10-08, Kali Linux at **192.168.20.20** generated five controlled failed 
 
 Windows Security auditing generated Event ID **4625** records. A Splunk analytic grouped five failures for the same source IP and target account, with **Workstation=KALI** and **LogonType=3 (Network)**. pfSense independently recorded TCP traffic from the same source to the same target on destination port **445**. A follow-up Splunk search found **0 Event ID 4624 successful logons from 192.168.20.20** during the checked one-hour window.
 
+On **2026-10-09**, a fresh five-attempt SMB test reproduced the behavior. The scheduled alert fired at **17:50:01 UTC (20:50:01 Asia/Riyadh)**, and its scheduled job returned **5 events / 1 grouped result** for the same source and account.
+
 **Verdict:** True positive for the controlled failed-authentication / brute-force behavior.  
 **Disposition:** Authorized lab activity; unsuccessful authentication attempt.  
 **Severity:** Medium for the lab scenario.  
-**Observed impact:** No successful account compromise observed.  
+**Observed impact:** Failed authentication confirmed; complete successful-logon coverage remains pending.  
 **MITRE ATT&CK:** T1110 — Brute Force.
 
 ## Visual evidence
@@ -141,9 +143,39 @@ The saved Splunk alert is named:
 
 It is enabled, scheduled every five minutes with cron `*/5 * * * *`, searches the last five minutes, and triggers when the result count is greater than zero. The configured action is **Add to Triggered Alerts**.
 
-A saved/enabled alert is not evidence that it fired. The captured alert details showed no fired events at that point, so scheduled firing remains a follow-up task.
+The original 2026-10-08 configuration capture showed no fired events. A fresh 2026-10-09 test now confirms scheduled firing, as documented below.
 
-## Original screenshot evidence
+## Evidence 6 — Fresh scheduled-alert validation — 2026-10-09
+
+A new five-attempt SMB test was executed from Kali against Windows 11 using the same dedicated test account. All five terminal attempts returned `NT_STATUS_LOGON_FAILURE`.
+
+![Fresh Kali SMB failed-login test](../screenshots/kali-smb-failed-logons-retest-20261009-case003.png)
+
+Splunk **Trigger History** records **2026-10-09 17:50:01 UTC**, equivalent to **20:50:01 Asia/Riyadh**. The alert remains enabled with the **Add to Triggered Alerts** action.
+
+![SOC-002 scheduled trigger at 17:50:01 UTC](../screenshots/splunk-brute-force-alert-triggered-20261009-case003.png)
+
+Opening **View Results** shows a scheduler job (`sid=scheduler__...`) rather than a separate manual replay. The completed job displays **5 events** and **Statistics (1)**.
+
+![SOC-002 scheduled View Results with five failures](../screenshots/splunk-brute-force-scheduled-results-20261009-case003.png)
+
+| Field | Scheduled result |
+| --- | --- |
+| Search window | 2026-10-09 17:45:00–17:50:00, as displayed by Splunk |
+| detection_window | 2026-10-09 17:45:00, as displayed by Splunk |
+| IpAddress | 192.168.20.20 |
+| TargetUserName | SOC-Test |
+| count | 5 |
+| first_seen | 2026-10-09 17:48:00.989, as displayed by Splunk |
+| last_seen | 2026-10-09 17:48:07.792, as displayed by Splunk |
+| Workstation | KALI |
+| LogonType | 3 — Network |
+
+The scheduled SPL preserves `event_time` before applying five-minute `bin` grouping; this keeps the actual first/last event times in the result. The [repository SPL](../detections/windows-brute-force.spl) now matches the executed query visible in the screenshot.
+
+This retest confirms event generation, Windows Security ingestion, threshold matching, scheduled execution and the recorded alert action. No new successful-logon check or fresh pfSense correlation is attached for this retest; the earlier 4624 and firewall observations belong to the 2026-10-08 exercise.
+
+## Original screenshot evidence — 2026-10-08
 
 These original PNG captures are attached without changing their pixels. Search results, saved configurations and scheduled triggers are identified separately.
 
@@ -177,25 +209,9 @@ Seven parsed pfSense TCP/445 records show pass/in from Kali to Windows; firewall
 
 ## Analyst conclusion
 
-The endpoint and firewall evidence correlate on source, target, service and activity window:
+The original 2026-10-08 endpoint and firewall evidence agree on source **192.168.20.20**, target **192.168.10.100**, **TCP/445** and the activity period. The 2026-10-09 retest independently confirms five failed network logons for **SOC-Test** and a recorded scheduled alert.
 
-```text
-Kali 192.168.20.20
-        |
-        | TCP/445
-        v
-pfSense — pass/in
-        |
-        v
-Windows 11 192.168.10.100
-        |
-        +-- Event ID 4625 x5
-        |   SOC-Test / LogonType 3 / KALI
-        |
-        +-- No Event ID 4624 from 192.168.20.20 in checked 1h window
-```
-
-This is a **true positive for brute-force-like failed authentication behavior** in an authorized lab exercise. No successful account compromise was observed.
+This is a **true positive for brute-force-like failed authentication behavior** in an authorized lab exercise. The original negative 4624 result covers only its stated follow-up window; successful-logon coverage of both complete exercise periods remains a follow-up task.
 
 ## Response actions for a real SOC
 
@@ -211,8 +227,7 @@ For an equivalent unauthorized event:
 
 ## Remaining work
 
-- Capture a fired scheduled-alert entry after a fresh controlled test.
-- Repeat the 4624 check with a fixed window that includes the full original failed-logon period.
+- Repeat the 4624 check with fixed windows that cover the full original and fresh failed-logon periods, including time before and after each batch.
 - Export raw event samples for reproducibility.
 - Normalize cross-host timezone handling in a later lab maintenance pass.
 

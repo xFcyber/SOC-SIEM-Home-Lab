@@ -17,24 +17,24 @@ This repository documents the lab previously built by the author. It separates p
 | Wazuh manager and Windows agent | Active windows-lab agent 001 shown in dashboard screenshot |
 | Controlled Kali port scan | Eight-port SYN scan, matching firewall records and one grouped detection result confirmed |
 | Revised port scan SPL in this repository | Core extraction, grouping and threshold validated in case 002 manual replay |
-| Scheduled alert definition | Saved and enabled in screenshot; no fired events displayed |
+| Port-scan scheduled alert definition | Saved and enabled in screenshot; no fired events displayed |
 | Controlled SMB failed-logon exercise | Five failed logons from Kali correlated across Windows Security and pfSense; manual Splunk detection confirmed |
 | Windows Security forwarding | Confirmed in `security_logs` with XML-rendered Security events |
-| Brute-force alert | `SOC-002 - Brute Force Failed Logon Detection` saved, enabled and scheduled every five minutes; fired scheduled event not yet captured |
+| Brute-force alert | `SOC-002 - Brute Force Failed Logon Detection` fired at 2026-10-09 17:50:01 UTC; scheduled View Results confirms 5 failures and one grouped result |
 | Suspicious PowerShell execution | Sysmon Event ID 1 detection tuned and validated; `SOC-003 - Suspicious PowerShell Encoded Execution` fired successfully |
 | Scheduled Task persistence | Windows Security 4698 plus Sysmon process correlation validated; `SOC-004 - Suspicious Scheduled Task Creation` fired successfully |
 | Ransomware-like mass file activity | Windows Security 4663 burst detection validated; `SOC-005 - Possible Ransomware Mass File Activity` fired successfully at high severity |
 | Wazuh event and alert comparison | Pending evidence |
 | System / Application forwarding, AD and additional detections | Indexes configured or planned; additional ingestion evidence pending |
 
-**60 PNG files** (56 original screenshots and four cropped evidence views) are attached across the [evidence gallery](screenshots/README.md) and the investigations. They cover the lab baseline and all five controlled attack scenarios, including execution, indexed telemetry, detection results and the captured scheduled triggers. Raw event exports remain pending. Successful scheduled firing is evidenced for SOC-003, SOC-004 and SOC-005; port-scan and brute-force scheduled firing remain pending.
+**63 PNG files** (59 original screenshots and four cropped evidence views) are attached across the [evidence gallery](screenshots/README.md) and the investigations. They cover the lab baseline and all five controlled attack scenarios, including execution, indexed telemetry, detection results and the captured scheduled triggers. Raw event exports remain pending. Successful scheduled firing is evidenced for SOC-002, SOC-003, SOC-004 and SOC-005; port-scan scheduled firing remains pending.
 
 ## Five documented attack scenarios
 
 | Scenario | Investigation | Detection evidence | Scheduled alert evidence |
 | --- | --- | --- | --- |
 | TCP port scan | [Case 002](investigations/incident-002-controlled-port-scan.md) | 8 distinct ports / 8 firewall events | Saved and enabled; successful firing pending |
-| SMB failed logons / brute-force behavior | [Case 003](investigations/incident-003-brute-force.md) | 5 failed logons, Security 4625, TCP 445 correlation | Saved and enabled; successful firing pending |
+| SMB failed logons / brute-force behavior | [Case 003](investigations/incident-003-brute-force.md) | 5 failed logons, Security 4625, TCP 445 correlation | Trigger History + scheduled View Results confirmed on 2026-10-09 |
 | Suspicious encoded PowerShell | [Case 004](investigations/incident-004-suspicious-powershell.md) | Sysmon Event ID 1 and tuned command-line logic | Trigger History + View Results confirmed |
 | Scheduled Task persistence | [Case 005](investigations/incident-005-scheduled-task.md) | Security 4698 plus Sysmon process correlation | Trigger History + View Results confirmed |
 | Ransomware-like mass file activity | [Case 006](investigations/incident-006-ransomware-like-file-activity.md) | Security 4663, 20-file manual batch / 15-file validation batch | High-severity Trigger History + View Results confirmed |
@@ -114,11 +114,13 @@ An actual Nmap run scanned eight TCP ports on Windows 192.168.10.100 at 15:54 UT
 
 [Follow case 002](investigations/incident-002-controlled-port-scan.md).
 
-## Current exercise: controlled SMB failed logons — 2026-10-08
+## Current exercise: controlled SMB failed logons — 2026-10-08–09
 
 A dedicated lab account received five intentionally incorrect SMB authentication attempts from Kali **192.168.20.20** to Windows **192.168.10.100**. Windows generated Event ID **4625** records, and a Splunk aggregation returned one candidate with **5 failures**, **TargetUserName=SOC-Test**, **Workstation=KALI** and **LogonType=3**. pfSense independently recorded inbound TCP traffic from the same source to the target on **TCP 445**. A follow-up Event ID 4624 search returned **0 successful logons from the Kali address in the checked one-hour window**.
 
-The behavior is documented as an authorized-test true positive for **T1110 — Brute Force** with no successful compromise observed. The Splunk alert `SOC-002 - Brute Force Failed Logon Detection` is saved and enabled; scheduled firing is still awaiting captured evidence.
+The behavior is documented as an authorized-test true positive for **T1110 — Brute Force**. The original 4624 follow-up window starts after the failed-logon batch, so complete successful-logon coverage remains pending.
+
+A fresh five-attempt test on **2026-10-09** caused `SOC-002 - Brute Force Failed Logon Detection` to fire at **17:50:01 UTC (20:50:01 Asia/Riyadh)**. The scheduled **View Results** job covers **17:45–17:50 as displayed by Splunk** and returns **5 events / 1 grouped result**, matching Kali **192.168.20.20**, **SOC-Test**, **KALI** and **LogonType=3**. The execution, Trigger History and scheduled-result screenshots are attached in case 003.
 
 [Follow case 003](investigations/incident-003-brute-force.md) · [Detection analytic](detections/windows-brute-force-detection.md).
 
@@ -158,7 +160,7 @@ Log collection, SPL search, firewall log interpretation, endpoint telemetry vali
 
 ## Roadmap
 
-Capture scheduled firing evidence for the port-scan and brute-force alerts, repeat the successful-logon check across the full brute-force exercise window, and add raw event exports. Wazuh event comparisons, Active Directory and Windows Server remain future additions.
+Capture scheduled firing evidence for the port-scan alert, repeat the successful-logon check across the full original and fresh brute-force exercise windows, and add raw event exports. Wazuh event comparisons, Active Directory and Windows Server remain future additions.
 
 ## Scope and author
 

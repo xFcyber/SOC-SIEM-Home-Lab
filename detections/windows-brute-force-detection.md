@@ -1,6 +1,6 @@
 # Windows failed-logon brute-force candidate
 
-**Status:** Five-event controlled validation confirmed. Scheduled Splunk alert created and enabled; a fired scheduled alert has not yet been captured.
+**Status:** Five-event manual validation and scheduled firing confirmed. The fresh 2026-10-09 test has captured Trigger History and scheduled View Results.
 
 ## Behavior and data
 
@@ -17,7 +17,7 @@ The threshold is intentionally low for lab validation and requires analyst conte
 
 ## Scheduled-search SPL
 
-The alert is intended to run every five minutes over the previous five minutes. Because the search window already defines the interval, the scheduled query does not need a second `bin _time` grouping boundary.
+The alert runs every five minutes over the previous five minutes. The query below matches the captured 2026-10-09 scheduled job: it preserves the original event time, groups events into five-minute buckets by source/account, and returns buckets with at least five failures.
 
 ```spl
 index=security_logs "<EventID>4625</EventID>"
@@ -26,10 +26,17 @@ index=security_logs "<EventID>4625</EventID>"
 | rex field=_raw "<Data Name='IpPort'>(?<IpPort>[^<]*)</Data>"
 | rex field=_raw "<Data Name='LogonType'>(?<LogonType>[^<]*)</Data>"
 | rex field=_raw "<Data Name='WorkstationName'>(?<WorkstationName>[^<]*)</Data>"
-| stats count min(_time) as first_seen max(_time) as last_seen values(WorkstationName) as Workstation values(LogonType) as LogonType by IpAddress TargetUserName
+| eval event_time=_time
+| bin _time span=5m
+| stats count
+    min(event_time) as first_seen
+    max(event_time) as last_seen
+    values(WorkstationName) as Workstation
+    values(LogonType) as LogonType
+    by _time IpAddress TargetUserName
 | where count >= 5
-| convert ctime(first_seen) ctime(last_seen)
-| sort - count
+| convert ctime(_time) ctime(first_seen) ctime(last_seen)
+| rename _time as detection_window
 ```
 
 Repository SPL: [windows-brute-force.spl](windows-brute-force.spl).
@@ -66,7 +73,9 @@ Configuration used:
 - Severity used in the lab: **Medium**
 - Status: **Enabled**
 
-The alert configuration page was captured, but no fired scheduled event was demonstrated at that point. Manual analytic validation and saved-alert configuration are therefore documented separately from scheduled firing.
+The original configuration capture showed no fired events. On **2026-10-09**, a fresh five-attempt test caused **Trigger History** to record **17:50:01 UTC (20:50:01 Asia/Riyadh)**. Its scheduled **View Results** job displays **5 events / 1 grouped result** for **192.168.20.20 / SOC-Test / KALI / LogonType 3** in the **17:45–17:50** window shown by Splunk. Actual first/last event times are **17:48:00.989** and **17:48:07.792** as displayed.
+
+[Trigger History screenshot](../screenshots/splunk-brute-force-alert-triggered-20261009-case003.png) · [Scheduled results screenshot](../screenshots/splunk-brute-force-scheduled-results-20261009-case003.png) · [Full retest evidence](../investigations/incident-003-brute-force.md#evidence-6--fresh-scheduled-alert-validation--2026-10-09).
 
 ## Interpretation
 
@@ -83,6 +92,8 @@ A result indicates repeated failed authentication behavior, not a successful com
 - Administrative mistakes and stale credentials can generate repeated failures.
 - A distributed password spray may stay below a per-source threshold.
 - Slow attacks can evade a short five-minute window.
+- Fixed five-minute buckets can split a burst across a bucket boundary; the captured test fits within one bucket.
+- Late ingestion or skipped scheduled runs can miss events; ingestion delay has not been measured in this test.
 - Local failures with no meaningful remote IP should be investigated separately.
 - XML extraction depends on the current `renderXml=true` Windows input format.
 

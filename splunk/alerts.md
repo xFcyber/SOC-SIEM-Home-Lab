@@ -41,7 +41,7 @@ Reference: [Splunk scheduling guidance](https://help.splunk.com/en/splunk-cloud-
 
 ## Windows brute-force alert
 
-**Status:** Saved, enabled and manually validated; scheduled firing has not yet been captured.
+**Status:** Saved, enabled, manually validated and scheduled firing confirmed on 2026-10-09.
 
 The 2026-10-08 failed-logon exercise produced five Windows Event ID 4625 records from Kali `192.168.20.20` against the lab account `SOC-Test`. The grouped search returned one candidate with five failures, `Workstation=KALI` and `LogonType=3`.
 
@@ -61,7 +61,13 @@ The saved Splunk alert is:
 
 Use the [Windows brute-force analytic](../detections/windows-brute-force-detection.md) and [SPL file](../detections/windows-brute-force.spl). The [case 003 investigation](../investigations/incident-003-brute-force.md) documents endpoint and pfSense correlation plus the negative Event ID 4624 follow-up.
 
-A saved and enabled alert does not prove a scheduled trigger occurred. Capture a fresh run in Triggered Alerts before marking scheduled firing as validated.
+A fresh five-attempt SMB retest caused **Trigger History** to record **2026-10-09 17:50:01 UTC (20:50:01 Asia/Riyadh)**. Its **View Results** scheduler job displays **5 events / 1 grouped result** for **192.168.20.20**, **SOC-Test**, **KALI** and **LogonType=3**, in the **17:45–17:50** window shown by Splunk. The executed query uses five-minute buckets and preserves original first/last event timestamps.
+
+![SOC-002 scheduled firing](../screenshots/splunk-brute-force-alert-triggered-20261009-case003.png)
+
+![SOC-002 scheduled results](../screenshots/splunk-brute-force-scheduled-results-20261009-case003.png)
+
+Successful-logon coverage of the full original and fresh exercise periods remains pending.
 
 
 ## Suspicious PowerShell encoded execution alert
