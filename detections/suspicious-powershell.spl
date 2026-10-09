@@ -1,0 +1,14 @@
+index=main
+sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational"
+"<EventID>1</EventID>"
+("powershell.exe" OR "pwsh.exe")
+| rex field=_raw "<Data Name='Image'>(?<Image>[^<]*)</Data>"
+| rex field=_raw "<Data Name='CommandLine'>(?<CommandLine>[^<]*)</Data>"
+| rex field=_raw "<Data Name='ParentImage'>(?<ParentImage>[^<]*)</Data>"
+| rex field=_raw "<Data Name='User'>(?<User>[^<]*)</Data>"
+| rex field=_raw "<Data Name='ProcessId'>(?<ProcessId>[^<]*)</Data>"
+| rex field=_raw "<Data Name='ProcessGuid'>(?<ProcessGuid>[^<]*)</Data>"
+| where match(CommandLine,"(?i)(^|\\s)-(enc|encodedcommand)\\s+")
+    AND match(CommandLine,"(?i)-windowstyle\\s+hidden")
+| table _time User Image CommandLine ParentImage ProcessId ProcessGuid
+| sort - _time
