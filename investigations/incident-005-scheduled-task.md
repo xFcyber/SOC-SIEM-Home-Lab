@@ -14,6 +14,12 @@ A Splunk alert named **SOC-004 - Suspicious Scheduled Task Creation** was create
 **Severity:** Medium.  
 **MITRE ATT&CK:** T1053.005 — Scheduled Task/Job: Scheduled Task.
 
+## Visual evidence
+
+![SOC-004 Scheduled Task alert evidence](../screenshots/soc-004/evidence.png)
+
+The PNG above is cropped from the captured lab screenshot so the key Splunk result remains readable directly inside the investigation.
+
 ## Evidence 1 — Audit policy
 
 The required Windows audit subcategory was initially:
