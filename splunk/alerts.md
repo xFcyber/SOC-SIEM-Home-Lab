@@ -62,3 +62,30 @@ The saved Splunk alert is:
 Use the [Windows brute-force analytic](../detections/windows-brute-force-detection.md) and [SPL file](../detections/windows-brute-force.spl). The [case 003 investigation](../investigations/incident-003-brute-force.md) documents endpoint and pfSense correlation plus the negative Event ID 4624 follow-up.
 
 A saved and enabled alert does not prove a scheduled trigger occurred. Capture a fresh run in Triggered Alerts before marking scheduled firing as validated.
+
+
+## Suspicious PowerShell encoded execution alert
+
+**Status:** Saved, enabled and scheduled firing confirmed.
+
+The saved alert is:
+
+`SOC-003 - Suspicious PowerShell Encoded Execution`
+
+| Setting | Captured value |
+| --- | --- |
+| Type | Scheduled |
+| Cron | `*/5 * * * *` |
+| Search window | Last 5 minutes |
+| Trigger | Number of results greater than 0 |
+| Trigger mode | Once |
+| Action | Add to Triggered Alerts |
+| Severity | Medium |
+| Expiration | 24 hours |
+| Status | Enabled |
+
+After a fresh controlled test, the alert page displayed a **Trigger History** row at **2026-10-09 09:20:03 UTC**. Opening **View Results** returned **1 event** from the scheduled window and showed the expected PowerShell command line containing `-NoProfile`, `-WindowStyle Hidden` and `-EncodedCommand`.
+
+This is the first alert in the repository with both saved configuration and a captured scheduled firing.
+
+[Detection](../detections/suspicious-powershell-detection.md) · [Case 004](../investigations/incident-004-suspicious-powershell.md)
