@@ -1,0 +1,15 @@
+index=security_logs
+"<EventID>4663</EventID>"
+"SOC-RANSOMWARE-LAB"
+| rex field=_raw "<Data Name='SubjectUserName'>(?<User>[^<]*)</Data>"
+| rex field=_raw "<Data Name='ObjectName'>(?<ObjectName>[^<]*)</Data>"
+| rex field=_raw "<Data Name='ProcessName'>(?<ProcessName>[^<]*)</Data>"
+| where match(lower(ObjectName),"\.(encrypted|locked)$")
+| bin _time span=1m
+| stats
+    count as AccessEvents
+    dc(ObjectName) as UniqueFiles
+    values(ProcessName) as ProcessName
+    by host User _time
+| where UniqueFiles >= 10
+| sort - UniqueFiles
