@@ -14,6 +14,12 @@ Windows Security auditing generated Event ID **4625** records. A Splunk analytic
 **Observed impact:** No successful account compromise observed.  
 **MITRE ATT&CK:** T1110 — Brute Force.
 
+## Visual evidence
+
+![SOC-002 brute-force detection evidence](../screenshots/soc-002/evidence.png)
+
+The PNG above is cropped from the captured lab screenshot so the key Splunk result remains readable directly inside the investigation.
+
 ## Scope
 
 | Role | Observed value |
@@ -174,7 +180,6 @@ For an equivalent unauthorized event:
 ## Remaining work
 
 - Capture a fired scheduled-alert entry after a fresh controlled test.
-- Add the new screenshots to the repository evidence gallery.
 - Export raw event samples for reproducibility.
 - Normalize cross-host timezone handling in a later lab maintenance pass.
 
