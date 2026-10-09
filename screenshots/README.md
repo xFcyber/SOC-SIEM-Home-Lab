@@ -158,3 +158,17 @@ Summary charts are visible, but individual event details are not. Technique/comp
 | wazuh-event-details.png | Individual collected event or alert |
 
 Add only real evidence. Do not infer missing values from screenshots or substitute generated interface images.
+
+
+## SOC investigation evidence
+
+These PNGs are cropped from the captured lab screenshots so the key result is readable directly in each case report.
+
+| Alert | Evidence |
+| --- | --- |
+| SOC-002 — Brute Force Failed Logon Detection | [PNG](soc-002/evidence.png) |
+| SOC-003 — Suspicious PowerShell Encoded Execution | [PNG](soc-003/evidence.png) |
+| SOC-004 — Suspicious Scheduled Task Creation | [PNG](soc-004/evidence.png) |
+| SOC-005 — Possible Ransomware Mass File Activity | [PNG](soc-005/evidence.png) |
+
+Each image is also embedded directly in its corresponding investigation under `investigations/`.
