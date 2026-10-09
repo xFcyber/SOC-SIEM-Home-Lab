@@ -1,6 +1,6 @@
 # Scheduled port scan alert
 
-**Status:** Scheduled Trigger History captured on 2026-10-09. Saved query, actual cron/window and matching scheduled results remain pending.
+**Status:** Trigger History and scheduled historical replay confirmed on 2026-10-09. Fixed replay bounds identified; relative-window correction, exact cron capture and fresh validation pending.
 
 ## Earlier saved definition
 
@@ -23,19 +23,41 @@ The newly captured saved alert is **SOC Lab - IPv4 TCP Port Scan**. The screensh
 | Action | Add to Triggered Alerts |
 | App / owner / permissions | search / off / Private |
 | Latest visible firing | 2026-10-09 18:30:02 UTC (21:30:02 Asia/Riyadh) |
-| Exact cron, earliest/latest and query | Not visible |
+| Exact cron expression | Not visible |
 
-Multiple preceding Trigger History rows recur at approximately five-minute intervals. These rows prove firing; they do not identify the triggering traffic, establish the saved query's equivalence to the repository SPL or explain the repetition. Review **View Results** for the latest firing, its completed-job time window and grouped source/destination/port values, then capture the saved settings.
+Multiple preceding Trigger History rows recur at approximately five-minute intervals. The following scheduler result identifies the inspected firing's traffic and effective window.
 
-The [case 002 manual replay](../investigations/incident-002-controlled-port-scan.md) independently validates the core extraction, grouping and threshold for the recorded 2026-10-07 eight-port scan. That manual result has not yet been tied to the later scheduled firings.
+## Scheduled job reveals historical replay bounds
 
-## Schedule proposal — actual settings still unverified
+![Scheduled job repeats the October 7 eight-port result](../screenshots/splunk-port-scan-scheduled-replay-20261009-case002.png)
 
-Use the validated aggregation logic or the [generic port scan SPL](../detections/pfsense-ipv4-port-scan.spl) for a relative-window alert. Fixed epoch earliest/latest values used for a replay should be removed when configuring ongoing monitoring. The following values are a **proposal**, not values inferred from the new screenshot.
+The **View Results** URL contains a scheduler job identifier with `at_1791570600`, corresponding to **2026-10-09 18:30:00 UTC**. The completed search returns **8 events / Statistics (1)** over **2026-10-07 12:52–12:57**, with source **192.168.20.20**, destination **192.168.10.100**, **8 distinct ports / 8 logged events** and **pass**.
 
-| Setting | Proposed value |
+Its first line is:
+
+```spl
+index=pfSense "filterlog" earliest=1791377520 latest=1791377820
+```
+
+Those epochs decode to **2026-10-07 12:52:00–12:57:00 UTC**. The core query and output match the [case 002 historical replay](../investigations/incident-002-replay.spl). The inspected scheduled job therefore re-evaluates the old controlled scan. Fixed historical bounds allow unchanged old records to satisfy the alert repeatedly; the other firing rows have not been individually inspected.
+
+Inline time bounds take precedence over the time-range picker. The old completed-job interval confirms their effect in this job. A picker-only change is insufficient while those epochs remain in the saved SPL. [Splunk time-modifier reference](https://help.splunk.com/en/splunk-enterprise/search/search-manual/10.4/specify-time-ranges/specify-time-modifiers-in-your-search).
+
+This confirms scheduled **historical replay**, with a configuration issue for ongoing monitoring. It does not establish a new scan or validation of a live relative window.
+
+## Proposed correction — not yet applied
+
+From **Alerts**, locate the existing **SOC Lab - IPv4 TCP Port Scan** alert and choose **Open in Search**. Replace the first line with:
+
+```spl
+index=pfSense "filterlog" earliest=-6m@m latest=-1m@m
+```
+
+Keep the validated aggregation below it, run the edited search and use **Save** to update the existing alert. Capture the saved query and exact cron/time settings. The historical replay file remains unchanged as reproducible evidence. [Splunk alert-editing reference](https://help.splunk.com/en/splunk-enterprise/alert-and-respond/alerting-manual/10.4/view-and-update-alerts/alerts-page).
+
+| Setting | Proposed value; not yet captured as configured |
 | --- | --- |
-| Name | SOC Lab — IPv4 TCP Port Scan Candidate |
+| Existing alert name | SOC Lab - IPv4 TCP Port Scan |
 | Type | Scheduled |
 | Cron | `*/5 * * * *` |
 | Earliest | `-6m@m` |
@@ -44,20 +66,20 @@ Use the validated aggregation logic or the [generic port scan SPL](../detections
 | Action | Add to Triggered Alerts |
 | Initial throttling | Off during validation |
 
-This evaluates a five-minute window delayed by one minute to allow ingestion. Adjacent on-time runs have adjacent windows. Measure actual delay; late arrivals or missed jobs can still cause gaps. Splunk Enterprise scheduling uses the configured search-head timezone.
+This evaluates a five-minute window delayed by one minute to allow ingestion. Align the saved time settings with the same relative window and confirm the actual schedule. Adjacent on-time five-minute runs have adjacent windows. Measure actual delay; late arrivals or missed jobs can still cause gaps. Splunk Enterprise scheduling uses the configured search-head timezone.
 
-The SPL aggregates over the selected search window. Do not add a separate five-minute `bin` without reviewing alignment.
+The [generic port-scan SPL](../detections/pfsense-ipv4-port-scan.spl) is also available with optional output fields; the correction above keeps the demonstrated core aggregation. It does not add a separate five-minute `bin`.
 
 ## Remaining validation
 
-1. Capture **View Results** for the latest **18:30:02 UTC** firing and review its actual query, job window and output.
-2. Capture the saved query and cron/earliest/latest settings; investigate the repeated firings before tuning or suppressing them.
-3. Correlate the results with a recorded scan and its raw events. Use a fresh controlled scan if needed to test the current relative-window configuration.
-4. Attach the scheduled results, saved settings and original raw event export.
+1. Apply the relative-window correction to the existing saved alert and capture the updated query.
+2. Capture exact cron and time settings, then verify alignment.
+3. Run a fresh bounded controlled scan through pfSense, record its time and review the corrected scheduler job against its indexed events.
+4. Attach updated settings, fresh scheduled results and the original raw-event export.
 
-Once matching results are verified, tune thresholds and optionally suppress repeated candidates by source/destination. Document any suppression so repeated testing does not appear to fail silently.
+Correct the fixed-window cause before using suppression to reduce duplicates. Once fresh matching results are verified, tune thresholds and optionally suppress repeated candidates by source/destination, documenting any suppression.
 
-Reference: [Splunk scheduling guidance](https://help.splunk.com/en/splunk-cloud-platform/alert-and-respond/alerting-manual/10.3.2512/create-alerts/alert-scheduling-tips).
+[Case 002 evidence and diagnosis](../investigations/incident-002-controlled-port-scan.md) · [Splunk scheduling guidance](https://help.splunk.com/en/splunk-cloud-platform/alert-and-respond/alerting-manual/10.3.2512/create-alerts/alert-scheduling-tips).
 
 ## Windows brute-force alert
 

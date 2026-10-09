@@ -1,6 +1,6 @@
 # IPv4 TCP port scan candidate
 
-**Status:** Core field extraction, grouping and threshold validated by a manual case 002 replay. Scheduled Trigger History captured on 2026-10-09; saved-query equivalence, job results and scan attribution pending.
+**Status:** Core extraction, grouping and threshold validated by manual and scheduled historical replay. Fixed historical time bounds identified in the saved alert's 2026-10-09 job; relative-window correction and fresh validation pending.
 
 ## Behavior and data
 
@@ -69,7 +69,11 @@ The executed variant uses the same extraction, IPv4 TCP/inbound filters, groupin
 
 The [original alert-overview screenshot](../screenshots/splunk-port-scan-alert-triggered-20261009-case002.png) shows **SOC Lab - IPv4 TCP Port Scan** enabled and scheduled, with **Number of Results > 0** and **Add to Triggered Alerts**. The latest visible firing is **18:30:02 UTC (21:30:02 Asia/Riyadh)**; earlier rows recur at approximately five-minute intervals.
 
-This demonstrates scheduled firing of that saved alert. The screenshot does not expose its SPL, exact cron or search window. It therefore does not demonstrate that the saved search is identical to the generic analytic above, or that its results match the controlled eight-port scan. Review the scheduled **View Results** and actual settings to explain the repeated firings.
+The overview alone does not expose its SPL, exact cron or search window. The later [View Results screenshot](../screenshots/splunk-port-scan-scheduled-replay-20261009-case002.png) captures a scheduler job launched at **18:30 UTC on 2026-10-09** that still uses `earliest=1791377520 latest=1791377820`. It evaluates **2026-10-07 12:52–12:57 UTC** and returns **8 events / 1 grouped result** matching the old scan's source, destination, port set and **pass** action.
+
+The visible core analytic agrees with the historical replay, while the generic SPL above includes optional output fields not shown in the job result. Fixed replay bounds explain repeated alerts on old data; they do not demonstrate live detection of a new scan. The proposed correction replaces the inline epochs with `earliest=-6m@m latest=-1m@m` and validates a fresh scan under a confirmed five-minute schedule. This has **not yet been applied or validated**. Preserve the historical replay for reproducibility.
+
+[Diagnosis and correction](../investigations/incident-002-controlled-port-scan.md) · [Observed job and schedule proposal](../splunk/alerts.md)
 
 ## Validation sequence
 

@@ -1,6 +1,6 @@
 # Lab screenshot evidence
 
-Sixty-one original lab screenshots are included in this gallery and the linked investigations. The original captures were visually inspected and uploaded without changing their pixels. Four additional cropped evidence views are indexed at the end of the gallery. Captions distinguish observed state from work still pending.
+Sixty-two original lab screenshots are included in this gallery and the linked investigations. The original captures were visually inspected and uploaded without changing their pixels. Four additional cropped evidence views are indexed at the end of the gallery. Captions distinguish observed state from work still pending.
 
 ## VirtualBox environment baseline — 2026-10-07
 
@@ -84,7 +84,7 @@ The displayed event time and raw prefixes show a three-hour difference whose cau
 
 Nmap **7.94SVN** starts at **15:54 +03**, targets **192.168.10.100**, and completes in **0.34 seconds**. The command scans eight ports: **135, 139 and 445 are reported open**, while **22, 80, 443, 3389 and 5985 are closed**. Reasons are SYN-ACK for open ports and reset for closed ports.
 
-This is scan execution evidence. Matching firewall records and the grouped analytic are attached below. A later 2026-10-09 screenshot records scheduled Trigger History; its matching job results remain pending.
+This is scan execution evidence. Matching firewall records and the grouped analytic are attached below. Later 2026-10-09 screenshots record Trigger History and matching scheduled results that replay this scan's fixed historical time window. Fresh relative-window validation remains pending.
 
 [Case 002](../investigations/incident-002-controlled-port-scan.md)
 
@@ -96,7 +96,7 @@ The captured **Last 24 hours** search returns **8 events** from **192.168.20.20*
 
 The displayed event time is **12:54:56 PM**; raw prefixes contain **12:54:56** and **15:54:56**. Numeric event/index times and configured timezone are not shown. Matching addresses, port set and the embedded 15:54 minute support correlation with the Nmap run. Firewall permission does not mean every port was open.
 
-This proves indexed matching records. The grouped detection result is attached below. The separate 2026-10-09 Trigger History capture establishes firing, but attribution of those scheduled results to a recorded scan remains pending.
+This proves indexed matching records. The grouped detection result is attached below. The separate 2026-10-09 Trigger History and View Results captures establish scheduled replay of this scan's fixed historical window; a new relative-window test remains pending.
 
 [Case 002 and replay query](../investigations/incident-002-controlled-port-scan.md)
 
@@ -136,9 +136,19 @@ The alert is enabled and scheduled. The page explicitly shows **no fired events*
 
 The actual saved alert is named **SOC Lab - IPv4 TCP Port Scan**. It is **enabled**, its type is **Scheduled / Cron Schedule**, its condition is **Number of Results > 0**, and its action is **Add to Triggered Alerts**. The newest visible trigger is **2026-10-09 18:30:02 UTC (21:30:02 Asia/Riyadh)**. Multiple preceding rows recur at approximately five-minute intervals.
 
-This original screenshot proves scheduled alert firing. It does not show the saved SPL, exact cron expression, earliest/latest bounds or result rows. The repeated firings need investigation; they have not been attributed to the 2026-10-07 eight-port scan or a fresh scan.
+This original screenshot proves scheduled alert firing. It does not itself show the saved SPL, exact cron expression, earliest/latest bounds or result rows. The following View Results capture ties the inspected firing to the fixed 2026-10-07 scan window and explains the repeated historical-result alerts.
 
 [Case 002](../investigations/incident-002-controlled-port-scan.md) · [Observed alert state and schedule proposal](../splunk/alerts.md)
+
+## Port-scan scheduled historical replay — 2026-10-09
+
+![Scheduler job replays the fixed October 7 scan window](splunk-port-scan-scheduled-replay-20261009-case002.png)
+
+The URL contains a **scheduler** job identifier with `at_1791570600`, corresponding to **2026-10-09 18:30:00 UTC** and the preceding **18:30:02 UTC** Trigger History row. The search still contains `earliest=1791377520 latest=1791377820`. Its completed-job banner shows **8 events** over **2026-10-07 12:52–12:57**, and **Statistics (1)** contains **192.168.20.20 → 192.168.10.100**, **8 distinct ports**, **8 logged events** and **pass**.
+
+The destination ports match the recorded scan: **22, 80, 135, 139, 443, 445, 3389, 5985**. This is scheduled replay of historical test data. Fixed bounds make unchanged old events eligible on each run; a fresh scan and relative-window operation have not been demonstrated. The live alert correction is documented as pending.
+
+[Case 002 diagnosis and correction](../investigations/incident-002-controlled-port-scan.md) · [Alert correction](../splunk/alerts.md)
 
 ## pfSense OPT1 rule in progress
 
@@ -156,7 +166,7 @@ Summary charts are visible, but individual event details are not. Technique/comp
 
 ## Evidence for the four subsequent attack investigations — 2026-10-08–09
 
-The following **43 original PNGs** complete the uploaded screenshot evidence for these four cases. Alongside the existing controlled port-scan images, the repository now contains screenshot evidence for all **five distinct attack scenarios**. Each investigation embeds its own captures with captions. Brute-force scheduled firing is confirmed by the 2026-10-09 retest below. Port-scan Trigger History is captured above; its scheduled results and scan attribution still require review.
+The following **43 original PNGs** complete the uploaded screenshot evidence for these four cases. Alongside the existing controlled port-scan images, the repository now contains screenshot evidence for all **five distinct attack scenarios**. Each investigation embeds its own captures with captions. Brute-force scheduled firing is confirmed by the 2026-10-09 retest below. Port-scan Trigger History and matching scheduled results are captured above; its fixed historical bounds still require correction and fresh validation.
 
 ### Case 3 — Controlled SMB failed logons
 
@@ -249,7 +259,7 @@ The [original Windows Security CSV](../investigations/evidence/soc-002-4625-even
 | windows-sysmon-event1.png | Local Sysmon process creation |
 | splunk-sysmon-event.png | Matching indexed Sysmon event |
 | splunk-alert-schedule.png | Actual cron and time-window settings |
-| splunk-port-scan-scheduled-results.png | Port-scan View Results with the actual query, completed-job time window and matching result rows |
+| splunk-port-scan-live-validation.png | Fresh scan matched by a corrected relative-window scheduled job; include actual query, completed-job window and result rows |
 | wazuh-event-details.png | Individual collected event or alert |
 
 Add only real evidence. Do not infer missing values from screenshots or substitute generated interface images.

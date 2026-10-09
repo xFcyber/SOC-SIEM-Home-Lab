@@ -1,10 +1,10 @@
 # Case 002 — Controlled Kali TCP port scan
 
-**Status:** Controlled scan, firewall correlation and manual detection replay confirmed. Scheduled Trigger History captured on 2026-10-09; scheduled results and scan attribution pending.
+**Status:** Controlled scan, firewall correlation, manual replay and scheduled historical replay confirmed. Fixed replay bounds identified in the 2026-10-09 scheduler job; relative-window correction and fresh validation pending.
 
 ## Summary
 
-On 2026-10-07 at 15:54 UTC+03:00, an authorized Nmap SYN scan targeted eight TCP ports on the Windows lab address 192.168.10.100. The captured output reports three open and five closed ports. Eight indexed TCP SYN records match the source/destination pair and scanned ports, all with firewall action pass. A subsequent manual analytic replay returns one scan candidate with eight distinct ports and eight logged events. No compromise or exploitation is established. A later screenshot from 2026-10-09 establishes scheduled alert firing, but does not show the underlying scheduled results or their relationship to this scan.
+On 2026-10-07 at 15:54 UTC+03:00, an authorized Nmap SYN scan targeted eight TCP ports on the Windows lab address 192.168.10.100. The captured output reports three open and five closed ports. Eight indexed TCP SYN records match the source/destination pair and scanned ports, all with firewall action pass. A subsequent manual analytic replay returns one scan candidate with eight distinct ports and eight logged events. No compromise or exploitation is established. Later screenshots from 2026-10-09 establish scheduled alert firing and a matching scheduler job. That job retains the fixed 2026-10-07 replay bounds and returns this old scan's eight-port result; it does not demonstrate detection of a new scan.
 
 This is a new exercise, separate from [case 001](incident-001-port-scan.md), whose historical firewall source address was 192.168.20.100.
 
@@ -132,23 +132,68 @@ The grouped values agree with the eight individually reviewed records and the sc
 
 Multiple fully visible preceding entries recur at roughly five-minute intervals, including **18:25:01**, **18:20:02** and **18:15:02 UTC**. This proves that the scheduled alert fired and recorded trigger history. The row cadence is an observation; the actual cron expression is not visible.
 
-The alert overview does not expose the saved SPL, search time bounds or matching source/destination/port values. Consequently, these firings are **not yet attributed** to the 2026-10-07 scan or to a new controlled test. The cause of repeated triggers remains unresolved. Review **View Results** for the latest row, then inspect the saved query and schedule before deciding whether a fresh test or tuning is needed.
+The alert overview alone does not expose the saved SPL, search time bounds or matching source/destination/port values. At this stage, attribution and the cause of repeated triggers were unresolved. Evidence 5 below captures the scheduler job for the latest row and identifies fixed historical replay bounds.
 
 The original PNG is preserved without editing: **366,388 bytes**, SHA-256 `5f6d697181271ba69b418c599124bcb1d6aca245fa5ec7f8eeef254f5fcbde64`.
+
+## Evidence 5 — Scheduled results identify fixed historical replay bounds — 2026-10-09
+
+![Scheduled port-scan results with fixed October 7 epoch bounds](../screenshots/splunk-port-scan-scheduled-replay-20261009-case002.png)
+
+The **View Results** URL contains a `scheduler__off__search__` job identifier with `at_1791570600`. This epoch corresponds to **2026-10-09 18:30:00 UTC**, tying the job to the **18:30:02 UTC** Trigger History row. The green completion indicator and **Statistics (1)** show a completed scheduler result.
+
+The first search line is:
+
+```spl
+index=pfSense "filterlog" earliest=1791377520 latest=1791377820
+```
+
+| Job / result field | Captured value |
+| --- | --- |
+| Scheduled launch reference | 2026-10-09 18:30:00 UTC |
+| Search start, decoded from earliest | 2026-10-07 12:52:00 UTC |
+| Search end, decoded from latest | 2026-10-07 12:57:00 UTC |
+| Completed-job displayed window | 10/7/26 12:52:00 PM–12:57:00 PM |
+| Events / grouped results | 8 / 1 |
+| src_ip | 192.168.20.20 |
+| dst_ip | 192.168.10.100 |
+| unique_ports / logged_events | 8 / 8 |
+| destination_ports | 22, 80, 135, 139, 443, 445, 3389, 5985 |
+| firewall_actions | pass |
+
+The visible extraction, IPv4 TCP/inbound filtering, source/destination grouping and threshold match the [historical replay](incident-002-replay.spl). The grouped values and exact port set agree with evidence 2 and 3. Some long search lines are horizontally clipped in the image; it is not treated as a complete plain-text export of the saved-search configuration.
+
+**Diagnosis:** The inspected scheduled job evaluates a fixed five-minute window from **7 October**, although it launches on **9 October**. This supports attributing its result to the old controlled scan. Unchanged historical events can satisfy the trigger on every scheduled run, explaining the repeated-history pattern without requiring a fresh attack. Only this scheduled job's results have been inspected; the other Trigger History rows were not individually opened.
+
+Splunk documents that inline time modifiers take precedence over the time-range picker. Changing the picker alone cannot remove these inline epoch bounds. The effective old interval is also directly confirmed by the completed-job banner. [Official time-modifier reference](https://help.splunk.com/en/splunk-enterprise/search/search-manual/10.4/specify-time-ranges/specify-time-modifiers-in-your-search).
+
+The original PNG is unchanged: **425,123 bytes**, SHA-256 `9e314af21d12049a56fe5985e667ea60ff6e83ab786fa1e613ad6b9300090e17`.
+
+### Proposed live-alert correction — not yet applied
+
+Update the existing saved alert through **Alerts → Open in Search**, replacing its first line with:
+
+```spl
+index=pfSense "filterlog" earliest=-6m@m latest=-1m@m
+```
+
+Keep the validated aggregation below it, run the search and use **Save** to update the existing alert. This proposes a five-minute moving window delayed by one minute for ingestion. Capture the actual cron expression and confirm a five-minute schedule; the row cadence alone does not establish the saved expression. Align the saved alert's time settings with the same relative window. [Official alert-editing reference](https://help.splunk.com/en/splunk-enterprise/alert-and-respond/alerting-manual/10.4/view-and-update-alerts/alerts-page).
+
+The correction is guidance, not evidence of a change already made on the user's Splunk instance. A fresh bounded scan, its indexed events and the corrected scheduled result are still required. The fixed [historical replay file](incident-002-replay.spl) remains preserved for reproducibility.
 
 ## Disposition and remaining validation
 
 **Behavior verdict:** True positive for the controlled port scan.  
 **Activity context:** Authorized lab test.  
-**Scheduled alert:** Trigger History confirms firing on 2026-10-09; underlying job results and scan attribution remain pending.  
+**Scheduled alert:** Trigger History and View Results confirm historical replay on 2026-10-09; fixed bounds identified, relative-window correction and fresh-event validation pending.  
 **Endpoint compromise:** Not established.
 
-1. Open **View Results** for the latest **18:30:02 UTC** firing and capture the completed job's query, actual time window and grouped values.
-2. Capture the saved SPL, cron expression and earliest/latest settings. Check whether replay epoch bounds or a broad/overlapping window explain the repeated triggers; their cause is not yet known. The [schedule proposal](../splunk/alerts.md) remains a proposal until actual settings are captured.
-3. Correlate the scheduled results to a recorded controlled scan. Generate a fresh bounded test only if needed to validate the current relative-window configuration.
+1. Apply the proposed relative-window correction to the existing alert and capture the saved query.
+2. Capture its exact cron and time settings; confirm the schedule and search window are aligned.
+3. Generate a fresh bounded eight-port scan, record its time and correlate its indexed events with the corrected scheduled job.
 4. Export the raw records and attach the original Nmap output for reproducible evidence.
 
-No containment or endpoint change has been performed. Clock synchronization remains deferred. The exercise remains open for scheduled-result review, scan attribution and original event/output exports.
+No containment or endpoint change has been performed. Clock synchronization remains deferred. The exercise remains open for relative-window correction, fresh scheduled validation and original event/output exports.
 
 ## References
 
