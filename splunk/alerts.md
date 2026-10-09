@@ -89,3 +89,30 @@ After a fresh controlled test, the alert page displayed a **Trigger History** ro
 This is the first alert in the repository with both saved configuration and a captured scheduled firing.
 
 [Detection](../detections/suspicious-powershell-detection.md) · [Case 004](../investigations/incident-004-suspicious-powershell.md)
+
+
+## Suspicious Scheduled Task creation alert
+
+**Status:** Saved, enabled and scheduled firing confirmed.
+
+The saved alert is:
+
+`SOC-004 - Suspicious Scheduled Task Creation`
+
+| Setting | Captured value |
+| --- | --- |
+| Type | Scheduled |
+| Cron | `*/5 * * * *` |
+| Search window | Last 5 minutes |
+| Trigger | Number of results greater than 0 |
+| Trigger mode | Once |
+| Action | Add to Triggered Alerts |
+| Severity | Medium |
+| Expiration | 24 hours |
+| Status | Enabled |
+
+A fresh validation task named `\SOC-LAB-T1053-ALERT` was created after the alert was enabled. Trigger History recorded a firing at **2026-10-09 13:00:01 UTC**. Opening **View Results** returned **1 event** and showed `User=faris` and `TaskName=\SOC-LAB-T1053-ALERT`.
+
+The lab validation query included a task-name fallback for the controlled `SOC-LAB` task. The repository's generic analytic removes that lab-only dependency and focuses on suspicious task content.
+
+[Detection](../detections/scheduled-task-detection.md) · [Case 005](../investigations/incident-005-scheduled-task.md)
