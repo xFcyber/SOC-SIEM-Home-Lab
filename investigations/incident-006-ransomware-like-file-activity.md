@@ -16,6 +16,12 @@ Splunk detected **20 distinct files in one minute** during manual validation. A 
 **Severity:** High.  
 **MITRE ATT&CK:** T1486 — Data Encrypted for Impact.
 
+## Visual evidence
+
+![SOC-005 ransomware-like mass file activity evidence](../screenshots/soc-005/evidence.png)
+
+The PNG above is cropped from the captured lab screenshot so the key Splunk result remains readable directly inside the investigation.
+
 ## Evidence 1 — Safe simulation
 
 The dedicated directory was:
