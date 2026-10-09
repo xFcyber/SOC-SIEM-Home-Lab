@@ -17,7 +17,7 @@ This repository documents the lab previously built by the author. It separates p
 | Wazuh manager and Windows agent | Active windows-lab agent 001 shown in dashboard screenshot |
 | Controlled Kali port scan | Eight-port SYN scan, matching firewall records and one grouped detection result confirmed |
 | Revised port scan SPL in this repository | Core extraction, grouping and threshold validated in case 002 manual replay |
-| Port-scan scheduled alert definition | Saved and enabled in screenshot; no fired events displayed |
+| Port-scan scheduled alert | `SOC Lab - IPv4 TCP Port Scan` Trigger History shows 2026-10-09 18:30:02 UTC; scheduled results and scan attribution remain pending |
 | Controlled SMB failed-logon exercise | Five failed logons from Kali correlated across Windows Security and pfSense; manual Splunk detection confirmed |
 | Windows Security forwarding | Confirmed in `security_logs` with XML-rendered Security events |
 | Brute-force alert | `SOC-002 - Brute Force Failed Logon Detection` fired at 2026-10-09 17:50:01 UTC; scheduled View Results confirms 5 failures and one grouped result |
@@ -27,13 +27,13 @@ This repository documents the lab previously built by the author. It separates p
 | Wazuh event and alert comparison | Pending evidence |
 | System / Application forwarding, AD and additional detections | Indexes configured or planned; additional ingestion evidence pending |
 
-**64 PNG files** (60 original screenshots and four cropped evidence views) are attached across the [evidence gallery](screenshots/README.md) and the investigations. They cover the lab baseline and all five controlled attack scenarios, including execution, indexed telemetry, detection results and the captured scheduled triggers. A [five-row raw Windows Security CSV](investigations/evidence/soc-002-4625-events-20261009.csv) is attached for the SOC-002 retest; raw exports for other exercises remain pending. Successful scheduled firing is evidenced for SOC-002, SOC-003, SOC-004 and SOC-005; port-scan scheduled firing remains pending.
+**65 PNG files** (61 original screenshots and four cropped evidence views) are attached across the [evidence gallery](screenshots/README.md) and the investigations. They cover the lab baseline and all five controlled attack scenarios, including execution, indexed telemetry, detection results and the captured scheduled triggers. A [five-row raw Windows Security CSV](investigations/evidence/soc-002-4625-events-20261009.csv) is attached for the SOC-002 retest; raw exports for other exercises remain pending. Trigger History is now captured for all five scenarios. Scheduled View Results is confirmed for SOC-002, SOC-003, SOC-004 and SOC-005; the port-scan job's query, time window and matching results still need review.
 
 ## Five documented attack scenarios
 
 | Scenario | Investigation | Detection evidence | Scheduled alert evidence |
 | --- | --- | --- | --- |
-| TCP port scan | [Case 002](investigations/incident-002-controlled-port-scan.md) | 8 distinct ports / 8 firewall events | Saved and enabled; successful firing pending |
+| TCP port scan | [Case 002](investigations/incident-002-controlled-port-scan.md) | 8 distinct ports / 8 firewall events in the 2026-10-07 manual replay | Trigger History captured on 2026-10-09; scheduled results and scan attribution pending |
 | SMB failed logons / brute-force behavior | [Case 003](investigations/incident-003-brute-force.md) | 5 failed logons, Security 4625, TCP 445 correlation | Trigger History + scheduled View Results confirmed on 2026-10-09 |
 | Suspicious encoded PowerShell | [Case 004](investigations/incident-004-suspicious-powershell.md) | Sysmon Event ID 1 and tuned command-line logic | Trigger History + View Results confirmed |
 | Scheduled Task persistence | [Case 005](investigations/incident-005-scheduled-task.md) | Security 4698 plus Sysmon process correlation | Trigger History + View Results confirmed |
@@ -110,7 +110,7 @@ The captured Wazuh page shows windows-lab (001) active. See the [agent inventory
 
 ## Current exercise: controlled scan — 2026-10-07
 
-An actual Nmap run scanned eight TCP ports on Windows 192.168.10.100 at 15:54 UTC+03:00. Ports 135, 139 and 445 were reported open; the other five were closed. The command and completed output are attached. Eight indexed TCP SYN records match the scanner, target and all eight ports, with firewall action pass. The manual analytic replay returns one candidate with eight distinct ports and eight events. This is an authorized-test true positive for scan behavior; scheduled alert firing remains pending.
+An actual Nmap run scanned eight TCP ports on Windows 192.168.10.100 at 15:54 UTC+03:00. Ports 135, 139 and 445 were reported open; the other five were closed. The command and completed output are attached. Eight indexed TCP SYN records match the scanner, target and all eight ports, with firewall action pass. The manual analytic replay returns one candidate with eight distinct ports and eight events. This is an authorized-test true positive for scan behavior. A separate 2026-10-09 capture shows the enabled `SOC Lab - IPv4 TCP Port Scan` alert with repeated Trigger History entries, most recently **18:30:02 UTC (21:30:02 Asia/Riyadh)**. Its scheduled query, window and results are not shown, so those firings have not yet been attributed to this controlled scan.
 
 [Follow case 002](investigations/incident-002-controlled-port-scan.md).
 
@@ -164,7 +164,7 @@ Log collection, SPL search, firewall log interpretation, endpoint telemetry vali
 
 ## Roadmap
 
-Capture scheduled firing evidence for the port-scan alert, repeat the successful-logon check across the full original 2026-10-08 brute-force exercise window, and add raw event exports for the other exercises. Wazuh event comparisons, Active Directory and Windows Server remain future additions.
+Review the port-scan alert's scheduled View Results, saved query and actual time window to explain its repeated firings and establish scan attribution. Repeat the successful-logon check across the full original 2026-10-08 brute-force exercise window, and add raw event exports for the other exercises. Wazuh event comparisons, Active Directory and Windows Server remain future additions.
 
 ## Scope and author
 

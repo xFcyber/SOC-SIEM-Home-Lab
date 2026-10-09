@@ -18,9 +18,13 @@
 sudo nmap -sS -Pn -n -p 22,80,135,139,443,445,3389,5985 --reason -oN soc-port-scan-01.txt 192.168.10.100
 ```
 
-The run starts at 15:54 UTC+03:00 and completes in 0.34 seconds. Ports 135, 139 and 445 are reported open; the other five are closed. The normal output file itself is still awaiting upload. Firewall correlation and detection results remain pending.
+The run starts at 15:54 UTC+03:00 and completes in 0.34 seconds. Ports 135, 139 and 445 are reported open; the other five are closed. The normal output file itself is still awaiting upload. [Case 002](../investigations/incident-002-controlled-port-scan.md) confirms eight matching firewall records and one grouped manual detection result.
 
 [Original scan screenshot](../screenshots/kali-port-scan.png)
+
+## Later scheduled alert evidence — 2026-10-09
+
+The [original Trigger History screenshot](../screenshots/splunk-port-scan-alert-triggered-20261009-case002.png) shows the enabled **SOC Lab - IPv4 TCP Port Scan** alert firing repeatedly, most recently **18:30:02 UTC (21:30:02 Asia/Riyadh)**. Its underlying scheduled results, saved SPL and time window still need review. No fresh scan is established by that screenshot, and those triggers have not yet been correlated to the recorded 2026-10-07 run.
 
 ## Example command
 

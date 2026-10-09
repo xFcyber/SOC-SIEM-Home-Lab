@@ -1,12 +1,37 @@
 # Scheduled port scan alert
 
-**Status: revised schedule proposal; an existing alert definition is shown below, but successful firing remains unverified.**
+**Status:** Scheduled Trigger History captured on 2026-10-09. Saved query, actual cron/window and matching scheduled results remain pending.
 
-![Existing enabled alert with no displayed fired events](../screenshots/splunk-alert-enabled-no-fires.png)
+## Earlier saved definition
 
-The captured Possible Port Scan Detected alert is enabled, scheduled and configured to add triggered records when results exceed zero. It explicitly displays no fired events. Its actual cron expression, window and query are not visible; the settings below are proposed for the revised analytic.
+![Earlier enabled alert with no displayed fired events](../screenshots/splunk-alert-enabled-no-fires.png)
 
-The [case 002 manual replay](../investigations/incident-002-controlled-port-scan.md) confirms the core extraction, grouping and threshold for an authorized eight-port scan. Scheduled firing remains pending. Use the validated aggregation logic or the [generic port scan SPL](../detections/pfsense-ipv4-port-scan.spl) for the scheduled definition. Remove fixed epoch earliest/latest modifiers used for replay, then configure the relative alert window below.
+The earlier **Possible Port Scan Detected** capture shows an enabled scheduled alert configured to add triggered records when results exceed zero. It displays no fired events at that capture time. Its actual cron expression, window and query are not visible.
+
+## Observed scheduled firing — 2026-10-09
+
+![SOC Lab IPv4 TCP port-scan scheduled Trigger History](../screenshots/splunk-port-scan-alert-triggered-20261009-case002.png)
+
+The newly captured saved alert is **SOC Lab - IPv4 TCP Port Scan**. The screenshot does not establish whether it is a rename of the earlier definition or a separate saved search.
+
+| Setting | Captured value |
+| --- | --- |
+| Name | SOC Lab - IPv4 TCP Port Scan |
+| Enabled | Yes |
+| Type | Scheduled; Cron Schedule |
+| Trigger | Number of Results greater than 0 |
+| Action | Add to Triggered Alerts |
+| App / owner / permissions | search / off / Private |
+| Latest visible firing | 2026-10-09 18:30:02 UTC (21:30:02 Asia/Riyadh) |
+| Exact cron, earliest/latest and query | Not visible |
+
+Multiple preceding Trigger History rows recur at approximately five-minute intervals. These rows prove firing; they do not identify the triggering traffic, establish the saved query's equivalence to the repository SPL or explain the repetition. Review **View Results** for the latest firing, its completed-job time window and grouped source/destination/port values, then capture the saved settings.
+
+The [case 002 manual replay](../investigations/incident-002-controlled-port-scan.md) independently validates the core extraction, grouping and threshold for the recorded 2026-10-07 eight-port scan. That manual result has not yet been tied to the later scheduled firings.
+
+## Schedule proposal — actual settings still unverified
+
+Use the validated aggregation logic or the [generic port scan SPL](../detections/pfsense-ipv4-port-scan.spl) for a relative-window alert. Fixed epoch earliest/latest values used for a replay should be removed when configuring ongoing monitoring. The following values are a **proposal**, not values inferred from the new screenshot.
 
 | Setting | Proposed value |
 | --- | --- |
@@ -23,21 +48,16 @@ This evaluates a five-minute window delayed by one minute to allow ingestion. Ad
 
 The SPL aggregates over the selected search window. Do not add a separate five-minute `bin` without reviewing alignment.
 
-## Validate
+## Remaining validation
 
-1. Confirm the search returns correct IPs and ports over a known scan window.
-2. Create the scheduled alert in Search and Reporting.
-3. Generate the controlled test in the attacker segment and record its timestamps.
-4. Inspect the scheduled search job and Triggered Alerts.
-5. Attach the schedule settings, a result and its underlying raw events.
+1. Capture **View Results** for the latest **18:30:02 UTC** firing and review its actual query, job window and output.
+2. Capture the saved query and cron/earliest/latest settings; investigate the repeated firings before tuning or suppressing them.
+3. Correlate the results with a recorded scan and its raw events. Use a fresh controlled scan if needed to test the current relative-window configuration.
+4. Attach the scheduled results, saved settings and original raw event export.
 
-A saved search definition does not demonstrate successful scheduled execution. Availability also depends on the installed Splunk edition/license and permissions.
-
-Once verified, tune thresholds and optionally suppress repeated candidates by source/destination. Document any suppression so repeated testing does not appear to fail silently.
+Once matching results are verified, tune thresholds and optionally suppress repeated candidates by source/destination. Document any suppression so repeated testing does not appear to fail silently.
 
 Reference: [Splunk scheduling guidance](https://help.splunk.com/en/splunk-cloud-platform/alert-and-respond/alerting-manual/10.3.2512/create-alerts/alert-scheduling-tips).
-
-
 
 ## Windows brute-force alert
 

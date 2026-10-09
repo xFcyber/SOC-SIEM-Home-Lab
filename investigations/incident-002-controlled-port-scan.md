@@ -1,10 +1,10 @@
 # Case 002 — Controlled Kali TCP port scan
 
-**Status:** Controlled scan, firewall correlation and manual detection replay confirmed; scheduled alert firing pending.
+**Status:** Controlled scan, firewall correlation and manual detection replay confirmed. Scheduled Trigger History captured on 2026-10-09; scheduled results and scan attribution pending.
 
 ## Summary
 
-On 2026-10-07 at 15:54 UTC+03:00, an authorized Nmap SYN scan targeted eight TCP ports on the Windows lab address 192.168.10.100. The captured output reports three open and five closed ports. Eight indexed TCP SYN records match the source/destination pair and scanned ports, all with firewall action pass. A subsequent manual analytic replay returns one scan candidate with eight distinct ports and eight logged events. No compromise, exploitation or scheduled alert firing is established.
+On 2026-10-07 at 15:54 UTC+03:00, an authorized Nmap SYN scan targeted eight TCP ports on the Windows lab address 192.168.10.100. The captured output reports three open and five closed ports. Eight indexed TCP SYN records match the source/destination pair and scanned ports, all with firewall action pass. A subsequent manual analytic replay returns one scan candidate with eight distinct ports and eight logged events. No compromise or exploitation is established. A later screenshot from 2026-10-09 establishes scheduled alert firing, but does not show the underlying scheduled results or their relationship to this scan.
 
 This is a new exercise, separate from [case 001](incident-001-port-scan.md), whose historical firewall source address was 192.168.20.100.
 
@@ -59,7 +59,7 @@ The SYN-ACK responses support Nmap's open-port classifications for 135, 139 and 
 
 Because `-Pn` bypasses host discovery, the `Host is up, received user-set` line alone is not a successful ping. The earlier ping evidence and the visible scan responses provide separate reachability observations.
 
-The activity is authorized discovery within the lab. The manual replay correctly identifies the controlled port scan: a true positive for the tested behavior, with an authorized-test disposition. It does not establish a malicious incident or a triggered scheduled alert. T1046 (Network Service Discovery) is a technique association for the exercise, not an assertion of malicious intent.
+The activity is authorized discovery within the lab. The manual replay correctly identifies the controlled port scan: a true positive for the tested behavior, with an authorized-test disposition. The manual replay alone does not establish a malicious incident or a triggered scheduled alert. T1046 (Network Service Discovery) is a technique association for the exercise, not an assertion of malicious intent.
 
 ## Evidence 2 — Matching firewall records in Splunk
 
@@ -114,19 +114,41 @@ Although the picker shows **Last 15 minutes**, the search includes `earliest=179
 
 The grouped values agree with the eight individually reviewed records and the scanned port set. This validates field extraction, grouping and threshold logic for this controlled IPv4 TCP case. The executed display variant omits the optional protocol/source-port fields and first_seen/last_seen columns present in the generic repository SPL; those extra output columns have not been demonstrated by this screenshot.
 
+## Evidence 4 — Scheduled Trigger History captured — 2026-10-09
+
+![SOC Lab IPv4 TCP port-scan alert with multiple scheduled firings](../screenshots/splunk-port-scan-alert-triggered-20261009-case002.png)
+
+| Alert field | Captured value |
+| --- | --- |
+| Saved alert name | SOC Lab - IPv4 TCP Port Scan |
+| Enabled | Yes |
+| App / owner | search / off |
+| Permissions | Private |
+| Alert type | Scheduled; Cron Schedule |
+| Trigger condition | Number of Results is > 0 |
+| Action | Add to Triggered Alerts |
+| Latest visible trigger | 2026-10-09 18:30:02 UTC |
+| Same instant in Asia/Riyadh | 2026-10-09 21:30:02 +03:00 |
+
+Multiple fully visible preceding entries recur at roughly five-minute intervals, including **18:25:01**, **18:20:02** and **18:15:02 UTC**. This proves that the scheduled alert fired and recorded trigger history. The row cadence is an observation; the actual cron expression is not visible.
+
+The alert overview does not expose the saved SPL, search time bounds or matching source/destination/port values. Consequently, these firings are **not yet attributed** to the 2026-10-07 scan or to a new controlled test. The cause of repeated triggers remains unresolved. Review **View Results** for the latest row, then inspect the saved query and schedule before deciding whether a fresh test or tuning is needed.
+
+The original PNG is preserved without editing: **366,388 bytes**, SHA-256 `5f6d697181271ba69b418c599124bcb1d6aca245fa5ec7f8eeef254f5fcbde64`.
+
 ## Disposition and remaining validation
 
 **Behavior verdict:** True positive for the controlled port scan.  
 **Activity context:** Authorized lab test.  
-**Scheduled alert:** Successful firing not yet demonstrated.  
+**Scheduled alert:** Trigger History confirms firing on 2026-10-09; underlying job results and scan attribution remain pending.  
 **Endpoint compromise:** Not established.
 
-1. Prepare the scheduled alert using the validated aggregation logic. Remove the fixed `earliest` / `latest` replay values from its query and configure a relative window as described in the [schedule proposal](../splunk/alerts.md).
-2. Capture the actual saved query, schedule, time window and trigger action.
-3. Generate a fresh controlled scan and inspect the scheduled job and Triggered Alerts. Manual replay does not prove scheduled operation.
+1. Open **View Results** for the latest **18:30:02 UTC** firing and capture the completed job's query, actual time window and grouped values.
+2. Capture the saved SPL, cron expression and earliest/latest settings. Check whether replay epoch bounds or a broad/overlapping window explain the repeated triggers; their cause is not yet known. The [schedule proposal](../splunk/alerts.md) remains a proposal until actual settings are captured.
+3. Correlate the scheduled results to a recorded controlled scan. Generate a fresh bounded test only if needed to validate the current relative-window configuration.
 4. Export the raw records and attach the original Nmap output for reproducible evidence.
 
-No containment or endpoint change has been performed. Clock synchronization remains deferred. The exercise remains open for scheduled-alert validation and original event/output exports.
+No containment or endpoint change has been performed. Clock synchronization remains deferred. The exercise remains open for scheduled-result review, scan attribution and original event/output exports.
 
 ## References
 

@@ -1,6 +1,6 @@
 # IPv4 TCP port scan candidate
 
-**Status:** Core field extraction, grouping and threshold validated by a manual case 002 replay; scheduled firing pending.
+**Status:** Core field extraction, grouping and threshold validated by a manual case 002 replay. Scheduled Trigger History captured on 2026-10-09; saved-query equivalence, job results and scan attribution pending.
 
 ## Behavior and data
 
@@ -64,6 +64,12 @@ Stateful logging may not record every packet. NAT or additional filtering may af
 The [2026-10-07 controlled scan](../investigations/incident-002-controlled-port-scan.md) has an attached [grouped-result screenshot](../screenshots/splunk-port-scan-result-case002.png). A fixed five-minute [replay](../investigations/incident-002-replay.spl) returns one source/destination pair: **192.168.20.20 → 192.168.10.100**, **8 distinct destination ports**, **8 logged events**, and **pass**. The values match the Nmap port set and individually reviewed firewall records.
 
 The executed variant uses the same extraction, IPv4 TCP/inbound filters, grouping and threshold as the generic query above, while omitting optional protocol/source-port fields and first_seen/last_seen columns. The screenshot validates the core behavior for this one controlled case; it does not demonstrate those extra columns, all input layouts, negative-case coverage or scheduled alert firing.
+
+## Scheduled Trigger History — 2026-10-09
+
+The [original alert-overview screenshot](../screenshots/splunk-port-scan-alert-triggered-20261009-case002.png) shows **SOC Lab - IPv4 TCP Port Scan** enabled and scheduled, with **Number of Results > 0** and **Add to Triggered Alerts**. The latest visible firing is **18:30:02 UTC (21:30:02 Asia/Riyadh)**; earlier rows recur at approximately five-minute intervals.
+
+This demonstrates scheduled firing of that saved alert. The screenshot does not expose its SPL, exact cron or search window. It therefore does not demonstrate that the saved search is identical to the generic analytic above, or that its results match the controlled eight-port scan. Review the scheduled **View Results** and actual settings to explain the repeated firings.
 
 ## Validation sequence
 
