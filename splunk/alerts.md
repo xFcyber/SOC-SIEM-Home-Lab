@@ -116,3 +116,32 @@ A fresh validation task named `\SOC-LAB-T1053-ALERT` was created after the alert
 The lab validation query included a task-name fallback for the controlled `SOC-LAB` task. The repository's generic analytic removes that lab-only dependency and focuses on suspicious task content.
 
 [Detection](../detections/scheduled-task-detection.md) · [Case 005](../investigations/incident-005-scheduled-task.md)
+
+
+## Possible ransomware mass file activity alert
+
+**Status:** Saved, enabled and scheduled firing confirmed.
+
+The saved alert is:
+
+`SOC-005 - Possible Ransomware Mass File Activity`
+
+| Setting | Captured value |
+| --- | --- |
+| Type | Scheduled |
+| Cron | `*/5 * * * *` |
+| Search window | Last 5 minutes |
+| Trigger | Number of results greater than 0 |
+| Trigger mode | Once |
+| Action | Add to Triggered Alerts |
+| Severity | High |
+| Expiration | 24 hours |
+| Status | Enabled |
+
+The analytic uses Windows Security Event ID **4663** scoped to the dedicated ransomware test directory, groups events into one-minute windows and requires at least **10 distinct filenames** with `.encrypted` or `.locked` extensions.
+
+The first manual validation returned **20 AccessEvents / 20 UniqueFiles** for PowerShell. After the alert was enabled, a fresh 15-file batch was generated. Trigger History recorded a firing at **2026-10-09 14:20:01 UTC**, and **View Results** returned **15 AccessEvents / 15 UniqueFiles**, `User=faris` and the PowerShell process path.
+
+The lab maps this behavior to **MITRE ATT&CK T1486 — Data Encrypted for Impact**, while explicitly noting that no real file encryption was performed.
+
+[Detection](../detections/ransomware-mass-file-activity.md) · [Case 006](../investigations/incident-006-ransomware-like-file-activity.md)
