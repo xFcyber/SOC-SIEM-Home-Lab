@@ -22,6 +22,7 @@ This repository documents the lab previously built by the author. It separates p
 | Windows Security forwarding | Confirmed in `security_logs` with XML-rendered Security events |
 | Brute-force alert | `SOC-002 - Brute Force Failed Logon Detection` saved, enabled and scheduled every five minutes; fired scheduled event not yet captured |
 | Suspicious PowerShell execution | Sysmon Event ID 1 detection tuned and validated; `SOC-003 - Suspicious PowerShell Encoded Execution` fired successfully |
+| Scheduled Task persistence | Windows Security 4698 plus Sysmon process correlation validated; `SOC-004 - Suspicious Scheduled Task Creation` fired successfully |
 | Wazuh event and alert comparison | Pending evidence |
 | System / Application forwarding, AD and additional detections | Indexes configured or planned; additional ingestion evidence pending |
 
@@ -73,9 +74,9 @@ Kali can be moved between segments for different exercises. For the firewall cas
 | Wazuh | [Setup checks](wazuh/setup.md), [agent collection](wazuh/agent-configuration.md) |
 | pfSense | [Interfaces and rules](pfsense/configuration.md), [syslog](pfsense/syslog-forwarding.md) |
 | Windows | [Sysmon](windows-endpoint/sysmon.md), [forwarder](windows-endpoint/splunk-universal-forwarder.md), [Wazuh agent](windows-endpoint/wazuh-agent.md) |
-| Simulation | [Controlled port scan](attack-simulations/port-scan.md), [controlled SMB failed logons](attack-simulations/brute-force.md), [controlled suspicious PowerShell](attack-simulations/powershell.md) |
-| Detection | [Port scan analytic](detections/port-scan-detection.md), [port-scan SPL](detections/pfsense-ipv4-port-scan.spl), [Windows brute-force analytic](detections/windows-brute-force-detection.md), [brute-force SPL](detections/windows-brute-force.spl), [PowerShell analytic](detections/suspicious-powershell-detection.md), [PowerShell SPL](detections/suspicious-powershell.spl) |
-| Investigation | [Historical case 001](investigations/incident-001-port-scan.md), [controlled scan case 002](investigations/incident-002-controlled-port-scan.md), [brute-force case 003](investigations/incident-003-brute-force.md), [PowerShell case 004](investigations/incident-004-suspicious-powershell.md), [case template](investigations/incident-template.md) |
+| Simulation | [Controlled port scan](attack-simulations/port-scan.md), [controlled SMB failed logons](attack-simulations/brute-force.md), [controlled suspicious PowerShell](attack-simulations/powershell.md), [controlled Scheduled Task persistence](attack-simulations/scheduled-task.md) |
+| Detection | [Port scan analytic](detections/port-scan-detection.md), [port-scan SPL](detections/pfsense-ipv4-port-scan.spl), [Windows brute-force analytic](detections/windows-brute-force-detection.md), [brute-force SPL](detections/windows-brute-force.spl), [PowerShell analytic](detections/suspicious-powershell-detection.md), [PowerShell SPL](detections/suspicious-powershell.spl), [Scheduled Task analytic](detections/scheduled-task-detection.md), [Scheduled Task SPL](detections/scheduled-task-creation.spl) |
+| Investigation | [Historical case 001](investigations/incident-001-port-scan.md), [controlled scan case 002](investigations/incident-002-controlled-port-scan.md), [brute-force case 003](investigations/incident-003-brute-force.md), [PowerShell case 004](investigations/incident-004-suspicious-powershell.md), [Scheduled Task case 005](investigations/incident-005-scheduled-task.md), [case template](investigations/incident-template.md) |
 | Portfolio evidence | [Screenshot checklist](screenshots/README.md) |
 
 ## First case: Kali → pfSense → Splunk
@@ -117,6 +118,16 @@ The scheduled alert `SOC-003 - Suspicious PowerShell Encoded Execution` was then
 This exercise demonstrates both **detection engineering** and **false-positive reduction**, mapped to **MITRE ATT&CK T1059.001 — PowerShell**.
 
 [Follow case 004](investigations/incident-004-suspicious-powershell.md) · [Detection analytic](detections/suspicious-powershell-detection.md).
+
+## Current exercise: Scheduled Task persistence — 2026-10-09
+
+Windows auditing for **Other Object Access Events** was enabled, then an authorized Scheduled Task was created and exercised. Windows Security produced Event ID **4698**, while Sysmon Event ID **1** captured both task-management activity and the task-launched `cmd.exe` process. The execution path showed `cmd.exe` with parent `svchost.exe`, consistent with Task Scheduler service execution context.
+
+The scheduled Splunk alert `SOC-004 - Suspicious Scheduled Task Creation` was validated end-to-end. Trigger History recorded a firing at **2026-10-09 13:00:01 UTC**, and **View Results** returned the fresh validation task `\SOC-LAB-T1053-ALERT`.
+
+This exercise maps to **MITRE ATT&CK T1053.005 — Scheduled Task/Job: Scheduled Task**.
+
+[Follow case 005](investigations/incident-005-scheduled-task.md) · [Detection analytic](detections/scheduled-task-detection.md).
 
 ## Skills practiced
 
