@@ -42,7 +42,7 @@ The same eight-port command completes at **11:28:25 +03:00 (08:28:25 UTC)**. Nma
 
 The [fresh Trigger History](../screenshots/splunk-port-scan-alert-triggered-20261010-case002.png) records **08:30:02 UTC (11:30:02 Asia/Riyadh)**. The [matching scheduled job](../screenshots/splunk-port-scan-scheduled-results-20261010-case002.png) uses `earliest=-6m@m latest=-1m@m`, covers **08:24–08:29**, and returns **192.168.20.20 → 192.168.10.100**, **8 distinct ports / 8 indexed events**, the exact Nmap port set and **pass**. The [executed scheduled SPL](../detections/pfsense-ipv4-port-scan-scheduled.spl) is attached.
 
-This confirms fresh scheduled detection for the authorized test. Native Nmap/raw firewall exports and exact cron/dispatch settings still need capture. The screenshot does not document the gateway/interface or route-recovery configuration change.
+This confirms fresh scheduled detection for the authorized test. The [unchanged raw firewall export](../investigations/evidence/soc-port-scan-events-20261010.csv) contains **8 distinct inbound TCP SYN records** on **em2**, from **192.168.20.20:37074** to **192.168.10.100**, with the exact scanned port set and **pass**. Its records reproduce the scheduled eight-event/eight-port aggregation. Native Nmap output and exact cron/dispatch settings still need capture. The raw records document the firewall interface; the current selected gateway/route and the route-recovery configuration change remain uncaptured. [Raw validation and timestamp limits](../investigations/incident-002-controlled-port-scan.md#evidence-10--original-raw-firewall-csv-reconciled--2026-10-10).
 
 ## Example command
 

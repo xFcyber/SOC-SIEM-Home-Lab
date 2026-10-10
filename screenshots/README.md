@@ -156,7 +156,7 @@ The destination ports match the recorded scan: **22, 80, 135, 139, 443, 445, 338
 
 The timestamps before and after the command both show **2026-10-10T11:28:25+03:00 (08:28:25 UTC)**. Nmap **7.94SVN** completes an eight-port SYN scan of **192.168.10.100**, reporting **1 IP address / 1 host up**, **0.20 seconds** elapsed and **0.031 seconds** latency. Ports **135, 139 and 445** are **open** with SYN-ACK responses; **22, 80, 443, 3389 and 5985** are **closed** with reset responses. All displayed response TTLs are **127**.
 
-This proves fresh scan execution and visible target responses after the earlier failed route setup. The screenshot does not expose Kali's current source address, selected gateway or the configuration change that enabled the run. The later scheduled result below confirms the indexed source/destination pair, port set and executed relative bounds; individual raw event review and the exact cron expression remain pending. The native `soc-port-scan-20261010.txt` file has not yet been uploaded.
+This proves fresh scan execution and visible target responses after the earlier failed route setup. The screenshot does not expose Kali's current source address, selected gateway or the configuration change that enabled the run. The later scheduled result below confirms the indexed source/destination pair, port set and executed relative bounds. The raw CSV indexed below supplies the eight individual records; the exact cron expression remains pending. The native `soc-port-scan-20261010.txt` file has not yet been uploaded.
 
 [Case 002 fresh execution evidence](../investigations/incident-002-controlled-port-scan.md) · [Simulation](../attack-simulations/port-scan.md)
 
@@ -172,7 +172,7 @@ This proves fresh scan execution and visible target responses after the earlier 
 
 The scheduler identifier contains `at_1791621000`, corresponding to **2026-10-10 08:30:00 UTC**. The executed first line uses **earliest=-6m@m / latest=-1m@m**, and the completed-job banner shows **08:24–08:29 on 2026-10-10**, with **8 events / Statistics (1)**.
 
-The grouped row reports **192.168.20.20 → 192.168.10.100**, **unique_ports=8**, **logged_events=8**, destination ports **22, 80, 135, 139, 443, 445, 3389, 5985**, and **firewall_actions=pass**. The selected window contains the fresh scan's displayed **08:28:25 UTC** time and the port set matches its command. This validates the corrected relative-window scheduled detection for this controlled test; native/raw exports and exact cron configuration remain pending.
+The grouped row reports **192.168.20.20 → 192.168.10.100**, **unique_ports=8**, **logged_events=8**, destination ports **22, 80, 135, 139, 443, 445, 3389, 5985**, and **firewall_actions=pass**. The selected window contains the fresh scan's displayed **08:28:25 UTC** time and the port set matches its command. This validates the corrected relative-window scheduled detection for this controlled test. The original raw CSV is attached and reconciled below; native Nmap output and exact cron configuration remain pending.
 
 [Case 002 complete evidence](../investigations/incident-002-controlled-port-scan.md) · [Executed scheduled SPL](../detections/pfsense-ipv4-port-scan-scheduled.spl)
 
@@ -265,15 +265,18 @@ The following **43 original PNGs** complete the uploaded screenshot evidence for
 | [splunk-ransomware-alert-fired-case006.png](splunk-ransomware-alert-fired-case006.png) | SOC-005 Trigger History records 2026-10-09 14:20:01 UTC. |
 | [splunk-ransomware-alert-results-case006.png](splunk-ransomware-alert-results-case006.png) | The scheduled View Results returns AccessEvents=15 and UniqueFiles=15 for the fresh validation batch. |
 
-## Raw event export — case 003
+## Original raw event exports — cases 002 and 003
+
+The [original pfSense CSV](../investigations/evidence/soc-port-scan-events-20261010.csv) contains the fresh port scan's **8 distinct raw records**, with explicit UTC `_time` and source metadata preserved. The bytes are unchanged, and the records reproduce the scheduled result. Its seven-second timestamp difference from the Nmap capture and raw-prefix offset limitation are documented in case 002.
 
 The [original Windows Security CSV](../investigations/evidence/soc-002-4625-events-20261009.csv) contains **5 distinct Event ID 4625 records** from the fresh 2026-10-09 test. Each row preserves its `_raw` XML, `_time` and Splunk source metadata. The bytes are unchanged; the uploaded filename's duplicate `.csv` extension was removed in the repository.
 
 | File | Observed evidence |
 | --- | --- |
+| [soc-port-scan-events-20261010.csv](../investigations/evidence/soc-port-scan-events-20261010.csv) | 8 distinct inbound IPv4 TCP SYN records on em2; 192.168.20.20:37074 → 192.168.10.100; eight scanned ports; pass; UTC 08:28:32. Independently reproduces the scheduled 8 ports / 8 events. |
 | [soc-002-4625-events-20261009.csv](../investigations/evidence/soc-002-4625-events-20261009.csv) | 5 records, IDs 78762–78766; SOC-Test; 192.168.20.20; KALI; LogonType 3; UTC 17:48:00.989–17:48:07.792. |
 
-[Case 003 validation and checksum](../investigations/incident-003-brute-force.md#evidence-8--raw-windows-security-csv-export--2026-10-09)
+[Case 002 raw validation, timestamp limits and checksum](../investigations/incident-002-controlled-port-scan.md#evidence-10--original-raw-firewall-csv-reconciled--2026-10-10) · [Case 003 validation and checksum](../investigations/incident-003-brute-force.md#evidence-8--raw-windows-security-csv-export--2026-10-09)
 
 ## Evidence still needed
 

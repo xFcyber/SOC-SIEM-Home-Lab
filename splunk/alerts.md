@@ -1,6 +1,6 @@
 # Scheduled port scan alert
 
-**Status:** Relative-window correction and fresh scheduled firing confirmed on 2026-10-10. Trigger History and scheduler results match the new eight-port scan; exact cron/dispatch settings and raw/native exports remain pending.
+**Status:** Relative-window correction and fresh scheduled firing confirmed on 2026-10-10. Trigger History and scheduler results match the new eight-port scan; the unchanged raw CSV reproduces the scheduled aggregation. Exact cron/dispatch settings and native Nmap output remain pending.
 
 ## Earlier saved definition
 
@@ -92,11 +92,14 @@ The complete visible core query is transcribed without adding optional columns. 
 
 The approximate five-minute cadence in older history rows is not substituted for an actual cron-setting screenshot. Align and capture the saved schedule/time settings when available. Late-arrival behavior, missed-job coverage and ingestion delay have not been measured by this one successful test.
 
+## Raw-record reconciliation
+
+The [original raw firewall CSV](../investigations/evidence/soc-port-scan-events-20261010.csv) contains **8 distinct inbound IPv4 TCP SYN records**, with `_time=2026-10-10T08:28:32.000+0000`, inside the **08:24–08:29 UTC** job window. Its source/target pair, exact eight-port set and **pass** action independently reproduce **1 grouped result / 8 distinct ports / 8 logged events**. The export preserves host **192.168.10.1**, source **udp:5514**, sourcetype **syslog**, interface **em2** and source port **37074**. [Case 002 field validation, checksum and timestamp limits](../investigations/incident-002-controlled-port-scan.md#evidence-10--original-raw-firewall-csv-reconciled--2026-10-10).
+
 ## Remaining evidence
 
-1. Export and validate the underlying fresh firewall records for **08:24–08:29**, preserving raw payloads and metadata.
-2. Upload the native `soc-port-scan-20261010.txt` output.
-3. Capture exact cron/dispatch settings and any suppression configuration.
+1. Upload the native `soc-port-scan-20261010.txt` output.
+2. Capture exact cron/dispatch settings and any suppression configuration.
 
 Scheduled firing and matching results are complete for this controlled case. Threshold tuning and any future suppression should be documented after reviewing repeated candidates.
 

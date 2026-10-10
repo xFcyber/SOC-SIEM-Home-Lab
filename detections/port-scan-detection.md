@@ -1,6 +1,6 @@
 # IPv4 TCP port scan candidate
 
-**Status:** Core analytic, relative-window correction and fresh scheduled detection validated on 2026-10-10. The scheduler job returns 8 distinct ports / 8 events for the controlled scan; raw-event export and exact cron capture remain pending.
+**Status:** Core analytic, relative-window correction and fresh scheduled detection validated on 2026-10-10. The scheduler job returns 8 distinct ports / 8 events for the controlled scan, and the unchanged raw CSV independently reproduces this aggregation. Exact cron capture remains pending.
 
 ## Behavior and data
 
@@ -81,7 +81,7 @@ The [new original Nmap capture](../screenshots/kali-port-scan-retest-20261010-ca
 
 The later [Trigger History capture](../screenshots/splunk-port-scan-alert-triggered-20261010-case002.png) records **08:30:02 UTC**. Its [scheduler result](../screenshots/splunk-port-scan-scheduled-results-20261010-case002.png) uses `earliest=-6m@m latest=-1m@m` and covers **08:24–08:29 as displayed**, returning **8 events / 1 grouped result** for **192.168.20.20 → 192.168.10.100**, all eight selected ports and **pass**. This validates the relative-window correction and fresh scheduled detection for the controlled test.
 
-[Executed scheduled SPL](pfsense-ipv4-port-scan-scheduled.spl) preserves the demonstrated core analytic. The generic query above adds optional columns not exposed by this result. Raw records, observation-point details, exact cron/dispatch settings, suppression and broader negative-case coverage remain separately unverified. [Case 002](../investigations/incident-002-controlled-port-scan.md).
+[Executed scheduled SPL](pfsense-ipv4-port-scan-scheduled.spl) preserves the demonstrated core analytic. The generic query above adds optional columns not exposed by this result. The [original raw CSV](../investigations/evidence/soc-port-scan-events-20261010.csv) supplies **8 distinct inbound IPv4 TCP SYN records** on **em2**, source port **37074**, all with **pass**, `_time=2026-10-10T08:28:32.000+0000` and the exact eight-port set. Applying the executed analytic's extraction, filters and grouping reproduces the scheduled result. This validates the raw field mapping and firewall observation for this test. The selected gateway/route configuration, exact cron/dispatch settings, suppression and broader negative-case coverage remain separately unverified. The case records the seven-second timestamp difference from the Nmap capture and the absence of `_indextime`. [Case 002](../investigations/incident-002-controlled-port-scan.md).
 
 ## Validation sequence
 
