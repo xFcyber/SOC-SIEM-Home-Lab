@@ -32,7 +32,15 @@ At **11:22:49–11:22:52 +03:00**, the author submitted a new eight-port scan co
 
 [Submitted terminal transcript](../investigations/evidence/port-scan-retest-20261010-submitted-terminal.txt) · [Case 002 diagnosis and next steps](../investigations/incident-002-controlled-port-scan.md)
 
-Collect `ip -br addr`, `ip route`, `ip route get 192.168.10.100` and `nmcli device status` before changing the network configuration or retrying. The cause remains unresolved until those results are reviewed. The saved-alert relative-window correction also remains unverified.
+Interface/address/route diagnostics were requested after that aborted attempt. The later completed scan below shows target setup working for the new run; the configuration change itself was not captured. The saved-alert relative-window correction remains unverified.
+
+## Completed fresh rerun — 2026-10-10
+
+![Fresh completed Nmap scan](../screenshots/kali-port-scan-retest-20261010-case002.png)
+
+The same eight-port command completes at **11:28:25 +03:00 (08:28:25 UTC)**. Nmap reports **1 IP address / 1 host up**, **0.20 seconds** elapsed, ports **135/139/445 open** and **22/80/443/3389/5985 closed**. The native `soc-port-scan-20261010.txt` file is still awaiting upload; the original screenshot is attached unchanged.
+
+Next, review the scheduled job near **08:30 UTC (11:30 Asia/Riyadh)** if the proposed relative-window settings and five-minute schedule have been saved. Confirm its actual query, window and grouped values, then correlate the underlying fresh firewall events. Scan execution alone does not establish scheduled detection or the current pfSense observation point.
 
 ## Example command
 

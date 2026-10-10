@@ -1,6 +1,6 @@
 # Lab screenshot evidence
 
-Sixty-two original lab screenshots are included in this gallery and the linked investigations. The original captures were visually inspected and uploaded without changing their pixels. Four additional cropped evidence views are indexed at the end of the gallery. Captions distinguish observed state from work still pending.
+Sixty-three original lab screenshots are included in this gallery and the linked investigations. The original captures were visually inspected and uploaded without changing their pixels. Four additional cropped evidence views are indexed at the end of the gallery. Captions distinguish observed state from work still pending.
 
 ## VirtualBox environment baseline — 2026-10-07
 
@@ -146,9 +146,19 @@ This original screenshot proves scheduled alert firing. It does not itself show 
 
 The URL contains a **scheduler** job identifier with `at_1791570600`, corresponding to **2026-10-09 18:30:00 UTC** and the preceding **18:30:02 UTC** Trigger History row. The search still contains `earliest=1791377520 latest=1791377820`. Its completed-job banner shows **8 events** over **2026-10-07 12:52–12:57**, and **Statistics (1)** contains **192.168.20.20 → 192.168.10.100**, **8 distinct ports**, **8 logged events** and **pass**.
 
-The destination ports match the recorded scan: **22, 80, 135, 139, 443, 445, 3389, 5985**. This is scheduled replay of historical test data. Fixed bounds make unchanged old events eligible on each run; a fresh scan and relative-window operation have not been demonstrated. The live alert correction is documented as pending.
+The destination ports match the recorded scan: **22, 80, 135, 139, 443, 445, 3389, 5985**. This is scheduled replay of historical test data. Fixed bounds make unchanged old events eligible on each run; this historical scheduler job does not demonstrate relative-window operation. A fresh completed scan is captured below, while its scheduled correlation and the live alert correction remain pending.
 
 [Case 002 diagnosis and correction](../investigations/incident-002-controlled-port-scan.md) · [Alert correction](../splunk/alerts.md)
+
+## Fresh Kali eight-port scan — 2026-10-10
+
+![Completed fresh Nmap SYN scan after the earlier route error](kali-port-scan-retest-20261010-case002.png)
+
+The timestamps before and after the command both show **2026-10-10T11:28:25+03:00 (08:28:25 UTC)**. Nmap **7.94SVN** completes an eight-port SYN scan of **192.168.10.100**, reporting **1 IP address / 1 host up**, **0.20 seconds** elapsed and **0.031 seconds** latency. Ports **135, 139 and 445** are **open** with SYN-ACK responses; **22, 80, 443, 3389 and 5985** are **closed** with reset responses. All displayed response TTLs are **127**.
+
+This proves fresh scan execution and visible target responses after the earlier failed route setup. The screenshot does not expose Kali's current source address, selected gateway or the configuration change that enabled the run. Fresh pfSense event correlation, the saved alert's relative-window settings and its scheduled results remain pending. The native `soc-port-scan-20261010.txt` file has not yet been uploaded.
+
+[Case 002 fresh execution evidence](../investigations/incident-002-controlled-port-scan.md) · [Simulation](../attack-simulations/port-scan.md)
 
 ## pfSense OPT1 rule in progress
 

@@ -1,6 +1,6 @@
 # Scheduled port scan alert
 
-**Status:** Trigger History and scheduled historical replay confirmed on 2026-10-09. Fixed replay bounds identified; relative-window correction, exact cron capture and fresh validation pending.
+**Status:** Scheduled historical replay confirmed on 2026-10-09; fresh scan execution captured on 2026-10-10. Corrected saved query, actual cron/window settings and fresh scheduled correlation remain pending.
 
 ## Earlier saved definition
 
@@ -70,12 +70,18 @@ This evaluates a five-minute window delayed by one minute to allow ingestion. Al
 
 The [generic port-scan SPL](../detections/pfsense-ipv4-port-scan.spl) is also available with optional output fields; the correction above keeps the demonstrated core aggregation. It does not add a separate five-minute `bin`.
 
+## Fresh execution ready for scheduled review — 2026-10-10
+
+The [original fresh scan screenshot](../screenshots/kali-port-scan-retest-20261010-case002.png) captures the completed eight-port run at **2026-10-10 11:28:25 +03:00 (08:28:25 UTC)**, with **3 open / 5 closed ports** on **192.168.10.100**.
+
+Under the **proposed**, still-unverified five-minute cron and `-6m@m` / `-1m@m` bounds, the **08:30 UTC (11:30 Asia/Riyadh)** scheduler run should cover **08:24–08:29 UTC**. Inspect Trigger History and its **View Results** to confirm the actual query/window and correlate fresh firewall events. This expected timing is not evidence that the alert fired or that the correction was saved.
+
 ## Remaining validation
 
-1. Apply the relative-window correction to the existing saved alert and capture the updated query.
-2. Capture exact cron and time settings, then verify alignment.
-3. Run a fresh bounded controlled scan through pfSense, record its time and review the corrected scheduler job against its indexed events.
-4. Attach updated settings, fresh scheduled results and the original raw-event export.
+1. Inspect Trigger History near **2026-10-10 08:30 UTC** and open the corresponding scheduler result if present.
+2. Capture the corrected saved query and actual cron/time settings, confirming the proposed relative bounds.
+3. Compare the scheduled result and its underlying fresh firewall records with the **08:28:25 UTC** completed scan.
+4. Attach settings, fresh scheduled results, native Nmap output and the original raw-event export.
 
 Correct the fixed-window cause before using suppression to reduce duplicates. Once fresh matching results are verified, tune thresholds and optionally suppress repeated candidates by source/destination, documenting any suppression.
 

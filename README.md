@@ -17,7 +17,7 @@ This repository documents the lab previously built by the author. It separates p
 | Wazuh manager and Windows agent | Active windows-lab agent 001 shown in dashboard screenshot |
 | Controlled Kali port scan | Eight-port SYN scan, matching firewall records and one grouped detection result confirmed |
 | Revised port scan SPL in this repository | Core extraction, grouping and threshold validated in case 002 manual replay |
-| Port-scan scheduled alert | Scheduled historical replay confirmed; correction not yet evidenced. The 2026-10-10 fresh retest aborted with a target-route error and 0 hosts scanned; network diagnosis pending |
+| Port-scan scheduled alert | Historical replay confirmed. A fresh eight-port scan completed on 2026-10-10 at 11:28:25 +03:00; updated relative-window settings, fresh firewall correlation and scheduled results pending |
 | Controlled SMB failed-logon exercise | Five failed logons from Kali correlated across Windows Security and pfSense; manual Splunk detection confirmed |
 | Windows Security forwarding | Confirmed in `security_logs` with XML-rendered Security events |
 | Brute-force alert | `SOC-002 - Brute Force Failed Logon Detection` fired at 2026-10-09 17:50:01 UTC; scheduled View Results confirms 5 failures and one grouped result |
@@ -27,13 +27,13 @@ This repository documents the lab previously built by the author. It separates p
 | Wazuh event and alert comparison | Pending evidence |
 | System / Application forwarding, AD and additional detections | Indexes configured or planned; additional ingestion evidence pending |
 
-**66 PNG files** (62 original screenshots and four cropped evidence views) are attached across the [evidence gallery](screenshots/README.md) and the investigations. They cover the lab baseline and all five controlled attack scenarios, including execution, indexed telemetry, detection results and the captured scheduled triggers. A [five-row raw Windows Security CSV](investigations/evidence/soc-002-4625-events-20261009.csv) is attached for the SOC-002 retest; raw exports for other exercises remain pending. Trigger History and scheduled View Results are now captured for all five scenarios. The port-scan job is a **historical replay with fixed 2026-10-07 bounds**, so fresh-event detection still requires a relative-window correction and a new controlled validation.
+**67 PNG files** (63 original screenshots and four cropped evidence views) are attached across the [evidence gallery](screenshots/README.md) and the investigations. They cover the lab baseline and all five controlled attack scenarios, including execution, indexed telemetry, detection results and the captured scheduled triggers. A [five-row raw Windows Security CSV](investigations/evidence/soc-002-4625-events-20261009.csv) is attached for the SOC-002 retest; raw exports for other exercises remain pending. Trigger History and scheduled View Results are now captured for all five scenarios. The port-scan job is a **historical replay with fixed 2026-10-07 bounds**, so fresh-event detection still requires verification of the relative-window correction and correlation with the newly completed 2026-10-10 scan.
 
 ## Five documented attack scenarios
 
 | Scenario | Investigation | Detection evidence | Scheduled alert evidence |
 | --- | --- | --- | --- |
-| TCP port scan | [Case 002](investigations/incident-002-controlled-port-scan.md) | 8 distinct ports / 8 firewall events from the 2026-10-07 scan | Scheduled historical replay confirmed on 2026-10-09; relative-window correction and fresh validation pending |
+| TCP port scan | [Case 002](investigations/incident-002-controlled-port-scan.md) | Historical 8-port / 8-event correlation; fresh 2026-10-10 Nmap run completed with 3 open / 5 closed ports | Historical replay confirmed; fresh telemetry and relative-window scheduled results pending |
 | SMB failed logons / brute-force behavior | [Case 003](investigations/incident-003-brute-force.md) | 5 failed logons, Security 4625, TCP 445 correlation | Trigger History + scheduled View Results confirmed on 2026-10-09 |
 | Suspicious encoded PowerShell | [Case 004](investigations/incident-004-suspicious-powershell.md) | Sysmon Event ID 1 and tuned command-line logic | Trigger History + View Results confirmed |
 | Scheduled Task persistence | [Case 005](investigations/incident-005-scheduled-task.md) | Security 4698 plus Sysmon process correlation | Trigger History + View Results confirmed |
@@ -112,7 +112,7 @@ The captured Wazuh page shows windows-lab (001) active. See the [agent inventory
 
 An actual Nmap run scanned eight TCP ports on Windows 192.168.10.100 at 15:54 UTC+03:00. Ports 135, 139 and 445 were reported open; the other five were closed. The command and completed output are attached. Eight indexed TCP SYN records match the scanner, target and all eight ports, with firewall action pass. The manual analytic replay returns one candidate with eight distinct ports and eight events. This is an authorized-test true positive for scan behavior. A separate 2026-10-09 capture shows the enabled `SOC Lab - IPv4 TCP Port Scan` alert with repeated Trigger History entries, most recently **18:30:02 UTC (21:30:02 Asia/Riyadh)**. The captured scheduler job for that firing uses `earliest=1791377520 latest=1791377820` and returns **8 events / 1 grouped result** over **2026-10-07 12:52–12:57 UTC**, matching the old scan's source, target and eight-port set. Fixed replay bounds explain how unchanged historical events can trigger repeatedly; this does not establish a new scan. Updating the saved alert to a relative window and validating a fresh test remain pending.
 
-A fresh retest attempted at **2026-10-10 11:22:49–11:22:52 +03:00** stopped with **failed to determine route to 192.168.10.100** and **0 hosts scanned**. The [user-submitted terminal transcript](investigations/evidence/port-scan-retest-20261010-submitted-terminal.txt) is attached. Kali interface/address/route diagnostics are required before retrying; this attempt does not establish a completed scan or fresh scheduled validation.
+A fresh retest attempted at **2026-10-10 11:22:49–11:22:52 +03:00** stopped with **failed to determine route to 192.168.10.100** and **0 hosts scanned**. The [user-submitted terminal transcript](investigations/evidence/port-scan-retest-20261010-submitted-terminal.txt) is attached. That attempt did not establish a completed scan or fresh scheduled validation. A later original screenshot captures a successful rerun at **11:28:25 +03:00 (08:28:25 UTC)**, with **1 IP address scanned in 0.20 seconds**, ports **135, 139 and 445 open**, and the other five closed. The network change that enabled the rerun is not shown; fresh firewall logs, saved-alert correction and scheduled results remain pending.
 
 [Follow case 002](investigations/incident-002-controlled-port-scan.md).
 
@@ -166,7 +166,7 @@ Log collection, SPL search, firewall log interpretation, endpoint telemetry vali
 
 ## Roadmap
 
-Diagnose Kali's target-route error from the 2026-10-10 retest, verify the port-scan alert's relative-window correction and actual cron/window settings, then validate a completed fresh controlled scan against the scheduled job. Repeat the successful-logon check across the full original 2026-10-08 brute-force exercise window, and add raw event exports for the other exercises. Wazuh event comparisons, Active Directory and Windows Server remain future additions.
+Verify the port-scan alert's relative-window correction and actual cron/window settings, then correlate the completed 2026-10-10 scan with fresh firewall events and its scheduled job. Capture the network change behind the recovered scan route when available. Repeat the successful-logon check across the full original 2026-10-08 brute-force exercise window, and add raw event exports for the other exercises. Wazuh event comparisons, Active Directory and Windows Server remain future additions.
 
 ## Scope and author
 

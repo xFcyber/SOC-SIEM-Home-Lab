@@ -1,6 +1,6 @@
 # IPv4 TCP port scan candidate
 
-**Status:** Core extraction, grouping and threshold validated by manual and scheduled historical replay. Fixed historical time bounds identified in the saved alert's 2026-10-09 job; relative-window correction and fresh validation pending.
+**Status:** Core analytic validated by manual and scheduled historical replay. Fresh scan execution captured on 2026-10-10; relative-window correction and fresh telemetry/scheduled correlation remain pending.
 
 ## Behavior and data
 
@@ -74,6 +74,12 @@ The overview alone does not expose its SPL, exact cron or search window. The lat
 The visible core analytic agrees with the historical replay, while the generic SPL above includes optional output fields not shown in the job result. Fixed replay bounds explain repeated alerts on old data; they do not demonstrate live detection of a new scan. The proposed correction replaces the inline epochs with `earliest=-6m@m latest=-1m@m` and validates a fresh scan under a confirmed five-minute schedule. This has **not yet been applied or validated**. Preserve the historical replay for reproducibility.
 
 [Diagnosis and correction](../investigations/incident-002-controlled-port-scan.md) · [Observed job and schedule proposal](../splunk/alerts.md)
+
+## Fresh execution awaiting correlation — 2026-10-10
+
+The [new original Nmap capture](../screenshots/kali-port-scan-retest-20261010-case002.png) shows a completed eight-port SYN scan at **11:28:25 +03:00 (08:28:25 UTC)**, after an earlier aborted route lookup. Target **192.168.10.100** responds with **135/139/445 open** and the other five selected ports closed; Nmap reports **1 IP address scanned in 0.20 seconds**.
+
+This is execution evidence. Current source IP, routing observation point, indexed firewall events, the corrected saved alert settings and fresh scheduled result are not shown. Validate these against the expected **08:30 UTC** run only if the proposed five-minute schedule and relative bounds are confirmed. [Case 002](../investigations/incident-002-controlled-port-scan.md).
 
 ## Validation sequence
 

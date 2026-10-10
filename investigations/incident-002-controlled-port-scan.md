@@ -1,10 +1,10 @@
 # Case 002 — Controlled Kali TCP port scan
 
-**Status:** Historical scan and scheduled replay confirmed; relative-window correction not yet evidenced. Fresh retest on 2026-10-10 aborted during target-route setup with 0 hosts scanned; network diagnosis and fresh validation pending.
+**Status:** Historical scan/replay and fresh scan execution confirmed. The 2026-10-10 rerun completed at 11:28:25 +03:00 after an earlier route error. Updated relative-window settings, fresh firewall correlation and scheduled results remain pending.
 
 ## Summary
 
-On 2026-10-07 at 15:54 UTC+03:00, an authorized Nmap SYN scan targeted eight TCP ports on the Windows lab address 192.168.10.100. The captured output reports three open and five closed ports. Eight indexed TCP SYN records match the source/destination pair and scanned ports, all with firewall action pass. A subsequent manual analytic replay returns one scan candidate with eight distinct ports and eight logged events. No compromise or exploitation is established. Later screenshots from 2026-10-09 establish scheduled alert firing and a matching scheduler job. That job retains the fixed 2026-10-07 replay bounds and returns this old scan's eight-port result; it does not demonstrate detection of a new scan.
+On 2026-10-07 at 15:54 UTC+03:00, an authorized Nmap SYN scan targeted eight TCP ports on the Windows lab address 192.168.10.100. The captured output reports three open and five closed ports. Eight indexed TCP SYN records match the source/destination pair and scanned ports, all with firewall action pass. A subsequent manual analytic replay returns one scan candidate with eight distinct ports and eight logged events. No compromise or exploitation is established. Later screenshots from 2026-10-09 establish scheduled alert firing and a matching scheduler job. That job retains the fixed 2026-10-07 replay bounds and returns this old scan's eight-port result; it does not demonstrate detection of a new scan. A later original capture confirms a completed fresh scan at **2026-10-10 11:28:25 +03:00 (08:28:25 UTC)**, with three open and five closed ports. Its fresh indexed telemetry and relative-window scheduled result have not yet been captured.
 
 This is a new exercise, separate from [case 001](incident-001-port-scan.md), whose historical firewall source address was 192.168.20.100.
 
@@ -203,11 +203,11 @@ date -Is
 | Completed scan count | 0 IP addresses (0 hosts up) |
 | Nmap reported elapsed time | 0.07 seconds |
 
-The target scan did not complete. Nmap's target-setup code emits this error when its route lookup fails. The output does not identify whether the underlying issue is interface state, missing IPv4 configuration, the routing table or Nmap's route selection. No current interface/address/route diagnostic output has been supplied. [Nmap target-setup source](https://github.com/nmap/nmap/blob/master/targets.cc).
+The target scan did not complete. Nmap's target-setup code emits this error when its route lookup fails. The output does not identify whether the underlying issue is interface state, missing IPv4 configuration, the routing table or Nmap's route selection. At this aborted-attempt stage, no current interface/address/route diagnostic output had been supplied. The later successful run in evidence 7 establishes that target setup and scanning worked at that time, while the actual network change remains uncaptured. [Nmap target-setup source](https://github.com/nmap/nmap/blob/master/targets.cc).
 
 No port states or fresh scheduled result are established by this attempt. Updated saved-alert settings have also not been supplied, so the proposed relative-window correction remains unverified. The native `soc-port-scan-20261010.txt` file itself has not been received.
 
-Next diagnostic commands, to run on Kali before any network configuration changes:
+Diagnostic commands requested after the aborted attempt:
 
 ```bash
 ip -br addr
@@ -216,7 +216,52 @@ ip route get 192.168.10.100
 nmcli device status
 ```
 
-These inspect current interface addresses, routes, target-route selection and NetworkManager device state. Their results will guide the next fix; no network configuration change is asserted here.
+These inspect current interface addresses, routes, target-route selection and NetworkManager device state. Their outputs and any network configuration changes have not been attached to this investigation. The later completed scan below is the current execution state.
+
+## Evidence 7 — Fresh completed eight-port scan — 2026-10-10
+
+![Fresh completed Kali scan of the Windows lab target](../screenshots/kali-port-scan-retest-20261010-case002.png)
+
+```bash
+date -Is
+sudo nmap -sS -Pn -n -p 22,80,135,139,443,445,3389,5985 --reason -oN soc-port-scan-20261010.txt 192.168.10.100
+date -Is
+```
+
+| Run field | Captured value |
+| --- | --- |
+| Before and after command timestamps | 2026-10-10T11:28:25+03:00 |
+| Same displayed second in UTC | 2026-10-10 08:28:25 UTC |
+| Nmap version | 7.94SVN |
+| Target | 192.168.10.100 |
+| Target / host count | 1 IP address / 1 host up |
+| Reported scan elapsed time | 0.20 seconds |
+| Reported latency | 0.031 seconds |
+| Requested normal-output filename | soc-port-scan-20261010.txt |
+| Current source IP / gateway | Not visible in this capture |
+
+| TCP port | State | Nmap service label | Reported reason |
+| --- | --- | --- | --- |
+| 22 | closed | ssh | reset, TTL 127 |
+| 80 | closed | http | reset, TTL 127 |
+| 135 | open | msrpc | syn-ack, TTL 127 |
+| 139 | open | netbios-ssn | syn-ack, TTL 127 |
+| 443 | closed | https | reset, TTL 127 |
+| 445 | open | microsoft-ds | syn-ack, TTL 127 |
+| 3389 | closed | ms-wbt-server | reset, TTL 127 |
+| 5985 | closed | wsman | reset, TTL 127 |
+
+The run completes and reports responses for all eight selected ports, resolving the immediate target-setup failure for this attempt. The screenshot does not show which network setting changed, whether that change persists across reboots or whether the current route traverses pfSense. Those details are not inferred from scan success.
+
+Because `-Pn` bypasses host discovery, the user-set host-up line is not an independent ping result; the visible SYN-ACK/reset responses provide reachability evidence. Service labels are port labels, not service/version identification. The observed open/closed states match the earlier scan, but are recorded as a separate new execution.
+
+The original PNG is unchanged: **352,100 bytes**, SHA-256 `803719a54346c6ee580c33847a1959f8beaf785e8edabf68819a2da38869a8ed`. The native Nmap output file has not been received.
+
+### Next scheduled correlation — expected timing, not a captured result
+
+If the proposed `*/5 * * * *` schedule and `earliest=-6m@m latest=-1m@m` bounds have been saved, an on-time **2026-10-10 08:30 UTC (11:30 Asia/Riyadh)** run should evaluate **08:24–08:29 UTC**, containing the displayed **08:28:25 UTC** scan time. This is derived from the proposed settings; the actual cron, corrected saved query, event-time parsing/ingestion and firing are still unverified.
+
+Review Trigger History near that time and open the matching **View Results** job. Capture the actual query, completed-job window and source/destination/port values, then compare with its underlying fresh firewall events. A result still using the fixed 7 October bounds would remain historical replay, irrespective of its launch time.
 
 ## Disposition and remaining validation
 
@@ -225,12 +270,12 @@ These inspect current interface addresses, routes, target-route selection and Ne
 **Scheduled alert:** Trigger History and View Results confirm historical replay on 2026-10-09; fixed bounds identified, relative-window correction and fresh-event validation pending.  
 **Endpoint compromise:** Not established.
 
-1. Collect the current Kali interface/address/route diagnostics and resolve the target-route error observed in evidence 6.
-2. Verify the proposed relative-window correction in the existing alert; capture the saved query, exact cron and time settings.
-3. After target-route recovery, complete a fresh bounded eight-port scan and correlate its indexed events with the corrected scheduled job.
-4. Export the raw records and attach the native Nmap output for reproducible evidence.
+1. Inspect Trigger History near **2026-10-10 08:30 UTC** and capture the matching **View Results** query, completed-job window and grouped result.
+2. Verify the relative-window correction and actual cron/time settings in the saved alert.
+3. Correlate the completed fresh scan with newly indexed pfSense records, confirming source address, target, exact port set and observation point.
+4. Attach the native Nmap output and raw-event export. Record the network change behind the recovered scan route when available.
 
-No containment or endpoint change has been performed. Clock synchronization remains deferred. The exercise remains open for target-route diagnosis, verification of the relative-window correction, fresh scheduled validation and original event/output exports.
+No containment or endpoint change has been performed. Clock synchronization remains deferred. The exercise remains open for verification of the relative-window correction, fresh firewall/scheduled correlation and original event/output exports. The immediate scan attempt now completes; the network change and its persistence remain undocumented.
 
 ## References
 
