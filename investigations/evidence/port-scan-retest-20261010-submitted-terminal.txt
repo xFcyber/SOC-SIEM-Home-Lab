@@ -1,0 +1,11 @@
+┌──(off㉿kali)-[~]
+└─$ date -Is
+sudo nmap -sS -Pn -n -p 22,80,135,139,443,445,3389,5985 --reason -oN soc-port-scan-20261010.txt 192.168.10.100
+date -Is
+2026-10-10T11:22:49+03:00
+[sudo] password for off: 
+Starting Nmap 7.94SVN ( https://nmap.org ) at 2026-10-10 11:22 +03
+setup_target: failed to determine route to 192.168.10.100
+WARNING: No targets were specified, so 0 hosts scanned.
+Nmap done: 0 IP addresses (0 hosts up) scanned in 0.07 seconds
+2026-10-10T11:22:52+03:00

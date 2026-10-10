@@ -26,6 +26,14 @@ The run starts at 15:54 UTC+03:00 and completes in 0.34 seconds. Ports 135, 139 
 
 The [original Trigger History screenshot](../screenshots/splunk-port-scan-alert-triggered-20261009-case002.png) shows the enabled **SOC Lab - IPv4 TCP Port Scan** alert firing repeatedly, most recently **18:30:02 UTC (21:30:02 Asia/Riyadh)**. The later [scheduled result screenshot](../screenshots/splunk-port-scan-scheduled-replay-20261009-case002.png) shows the **2026-10-09 18:30 UTC** job replaying the fixed **2026-10-07 12:52–12:57 UTC** window and returning **8 events / 1 grouped result** matching the original scan. No fresh scan is established. Correct the live alert's fixed bounds to the proposed relative window, capture its actual schedule, then run a fresh bounded test and inspect its scheduled results. The correction and fresh validation remain pending.
 
+## Fresh retest attempt — 2026-10-10
+
+At **11:22:49–11:22:52 +03:00**, the author submitted a new eight-port scan command with `-oN soc-port-scan-20261010.txt`. Nmap **7.94SVN** returned **setup_target: failed to determine route to 192.168.10.100**, followed by **0 hosts scanned**. This was an aborted attempt; no new port states or completed target scan are established.
+
+[Submitted terminal transcript](../investigations/evidence/port-scan-retest-20261010-submitted-terminal.txt) · [Case 002 diagnosis and next steps](../investigations/incident-002-controlled-port-scan.md)
+
+Collect `ip -br addr`, `ip route`, `ip route get 192.168.10.100` and `nmcli device status` before changing the network configuration or retrying. The cause remains unresolved until those results are reviewed. The saved-alert relative-window correction also remains unverified.
+
 ## Example command
 
 ```bash

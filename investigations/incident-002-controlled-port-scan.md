@@ -1,6 +1,6 @@
 # Case 002 — Controlled Kali TCP port scan
 
-**Status:** Controlled scan, firewall correlation, manual replay and scheduled historical replay confirmed. Fixed replay bounds identified in the 2026-10-09 scheduler job; relative-window correction and fresh validation pending.
+**Status:** Historical scan and scheduled replay confirmed; relative-window correction not yet evidenced. Fresh retest on 2026-10-10 aborted during target-route setup with 0 hosts scanned; network diagnosis and fresh validation pending.
 
 ## Summary
 
@@ -181,6 +181,43 @@ Keep the validated aggregation below it, run the search and use **Save** to upda
 
 The correction is guidance, not evidence of a change already made on the user's Splunk instance. A fresh bounded scan, its indexed events and the corrected scheduled result are still required. The fixed [historical replay file](incident-002-replay.spl) remains preserved for reproducibility.
 
+## Evidence 6 — Fresh retest aborted during target-route setup — 2026-10-10
+
+Source: [user-submitted terminal transcript](evidence/port-scan-retest-20261010-submitted-terminal.txt), preserved as text. This is a pasted terminal record, not an uploaded screenshot or the native Nmap normal-output file.
+
+The submitted command was:
+
+```bash
+date -Is
+sudo nmap -sS -Pn -n -p 22,80,135,139,443,445,3389,5985 --reason -oN soc-port-scan-20261010.txt 192.168.10.100
+date -Is
+```
+
+| Observation | Submitted value |
+| --- | --- |
+| Before command | 2026-10-10T11:22:49+03:00 |
+| After command | 2026-10-10T11:22:52+03:00 |
+| Same interval in UTC | 2026-10-10 08:22:49–08:22:52 UTC |
+| Nmap version | 7.94SVN |
+| Target-route error | setup_target: failed to determine route to 192.168.10.100 |
+| Completed scan count | 0 IP addresses (0 hosts up) |
+| Nmap reported elapsed time | 0.07 seconds |
+
+The target scan did not complete. Nmap's target-setup code emits this error when its route lookup fails. The output does not identify whether the underlying issue is interface state, missing IPv4 configuration, the routing table or Nmap's route selection. No current interface/address/route diagnostic output has been supplied. [Nmap target-setup source](https://github.com/nmap/nmap/blob/master/targets.cc).
+
+No port states or fresh scheduled result are established by this attempt. Updated saved-alert settings have also not been supplied, so the proposed relative-window correction remains unverified. The native `soc-port-scan-20261010.txt` file itself has not been received.
+
+Next diagnostic commands, to run on Kali before any network configuration changes:
+
+```bash
+ip -br addr
+ip route
+ip route get 192.168.10.100
+nmcli device status
+```
+
+These inspect current interface addresses, routes, target-route selection and NetworkManager device state. Their results will guide the next fix; no network configuration change is asserted here.
+
 ## Disposition and remaining validation
 
 **Behavior verdict:** True positive for the controlled port scan.  
@@ -188,12 +225,12 @@ The correction is guidance, not evidence of a change already made on the user's 
 **Scheduled alert:** Trigger History and View Results confirm historical replay on 2026-10-09; fixed bounds identified, relative-window correction and fresh-event validation pending.  
 **Endpoint compromise:** Not established.
 
-1. Apply the proposed relative-window correction to the existing alert and capture the saved query.
-2. Capture its exact cron and time settings; confirm the schedule and search window are aligned.
-3. Generate a fresh bounded eight-port scan, record its time and correlate its indexed events with the corrected scheduled job.
-4. Export the raw records and attach the original Nmap output for reproducible evidence.
+1. Collect the current Kali interface/address/route diagnostics and resolve the target-route error observed in evidence 6.
+2. Verify the proposed relative-window correction in the existing alert; capture the saved query, exact cron and time settings.
+3. After target-route recovery, complete a fresh bounded eight-port scan and correlate its indexed events with the corrected scheduled job.
+4. Export the raw records and attach the native Nmap output for reproducible evidence.
 
-No containment or endpoint change has been performed. Clock synchronization remains deferred. The exercise remains open for relative-window correction, fresh scheduled validation and original event/output exports.
+No containment or endpoint change has been performed. Clock synchronization remains deferred. The exercise remains open for target-route diagnosis, verification of the relative-window correction, fresh scheduled validation and original event/output exports.
 
 ## References
 
