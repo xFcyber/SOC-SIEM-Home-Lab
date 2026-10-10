@@ -1,6 +1,6 @@
 # IPv4 TCP port scan candidate
 
-**Status:** Core analytic validated by manual and scheduled historical replay. Fresh scan execution captured on 2026-10-10; relative-window correction and fresh telemetry/scheduled correlation remain pending.
+**Status:** Core analytic, relative-window correction and fresh scheduled detection validated on 2026-10-10. The scheduler job returns 8 distinct ports / 8 events for the controlled scan; raw-event export and exact cron capture remain pending.
 
 ## Behavior and data
 
@@ -71,15 +71,17 @@ The [original alert-overview screenshot](../screenshots/splunk-port-scan-alert-t
 
 The overview alone does not expose its SPL, exact cron or search window. The later [View Results screenshot](../screenshots/splunk-port-scan-scheduled-replay-20261009-case002.png) captures a scheduler job launched at **18:30 UTC on 2026-10-09** that still uses `earliest=1791377520 latest=1791377820`. It evaluates **2026-10-07 12:52–12:57 UTC** and returns **8 events / 1 grouped result** matching the old scan's source, destination, port set and **pass** action.
 
-The visible core analytic agrees with the historical replay, while the generic SPL above includes optional output fields not shown in the job result. Fixed replay bounds explain repeated alerts on old data; they do not demonstrate live detection of a new scan. The proposed correction replaces the inline epochs with `earliest=-6m@m latest=-1m@m` and validates a fresh scan under a confirmed five-minute schedule. This has **not yet been applied or validated**. Preserve the historical replay for reproducibility.
+The visible core analytic agrees with the historical replay, while the generic SPL above includes optional output fields not shown in the job result. Fixed replay bounds explain repeated alerts on old data; they do not demonstrate live detection of a new scan. The correction replaces the inline epochs with `earliest=-6m@m latest=-1m@m`, producing a moving five-minute search window. The exact cron expression remains separately awaiting capture. The later 2026-10-10 scheduler result confirms the executed relative bounds and a matching fresh scan result. Preserve the historical replay for reproducibility.
 
 [Diagnosis and correction](../investigations/incident-002-controlled-port-scan.md) · [Observed job and schedule proposal](../splunk/alerts.md)
 
-## Fresh execution awaiting correlation — 2026-10-10
+## Fresh execution and scheduled correlation confirmed — 2026-10-10
 
 The [new original Nmap capture](../screenshots/kali-port-scan-retest-20261010-case002.png) shows a completed eight-port SYN scan at **11:28:25 +03:00 (08:28:25 UTC)**, after an earlier aborted route lookup. Target **192.168.10.100** responds with **135/139/445 open** and the other five selected ports closed; Nmap reports **1 IP address scanned in 0.20 seconds**.
 
-This is execution evidence. Current source IP, routing observation point, indexed firewall events, the corrected saved alert settings and fresh scheduled result are not shown. Validate these against the expected **08:30 UTC** run only if the proposed five-minute schedule and relative bounds are confirmed. [Case 002](../investigations/incident-002-controlled-port-scan.md).
+The later [Trigger History capture](../screenshots/splunk-port-scan-alert-triggered-20261010-case002.png) records **08:30:02 UTC**. Its [scheduler result](../screenshots/splunk-port-scan-scheduled-results-20261010-case002.png) uses `earliest=-6m@m latest=-1m@m` and covers **08:24–08:29 as displayed**, returning **8 events / 1 grouped result** for **192.168.20.20 → 192.168.10.100**, all eight selected ports and **pass**. This validates the relative-window correction and fresh scheduled detection for the controlled test.
+
+[Executed scheduled SPL](pfsense-ipv4-port-scan-scheduled.spl) preserves the demonstrated core analytic. The generic query above adds optional columns not exposed by this result. Raw records, observation-point details, exact cron/dispatch settings, suppression and broader negative-case coverage remain separately unverified. [Case 002](../investigations/incident-002-controlled-port-scan.md).
 
 ## Validation sequence
 
@@ -90,4 +92,4 @@ This is execution evidence. Current source IP, routing observation point, indexe
 5. Review grouped results against individual events.
 6. Attach screenshots and exact observed values to the relevant case: [historical case 001](../investigations/incident-001-port-scan.md) or [controlled case 002](../investigations/incident-002-controlled-port-scan.md).
 
-[Schedule proposal](../splunk/alerts.md) · [CSV specification](https://docs.netgate.com/pfsense/en/latest/monitoring/logs/raw-filter-format.html)
+[Observed alert configuration and remaining checks](../splunk/alerts.md) · [CSV specification](https://docs.netgate.com/pfsense/en/latest/monitoring/logs/raw-filter-format.html)

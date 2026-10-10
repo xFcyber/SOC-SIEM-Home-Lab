@@ -1,6 +1,6 @@
 # Scheduled port scan alert
 
-**Status:** Scheduled historical replay confirmed on 2026-10-09; fresh scan execution captured on 2026-10-10. Corrected saved query, actual cron/window settings and fresh scheduled correlation remain pending.
+**Status:** Relative-window correction and fresh scheduled firing confirmed on 2026-10-10. Trigger History and scheduler results match the new eight-port scan; exact cron/dispatch settings and raw/native exports remain pending.
 
 ## Earlier saved definition
 
@@ -45,47 +45,62 @@ Inline time bounds take precedence over the time-range picker. The old completed
 
 This confirms scheduled **historical replay**, with a configuration issue for ongoing monitoring. It does not establish a new scan or validation of a live relative window.
 
-## Proposed correction — not yet applied
+## Relative-window correction verified — 2026-10-10
 
-From **Alerts**, locate the existing **SOC Lab - IPv4 TCP Port Scan** alert and choose **Open in Search**. Replace the first line with:
+The fresh [Nmap capture](../screenshots/kali-port-scan-retest-20261010-case002.png) records the completed scan at **11:28:25 +03:00 (08:28:25 UTC)**. The updated alert overview and matching scheduler job provide the fresh validation:
+
+![Fresh port-scan Trigger History](../screenshots/splunk-port-scan-alert-triggered-20261010-case002.png)
+
+![Fresh relative-window scheduled result](../screenshots/splunk-port-scan-scheduled-results-20261010-case002.png)
+
+| Configuration / result | Observed value |
+| --- | --- |
+| Alert name | SOC Lab - IPv4 TCP Port Scan |
+| Enabled / type | Yes / Scheduled; Cron Schedule |
+| Trigger / action | Results > 0 / Add to Triggered Alerts |
+| Modified field, as displayed | Oct 10, 2026 8:20:28 AM; no explicit offset |
+| Fresh trigger | 2026-10-10 08:30:02 UTC (11:30:02 Asia/Riyadh) |
+| Scheduler launch reference | `at_1791621000` = 2026-10-10 08:30:00 UTC |
+| Executed query earliest / latest | `-6m@m` / `-1m@m` |
+| Completed-job displayed window | 2026-10-10 08:24:00–08:29:00 |
+| Event / grouped-result count | 8 / 1 |
+| Source → destination | 192.168.20.20 → 192.168.10.100 |
+| Unique ports / logged events | 8 / 8 |
+| Destination ports | 22, 80, 135, 139, 443, 445, 3389, 5985 |
+| Firewall actions | pass |
+| Exact cron, dispatch-time fields and suppression | Not visible |
+
+The executed [scheduled SPL](../detections/pfsense-ipv4-port-scan-scheduled.spl) begins with:
 
 ```spl
 index=pfSense "filterlog" earliest=-6m@m latest=-1m@m
 ```
 
-Keep the validated aggregation below it, run the edited search and use **Save** to update the existing alert. Capture the saved query and exact cron/time settings. The historical replay file remains unchanged as reproducible evidence. [Splunk alert-editing reference](https://help.splunk.com/en/splunk-enterprise/alert-and-respond/alerting-manual/10.4/view-and-update-alerts/alerts-page).
+The corrected job evaluates a five-minute moving window delayed by one minute, and its window contains the fresh scan time. Its indexed source/target pair and port set match the controlled run. This verifies the applied correction and fresh scheduled detection; the earlier fixed-window job remains documented as historical replay.
 
-| Setting | Proposed value; not yet captured as configured |
+The complete visible core query is transcribed without adding optional columns. The [generic extended SPL](../detections/pfsense-ipv4-port-scan.spl) is retained separately. No fixed replay epochs are included in the live scheduled variant.
+
+## Schedule details still needing capture
+
+| Setting | Evidence status |
 | --- | --- |
-| Existing alert name | SOC Lab - IPv4 TCP Port Scan |
-| Type | Scheduled |
-| Cron | `*/5 * * * *` |
-| Earliest | `-6m@m` |
-| Latest | `-1m@m` |
-| Trigger | Number of results greater than 0 |
-| Action | Add to Triggered Alerts |
-| Initial throttling | Off during validation |
+| Relative earliest / latest in executed SPL | Confirmed: `-6m@m` / `-1m@m` |
+| Scheduled type | Confirmed: Cron Schedule |
+| Exact cron expression | Not captured; `*/5 * * * *` remains the intended configuration |
+| Dispatch-time fields / suppression | Not captured |
+| Persistent route-recovery configuration | Not captured |
 
-This evaluates a five-minute window delayed by one minute to allow ingestion. Align the saved time settings with the same relative window and confirm the actual schedule. Adjacent on-time five-minute runs have adjacent windows. Measure actual delay; late arrivals or missed jobs can still cause gaps. Splunk Enterprise scheduling uses the configured search-head timezone.
+The approximate five-minute cadence in older history rows is not substituted for an actual cron-setting screenshot. Align and capture the saved schedule/time settings when available. Late-arrival behavior, missed-job coverage and ingestion delay have not been measured by this one successful test.
 
-The [generic port-scan SPL](../detections/pfsense-ipv4-port-scan.spl) is also available with optional output fields; the correction above keeps the demonstrated core aggregation. It does not add a separate five-minute `bin`.
+## Remaining evidence
 
-## Fresh execution ready for scheduled review — 2026-10-10
+1. Export and validate the underlying fresh firewall records for **08:24–08:29**, preserving raw payloads and metadata.
+2. Upload the native `soc-port-scan-20261010.txt` output.
+3. Capture exact cron/dispatch settings and any suppression configuration.
 
-The [original fresh scan screenshot](../screenshots/kali-port-scan-retest-20261010-case002.png) captures the completed eight-port run at **2026-10-10 11:28:25 +03:00 (08:28:25 UTC)**, with **3 open / 5 closed ports** on **192.168.10.100**.
+Scheduled firing and matching results are complete for this controlled case. Threshold tuning and any future suppression should be documented after reviewing repeated candidates.
 
-Under the **proposed**, still-unverified five-minute cron and `-6m@m` / `-1m@m` bounds, the **08:30 UTC (11:30 Asia/Riyadh)** scheduler run should cover **08:24–08:29 UTC**. Inspect Trigger History and its **View Results** to confirm the actual query/window and correlate fresh firewall events. This expected timing is not evidence that the alert fired or that the correction was saved.
-
-## Remaining validation
-
-1. Inspect Trigger History near **2026-10-10 08:30 UTC** and open the corresponding scheduler result if present.
-2. Capture the corrected saved query and actual cron/time settings, confirming the proposed relative bounds.
-3. Compare the scheduled result and its underlying fresh firewall records with the **08:28:25 UTC** completed scan.
-4. Attach settings, fresh scheduled results, native Nmap output and the original raw-event export.
-
-Correct the fixed-window cause before using suppression to reduce duplicates. Once fresh matching results are verified, tune thresholds and optionally suppress repeated candidates by source/destination, documenting any suppression.
-
-[Case 002 evidence and diagnosis](../investigations/incident-002-controlled-port-scan.md) · [Splunk scheduling guidance](https://help.splunk.com/en/splunk-cloud-platform/alert-and-respond/alerting-manual/10.3.2512/create-alerts/alert-scheduling-tips).
+[Case 002 complete validation](../investigations/incident-002-controlled-port-scan.md) · [Splunk scheduling guidance](https://help.splunk.com/en/splunk-cloud-platform/alert-and-respond/alerting-manual/10.3.2512/create-alerts/alert-scheduling-tips).
 
 ## Windows brute-force alert
 

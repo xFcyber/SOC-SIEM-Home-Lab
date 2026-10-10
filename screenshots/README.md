@@ -1,6 +1,6 @@
 # Lab screenshot evidence
 
-Sixty-three original lab screenshots are included in this gallery and the linked investigations. The original captures were visually inspected and uploaded without changing their pixels. Four additional cropped evidence views are indexed at the end of the gallery. Captions distinguish observed state from work still pending.
+Sixty-five original lab screenshots are included in this gallery and the linked investigations. The original captures were visually inspected and uploaded without changing their pixels. Four additional cropped evidence views are indexed at the end of the gallery. Captions distinguish observed state from work still pending.
 
 ## VirtualBox environment baseline — 2026-10-07
 
@@ -84,7 +84,7 @@ The displayed event time and raw prefixes show a three-hour difference whose cau
 
 Nmap **7.94SVN** starts at **15:54 +03**, targets **192.168.10.100**, and completes in **0.34 seconds**. The command scans eight ports: **135, 139 and 445 are reported open**, while **22, 80, 443, 3389 and 5985 are closed**. Reasons are SYN-ACK for open ports and reset for closed ports.
 
-This is scan execution evidence. Matching firewall records and the grouped analytic are attached below. Later 2026-10-09 screenshots record Trigger History and matching scheduled results that replay this scan's fixed historical time window. Fresh relative-window validation remains pending.
+This is scan execution evidence. Matching firewall records and the grouped analytic are attached below. Later 2026-10-09 screenshots record Trigger History and matching scheduled results that replay this scan's fixed historical time window. Fresh relative-window validation is captured in the 2026-10-10 sections below.
 
 [Case 002](../investigations/incident-002-controlled-port-scan.md)
 
@@ -96,7 +96,7 @@ The captured **Last 24 hours** search returns **8 events** from **192.168.20.20*
 
 The displayed event time is **12:54:56 PM**; raw prefixes contain **12:54:56** and **15:54:56**. Numeric event/index times and configured timezone are not shown. Matching addresses, port set and the embedded 15:54 minute support correlation with the Nmap run. Firewall permission does not mean every port was open.
 
-This proves indexed matching records. The grouped detection result is attached below. The separate 2026-10-09 Trigger History and View Results captures establish scheduled replay of this scan's fixed historical window; a new relative-window test remains pending.
+This proves indexed matching records. The grouped detection result is attached below. The separate 2026-10-09 Trigger History and View Results captures establish scheduled replay of this scan's fixed historical window; a completed fresh scan and its relative-window scheduled result are captured below.
 
 [Case 002 and replay query](../investigations/incident-002-controlled-port-scan.md)
 
@@ -146,7 +146,7 @@ This original screenshot proves scheduled alert firing. It does not itself show 
 
 The URL contains a **scheduler** job identifier with `at_1791570600`, corresponding to **2026-10-09 18:30:00 UTC** and the preceding **18:30:02 UTC** Trigger History row. The search still contains `earliest=1791377520 latest=1791377820`. Its completed-job banner shows **8 events** over **2026-10-07 12:52–12:57**, and **Statistics (1)** contains **192.168.20.20 → 192.168.10.100**, **8 distinct ports**, **8 logged events** and **pass**.
 
-The destination ports match the recorded scan: **22, 80, 135, 139, 443, 445, 3389, 5985**. This is scheduled replay of historical test data. Fixed bounds make unchanged old events eligible on each run; this historical scheduler job does not demonstrate relative-window operation. A fresh completed scan is captured below, while its scheduled correlation and the live alert correction remain pending.
+The destination ports match the recorded scan: **22, 80, 135, 139, 443, 445, 3389, 5985**. This is scheduled replay of historical test data. Fixed bounds make unchanged old events eligible on each run; this historical scheduler job does not demonstrate relative-window operation. A fresh completed scan and its corrected relative-window scheduled result are captured below.
 
 [Case 002 diagnosis and correction](../investigations/incident-002-controlled-port-scan.md) · [Alert correction](../splunk/alerts.md)
 
@@ -156,9 +156,25 @@ The destination ports match the recorded scan: **22, 80, 135, 139, 443, 445, 338
 
 The timestamps before and after the command both show **2026-10-10T11:28:25+03:00 (08:28:25 UTC)**. Nmap **7.94SVN** completes an eight-port SYN scan of **192.168.10.100**, reporting **1 IP address / 1 host up**, **0.20 seconds** elapsed and **0.031 seconds** latency. Ports **135, 139 and 445** are **open** with SYN-ACK responses; **22, 80, 443, 3389 and 5985** are **closed** with reset responses. All displayed response TTLs are **127**.
 
-This proves fresh scan execution and visible target responses after the earlier failed route setup. The screenshot does not expose Kali's current source address, selected gateway or the configuration change that enabled the run. Fresh pfSense event correlation, the saved alert's relative-window settings and its scheduled results remain pending. The native `soc-port-scan-20261010.txt` file has not yet been uploaded.
+This proves fresh scan execution and visible target responses after the earlier failed route setup. The screenshot does not expose Kali's current source address, selected gateway or the configuration change that enabled the run. The later scheduled result below confirms the indexed source/destination pair, port set and executed relative bounds; individual raw event review and the exact cron expression remain pending. The native `soc-port-scan-20261010.txt` file has not yet been uploaded.
 
 [Case 002 fresh execution evidence](../investigations/incident-002-controlled-port-scan.md) · [Simulation](../attack-simulations/port-scan.md)
+
+## Fresh port-scan Trigger History — 2026-10-10
+
+![Corrected port-scan alert fires for the new controlled scan](splunk-port-scan-alert-triggered-20261010-case002.png)
+
+**SOC Lab - IPv4 TCP Port Scan** is enabled, **Scheduled / Cron Schedule**, and configured for **Number of Results > 0** with **Add to Triggered Alerts**. Trigger History records **2026-10-10 08:30:02 UTC (11:30:02 Asia/Riyadh)**. The modified field displays **Oct 10, 2026 8:20:28 AM** without an explicit offset. Older history rows are preserved; only the fresh firing's scheduler result is correlated below.
+
+## Fresh port-scan scheduled results — 2026-10-10
+
+![Relative-window scheduler job returns eight matching ports and events](splunk-port-scan-scheduled-results-20261010-case002.png)
+
+The scheduler identifier contains `at_1791621000`, corresponding to **2026-10-10 08:30:00 UTC**. The executed first line uses **earliest=-6m@m / latest=-1m@m**, and the completed-job banner shows **08:24–08:29 on 2026-10-10**, with **8 events / Statistics (1)**.
+
+The grouped row reports **192.168.20.20 → 192.168.10.100**, **unique_ports=8**, **logged_events=8**, destination ports **22, 80, 135, 139, 443, 445, 3389, 5985**, and **firewall_actions=pass**. The selected window contains the fresh scan's displayed **08:28:25 UTC** time and the port set matches its command. This validates the corrected relative-window scheduled detection for this controlled test; native/raw exports and exact cron configuration remain pending.
+
+[Case 002 complete evidence](../investigations/incident-002-controlled-port-scan.md) · [Executed scheduled SPL](../detections/pfsense-ipv4-port-scan-scheduled.spl)
 
 ## pfSense OPT1 rule in progress
 
@@ -176,7 +192,7 @@ Summary charts are visible, but individual event details are not. Technique/comp
 
 ## Evidence for the four subsequent attack investigations — 2026-10-08–09
 
-The following **43 original PNGs** complete the uploaded screenshot evidence for these four cases. Alongside the existing controlled port-scan images, the repository now contains screenshot evidence for all **five distinct attack scenarios**. Each investigation embeds its own captures with captions. Brute-force scheduled firing is confirmed by the 2026-10-09 retest below. Port-scan Trigger History and matching scheduled results are captured above; its fixed historical bounds still require correction and fresh validation.
+The following **43 original PNGs** complete the uploaded screenshot evidence for these four cases. Alongside the existing controlled port-scan images, the repository now contains screenshot evidence for all **five distinct attack scenarios**. Each investigation embeds its own captures with captions. Brute-force scheduled firing is confirmed by the 2026-10-09 retest below. Port-scan relative-window correction, fresh Trigger History and matching scheduled results are captured above. Scheduled firing and matching results are now evidenced for all five scenarios.
 
 ### Case 3 — Controlled SMB failed logons
 
@@ -268,8 +284,7 @@ The [original Windows Security CSV](../investigations/evidence/soc-002-4625-even
 | windows-forwarder-active.png | Active endpoint forwarding |
 | windows-sysmon-event1.png | Local Sysmon process creation |
 | splunk-sysmon-event.png | Matching indexed Sysmon event |
-| splunk-alert-schedule.png | Actual cron and time-window settings |
-| splunk-port-scan-live-validation.png | Fresh scan matched by a corrected relative-window scheduled job; include actual query, completed-job window and result rows |
+| splunk-alert-schedule.png | Exact cron expression, dispatch-time settings and any suppression configuration |
 | wazuh-event-details.png | Individual collected event or alert |
 
 Add only real evidence. Do not infer missing values from screenshots or substitute generated interface images.

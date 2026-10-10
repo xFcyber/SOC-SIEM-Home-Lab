@@ -1,10 +1,10 @@
 # Case 002 — Controlled Kali TCP port scan
 
-**Status:** Historical scan/replay and fresh scan execution confirmed. The 2026-10-10 rerun completed at 11:28:25 +03:00 after an earlier route error. Updated relative-window settings, fresh firewall correlation and scheduled results remain pending.
+**Status:** Fresh controlled scan and corrected relative-window scheduled detection confirmed on 2026-10-10. Trigger History at 08:30:02 UTC and View Results match 8 distinct ports / 8 indexed events. Native/raw exports and exact cron capture remain pending.
 
 ## Summary
 
-On 2026-10-07 at 15:54 UTC+03:00, an authorized Nmap SYN scan targeted eight TCP ports on the Windows lab address 192.168.10.100. The captured output reports three open and five closed ports. Eight indexed TCP SYN records match the source/destination pair and scanned ports, all with firewall action pass. A subsequent manual analytic replay returns one scan candidate with eight distinct ports and eight logged events. No compromise or exploitation is established. Later screenshots from 2026-10-09 establish scheduled alert firing and a matching scheduler job. That job retains the fixed 2026-10-07 replay bounds and returns this old scan's eight-port result; it does not demonstrate detection of a new scan. A later original capture confirms a completed fresh scan at **2026-10-10 11:28:25 +03:00 (08:28:25 UTC)**, with three open and five closed ports. Its fresh indexed telemetry and relative-window scheduled result have not yet been captured.
+On 2026-10-07 at 15:54 UTC+03:00, an authorized Nmap SYN scan targeted eight TCP ports on the Windows lab address 192.168.10.100. The captured output reports three open and five closed ports. Eight indexed TCP SYN records match the source/destination pair and scanned ports, all with firewall action pass. A subsequent manual analytic replay returns one scan candidate with eight distinct ports and eight logged events. No compromise or exploitation is established. Later screenshots from 2026-10-09 establish scheduled alert firing and a matching scheduler job. That job retains the fixed 2026-10-07 replay bounds and returns this old scan's eight-port result; it does not demonstrate detection of a new scan. A later original capture confirms a completed fresh scan at **2026-10-10 11:28:25 +03:00 (08:28:25 UTC)**, with three open and five closed ports. Its indexed aggregation and corrected relative-window scheduled result are captured in evidence 8 and 9 below, completing the fresh scheduled validation.
 
 This is a new exercise, separate from [case 001](incident-001-port-scan.md), whose historical firewall source address was 192.168.20.100.
 
@@ -169,7 +169,7 @@ Splunk documents that inline time modifiers take precedence over the time-range 
 
 The original PNG is unchanged: **425,123 bytes**, SHA-256 `9e314af21d12049a56fe5985e667ea60ff6e83ab786fa1e613ad6b9300090e17`.
 
-### Proposed live-alert correction — not yet applied
+### Live-alert correction identified after the historical replay
 
 Update the existing saved alert through **Alerts → Open in Search**, replacing its first line with:
 
@@ -179,7 +179,7 @@ index=pfSense "filterlog" earliest=-6m@m latest=-1m@m
 
 Keep the validated aggregation below it, run the search and use **Save** to update the existing alert. This proposes a five-minute moving window delayed by one minute for ingestion. Capture the actual cron expression and confirm a five-minute schedule; the row cadence alone does not establish the saved expression. Align the saved alert's time settings with the same relative window. [Official alert-editing reference](https://help.splunk.com/en/splunk-enterprise/alert-and-respond/alerting-manual/10.4/view-and-update-alerts/alerts-page).
 
-The correction is guidance, not evidence of a change already made on the user's Splunk instance. A fresh bounded scan, its indexed events and the corrected scheduled result are still required. The fixed [historical replay file](incident-002-replay.spl) remains preserved for reproducibility.
+At this historical-replay stage, the correction was guidance only. The later execution and scheduler captures in evidence 7–9 confirm the fresh test and the executed relative bounds. Individual raw-event export remains pending. The fixed [historical replay file](incident-002-replay.spl) remains preserved for reproducibility.
 
 ## Evidence 6 — Fresh retest aborted during target-route setup — 2026-10-10
 
@@ -205,7 +205,7 @@ date -Is
 
 The target scan did not complete. Nmap's target-setup code emits this error when its route lookup fails. The output does not identify whether the underlying issue is interface state, missing IPv4 configuration, the routing table or Nmap's route selection. At this aborted-attempt stage, no current interface/address/route diagnostic output had been supplied. The later successful run in evidence 7 establishes that target setup and scanning worked at that time, while the actual network change remains uncaptured. [Nmap target-setup source](https://github.com/nmap/nmap/blob/master/targets.cc).
 
-No port states or fresh scheduled result are established by this attempt. Updated saved-alert settings have also not been supplied, so the proposed relative-window correction remains unverified. The native `soc-port-scan-20261010.txt` file itself has not been received.
+No port states or fresh scheduled result are established by this attempt. At that failed-attempt stage, updated saved-alert settings had not been supplied. Evidence 9 later confirms the corrected bounds in the executed scheduler job. The native `soc-port-scan-20261010.txt` file itself has not been received.
 
 Diagnostic commands requested after the aborted attempt:
 
@@ -257,25 +257,84 @@ Because `-Pn` bypasses host discovery, the user-set host-up line is not an indep
 
 The original PNG is unchanged: **352,100 bytes**, SHA-256 `803719a54346c6ee580c33847a1959f8beaf785e8edabf68819a2da38869a8ed`. The native Nmap output file has not been received.
 
-### Next scheduled correlation — expected timing, not a captured result
+## Evidence 8 — Fresh scheduled Trigger History confirmed — 2026-10-10
 
-If the proposed `*/5 * * * *` schedule and `earliest=-6m@m latest=-1m@m` bounds have been saved, an on-time **2026-10-10 08:30 UTC (11:30 Asia/Riyadh)** run should evaluate **08:24–08:29 UTC**, containing the displayed **08:28:25 UTC** scan time. This is derived from the proposed settings; the actual cron, corrected saved query, event-time parsing/ingestion and firing are still unverified.
+![Port-scan alert records the fresh controlled test](../screenshots/splunk-port-scan-alert-triggered-20261010-case002.png)
 
-Review Trigger History near that time and open the matching **View Results** job. Capture the actual query, completed-job window and source/destination/port values, then compare with its underlying fresh firewall events. A result still using the fixed 7 October bounds would remain historical replay, irrespective of its launch time.
+| Alert field | Captured value |
+| --- | --- |
+| Name | SOC Lab - IPv4 TCP Port Scan |
+| Enabled | Yes |
+| App / owner / permissions | search / off / Private |
+| Type | Scheduled; Cron Schedule |
+| Trigger condition | Number of Results > 0 |
+| Action | Add to Triggered Alerts |
+| Fresh trigger time | 2026-10-10 08:30:02 UTC |
+| Same instant in Asia/Riyadh | 2026-10-10 11:30:02 +03:00 |
+| Modified field, as displayed | Oct 10, 2026 8:20:28 AM |
+
+The fresh history row follows the **11:28:25 +03:00** scan. The modified field has no explicit offset, so it is retained as displayed. Older trigger rows remain in the history; their presence is not treated as repeated fresh attacks or proof that the old bounds remain active.
+
+The original PNG is unchanged: **290,744 bytes**, SHA-256 `6aef95f322760eba5e2bd97e29da375835867ecceb8c93a9fabd830a907281d8`.
+
+## Evidence 9 — Corrected relative-window scheduler result confirmed — 2026-10-10
+
+![Fresh scheduler result contains the matching eight-port candidate](../screenshots/splunk-port-scan-scheduled-results-20261010-case002.png)
+
+The **View Results** URL contains a `scheduler__off__search__` identifier with `at_1791621000`, corresponding to **2026-10-10 08:30:00 UTC**. This matches the **08:30:02 UTC** Trigger History row. The search is completed and shows **8 events / Statistics (1)**.
+
+The fully visible query is transcribed in [the executed scheduled SPL](../detections/pfsense-ipv4-port-scan-scheduled.spl). Its first line is:
+
+```spl
+index=pfSense "filterlog" earliest=-6m@m latest=-1m@m
+```
+
+The core extraction, IPv4 TCP/inbound filtering, grouping and five-port threshold remain the same as the historical replay; only its fixed time bounds were replaced with relative bounds. Unlike the generic extended query, this executed variant does not output first_seen/last_seen or optional protocol/source-port fields.
+
+| Job / result field | Captured value |
+| --- | --- |
+| Scheduler launch reference | 2026-10-10 08:30:00 UTC |
+| Fresh Trigger History time | 2026-10-10 08:30:02 UTC |
+| Completed-job displayed window | 2026-10-10 08:24:00–08:29:00 |
+| Executed earliest / latest | -6m@m / -1m@m |
+| Events / grouped results | 8 / 1 |
+| src_ip | 192.168.20.20 |
+| dst_ip | 192.168.10.100 |
+| unique_ports / logged_events | 8 / 8 |
+| destination_ports | 22, 80, 135, 139, 443, 445, 3389, 5985 |
+| firewall_actions | pass |
+
+The window is consistent with the scheduler's UTC launch reference and contains the scan's **08:28:25 UTC** displayed time. The source/target pair, exact eight-port set and indexed aggregation support correlation with the fresh run. This establishes **scheduled detection of the controlled scan after the relative-window correction**, rather than another replay of 7 October data.
+
+The **pass** field describes firewall permission for the logged traffic. Nmap separately reports three open and five closed ports. Neither result establishes exploitation or endpoint compromise.
+
+The screenshot validates one fresh test. It does not expose the exact cron expression, dispatch-time settings, suppression options or the individual raw records. Current interface/gateway details and the earlier route-recovery configuration change also remain uncaptured. The generic query's optional columns and broader input/negative-case coverage are not claimed as validated by this result.
+
+The original PNG is unchanged: **326,484 bytes**, SHA-256 `a50b24df097750b3c03fc6bf33c2d3eb37b17f4ed97dcb8c0c663fd6c5d8df25`.
+
+### Raw firewall export to complete reproducibility — pending
+
+Run this separate source-event search for the **completed job's fixed evidence window**, then export its event results as CSV. It is a case-specific evidence query and does not replace the live alert's relative bounds:
+
+```spl
+index=pfSense "filterlog" earliest=1791620640 latest=1791620940 "192.168.20.20" "192.168.10.100" "tcp"
+```
+
+The export has not yet been received or counted. Review its raw IPv4 TCP direction/action fields against the scheduled analytic and reconcile any extra matching records before asserting an exact underlying event set. Preserve `_raw`, timestamps and source metadata. [Splunk Web export guidance](https://help.splunk.com/en/splunk-enterprise/search/search-manual/10.4/export-search-results/export-data-using-splunk-web).
 
 ## Disposition and remaining validation
 
 **Behavior verdict:** True positive for the controlled port scan.  
 **Activity context:** Authorized lab test.  
-**Scheduled alert:** Trigger History and View Results confirm historical replay on 2026-10-09; fixed bounds identified, relative-window correction and fresh-event validation pending.  
+**Scheduled alert:** Fresh Trigger History and matching relative-window View Results confirmed on 2026-10-10 at 08:30:02 UTC.  
 **Endpoint compromise:** Not established.
 
-1. Inspect Trigger History near **2026-10-10 08:30 UTC** and capture the matching **View Results** query, completed-job window and grouped result.
-2. Verify the relative-window correction and actual cron/time settings in the saved alert.
-3. Correlate the completed fresh scan with newly indexed pfSense records, confirming source address, target, exact port set and observation point.
-4. Attach the native Nmap output and raw-event export. Record the network change behind the recovered scan route when available.
+1. Attach and validate the raw firewall event export for **08:24–08:29**; compare individual records and metadata with the scheduled aggregation.
+2. Upload the native `soc-port-scan-20261010.txt` Nmap output.
+3. Capture the exact cron, dispatch-time settings and suppression configuration.
+4. Record the current gateway/interface and the network change behind the recovered scan route when available.
 
-No containment or endpoint change has been performed. Clock synchronization remains deferred. The exercise remains open for verification of the relative-window correction, fresh firewall/scheduled correlation and original event/output exports. The immediate scan attempt now completes; the network change and its persistence remain undocumented.
+Fresh scan execution, the relative-window correction and matching scheduled detection are validated for this authorized test. Remaining work is reproducible raw/native exports and additional configuration capture. Clock synchronization remains deferred; the route-recovery change and its persistence remain undocumented.
 
 ## References
 

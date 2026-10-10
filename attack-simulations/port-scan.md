@@ -24,7 +24,7 @@ The run starts at 15:54 UTC+03:00 and completes in 0.34 seconds. Ports 135, 139 
 
 ## Later scheduled alert evidence — 2026-10-09
 
-The [original Trigger History screenshot](../screenshots/splunk-port-scan-alert-triggered-20261009-case002.png) shows the enabled **SOC Lab - IPv4 TCP Port Scan** alert firing repeatedly, most recently **18:30:02 UTC (21:30:02 Asia/Riyadh)**. The later [scheduled result screenshot](../screenshots/splunk-port-scan-scheduled-replay-20261009-case002.png) shows the **2026-10-09 18:30 UTC** job replaying the fixed **2026-10-07 12:52–12:57 UTC** window and returning **8 events / 1 grouped result** matching the original scan. No fresh scan is established. Correct the live alert's fixed bounds to the proposed relative window, capture its actual schedule, then run a fresh bounded test and inspect its scheduled results. The correction and fresh validation remain pending.
+The [original Trigger History screenshot](../screenshots/splunk-port-scan-alert-triggered-20261009-case002.png) shows the enabled **SOC Lab - IPv4 TCP Port Scan** alert firing repeatedly, most recently **18:30:02 UTC (21:30:02 Asia/Riyadh)**. The later [scheduled result screenshot](../screenshots/splunk-port-scan-scheduled-replay-20261009-case002.png) shows the **2026-10-09 18:30 UTC** job replaying the fixed **2026-10-07 12:52–12:57 UTC** window and returning **8 events / 1 grouped result** matching the original scan. That 2026-10-09 job established historical replay only. The later 2026-10-10 execution and scheduler captures below confirm the correction and a fresh controlled result.
 
 ## Fresh retest attempt — 2026-10-10
 
@@ -32,7 +32,7 @@ At **11:22:49–11:22:52 +03:00**, the author submitted a new eight-port scan co
 
 [Submitted terminal transcript](../investigations/evidence/port-scan-retest-20261010-submitted-terminal.txt) · [Case 002 diagnosis and next steps](../investigations/incident-002-controlled-port-scan.md)
 
-Interface/address/route diagnostics were requested after that aborted attempt. The later completed scan below shows target setup working for the new run; the configuration change itself was not captured. The saved-alert relative-window correction remains unverified.
+Interface/address/route diagnostics were requested after that aborted attempt. The later completed scan below shows target setup working for the new run; the configuration change itself was not captured. The later fresh scheduler capture below verifies the executed relative-window correction.
 
 ## Completed fresh rerun — 2026-10-10
 
@@ -40,7 +40,9 @@ Interface/address/route diagnostics were requested after that aborted attempt. T
 
 The same eight-port command completes at **11:28:25 +03:00 (08:28:25 UTC)**. Nmap reports **1 IP address / 1 host up**, **0.20 seconds** elapsed, ports **135/139/445 open** and **22/80/443/3389/5985 closed**. The native `soc-port-scan-20261010.txt` file is still awaiting upload; the original screenshot is attached unchanged.
 
-Next, review the scheduled job near **08:30 UTC (11:30 Asia/Riyadh)** if the proposed relative-window settings and five-minute schedule have been saved. Confirm its actual query, window and grouped values, then correlate the underlying fresh firewall events. Scan execution alone does not establish scheduled detection or the current pfSense observation point.
+The [fresh Trigger History](../screenshots/splunk-port-scan-alert-triggered-20261010-case002.png) records **08:30:02 UTC (11:30:02 Asia/Riyadh)**. The [matching scheduled job](../screenshots/splunk-port-scan-scheduled-results-20261010-case002.png) uses `earliest=-6m@m latest=-1m@m`, covers **08:24–08:29**, and returns **192.168.20.20 → 192.168.10.100**, **8 distinct ports / 8 indexed events**, the exact Nmap port set and **pass**. The [executed scheduled SPL](../detections/pfsense-ipv4-port-scan-scheduled.spl) is attached.
+
+This confirms fresh scheduled detection for the authorized test. Native Nmap/raw firewall exports and exact cron/dispatch settings still need capture. The screenshot does not document the gateway/interface or route-recovery configuration change.
 
 ## Example command
 
